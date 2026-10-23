@@ -32,6 +32,11 @@ enum eSpace_Link_Flag : char {
    * actually open the same space twice, we have to pretend it is by managing area order carefully.
    */
   SPACE_FLAG_TYPE_WAS_ACTIVE = (1 << 1),
+  /**
+   * Moritz: the space is a tab of its area. An area with two or more tab spaces shows a tab strip
+   * in its header. Stock Blender ignores this flag, the spaces are then plain stored spaces.
+   */
+  SPACE_FLAG_TAB = (1 << 2),
 };
 ENUM_OPERATORS(eSpace_Link_Flag)
 

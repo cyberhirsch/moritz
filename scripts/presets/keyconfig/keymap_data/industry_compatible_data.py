@@ -316,6 +316,9 @@ def km_screen_region_context_menu(_params):
 
     items.extend([
         ("screen.region_context_menu", {"type": 'RIGHTMOUSE', "value": 'PRESS'}, None),
+        # Moritz: drag empty header space to move/dock the area.
+        ("screen.area_join", {"type": 'LEFTMOUSE', "value": 'CLICK_DRAG'},
+         {"properties": [("header_drag", True)]}),
     ])
 
     return keymap

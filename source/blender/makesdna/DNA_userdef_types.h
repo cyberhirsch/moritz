@@ -1018,7 +1018,9 @@ struct UserDef {
                              USER_LOCK_CURSOR_ADJUST | USER_DEPTH_CURSOR | USER_AUTOPERSP |
                              USER_NODE_AUTO_OFFSET | USER_GLOBALUNDO | USER_SHOW_GIZMO_NAVIGATE |
                              USER_SHOW_VIEWPORTNAME | USER_SHOW_FPS | USER_CONTINUOUS_MOUSE |
-                             USER_SAVE_PROMPT;
+                             USER_SAVE_PROMPT |
+                             /* Moritz: show the area drag grip by default. */
+                             USER_AREA_CORNER_HANDLE;
   eUserpref_UI_Flag2 uiflag2 = USER_REGION_OVERLAP;
   eUserpref_GPU_Flag gpu_flag = USER_GPU_FLAG_OVERLAY_SMOOTH_WIRE |
                                 USER_GPU_FLAG_SUBDIVISION_EVALUATION;

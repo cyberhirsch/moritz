@@ -101,6 +101,21 @@ enum class AreaDockTarget {
  */
 void ED_area_data_copy(ScrArea *area_dst, ScrArea *area_src, bool do_free);
 void ED_area_data_swap(ScrArea *area_dst, ScrArea *area_src);
+
+/* Moritz: area tabs, see #SPACE_FLAG_TAB. */
+
+/** Number of spaces of the area marked as tabs (an area shows tabs when this is 2 or more). */
+int ED_area_tab_count(const ScrArea *area);
+/**
+ * Move the active editor of `area_src` into `area_dst` as a new tab and activate it.
+ * When `only_active` is false, the other tabs of `area_src` move along.
+ * \return false when `area_src` has no editor left and must be closed by the caller.
+ */
+bool ED_area_tab_move(bContext *C, ScrArea *area_src, ScrArea *area_dst, bool only_active);
+/** Free all tabs of the area except the active one. */
+void ED_area_tab_strip_inactive(ScrArea *area);
+/** Close the active tab and activate the next one. \return false when the area has no tabs. */
+bool ED_area_tab_close_active(bContext *C, ScrArea *area);
 /* for quick toggle, can skip fades */
 void region_toggle_hidden(bContext *C, ARegion *region, bool do_fade);
 

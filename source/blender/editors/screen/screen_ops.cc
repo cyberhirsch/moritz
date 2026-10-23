@@ -1712,8 +1712,18 @@ static void area_dupli_fn(bScreen * /*screen*/, ScrArea *area, void *user_data)
   ED_area_tag_redraw(area);
 }
 
+/** Moritz: like #area_dupli_fn, but only keeps the active tab of the source area. */
+static void area_dupli_active_tab_fn(bScreen *screen, ScrArea *area, void *user_data)
+{
+  area_dupli_fn(screen, area, user_data);
+  ED_area_tab_strip_inactive(area);
+}
+
 /* operator callback */
-static bool area_dupli_open(bContext *C, ScrArea *area, const int2 position)
+static bool area_dupli_open(bContext *C,
+                            ScrArea *area,
+                            const int2 position,
+                            const bool only_active_tab = false)
 {
   const wmWindow *win = CTX_wm_window(C);
   const rcti window_rect = {win->posx + position.x,
@@ -1731,7 +1741,7 @@ static bool area_dupli_open(bContext *C, ScrArea *area, const int2 position)
                                     false,
                                     WIN_ALIGN_ABSOLUTE,
                                     /* Initialize area from callback. */
-                                    area_dupli_fn,
+                                    only_active_tab ? area_dupli_active_tab_fn : area_dupli_fn,
                                     static_cast<void *>(area));
   return (newwin != nullptr);
 }
@@ -4604,6 +4614,7 @@ struct sAreaJoinData {
   double end_time;            /* End time of animation. */
   wmWindow *draw_dock_win;    /* Window getting docking highlight. */
   bool close_win;             /* Close the source window when done. */
+  bool header_drag;           /* Moritz: started by dragging the header, move/dock only. */
   void *draw_callback;        /* call #screen_draw_join_highlight */
   void *draw_dock_callback;   /* call #screen_draw_dock_highlight, overlay on draw_dock_win. */
 };
@@ -4827,6 +4838,35 @@ static wmOperatorStatus area_join_invoke(bContext *C, wmOperator *op, const wmEv
     return OPERATOR_RUNNING_MODAL;
   }
 
+  /* Moritz: launched by dragging empty header space, like a panel tab in other apps. */
+  if (RNA_boolean_get(op->ptr, "header_drag")) {
+    ScrArea *sa1 = CTX_wm_area(C);
+    const ARegion *region = CTX_wm_region(C);
+    if (!sa1 || ED_area_is_global(sa1) || !region ||
+        !ELEM(region->regiontype, RGN_TYPE_HEADER, RGN_TYPE_TOOL_HEADER) ||
+        (U.app_flag & USER_APP_LOCK_CORNER_SPLIT))
+    {
+      return OPERATOR_PASS_THROUGH;
+    }
+    if (!area_join_init(C, op, sa1, nullptr)) {
+      return OPERATOR_CANCELLED;
+    }
+    sAreaJoinData *jd = static_cast<sAreaJoinData *>(op->customdata);
+    jd->header_drag = true;
+    jd->sa2 = jd->sa1;
+    jd->start_x = event->prev_press_xy[0];
+    jd->start_y = event->prev_press_xy[1];
+    jd->current_x = event->xy[0];
+    jd->current_y = event->xy[1];
+    jd->draw_callback = WM_draw_cb_activate(CTX_wm_window(C), area_join_draw_cb, op);
+    area_join_update_data(C, jd, event);
+    WM_cursor_set(jd->win1, area_join_cursor(jd, event));
+    area_join_dock_cb_window(jd, op);
+    WM_event_add_notifier(C, NC_WINDOW, nullptr);
+    WM_event_add_modal_handler(C, op);
+    return OPERATOR_RUNNING_MODAL;
+  }
+
   /* Launched from menu item or keyboard shortcut. */
   if (!area_join_init(C, op, nullptr, nullptr)) {
     ScrArea *sa1 = CTX_wm_area(C);
@@ -4861,6 +4901,9 @@ void static area_docking_apply(bContext *C, wmOperator *op)
   /* Check before making changes. */
   bool aligned_neighbors = (offset1 == 0 && offset2 == 0);
   bool same_area = (jd->sa1 == jd->sa2);
+  /* Moritz: a header drag of a tabbed area moves only its active tab. */
+  const bool tab_only = jd->header_drag && ED_area_tab_count(jd->sa1) >= 2;
+  ScrArea *newa = nullptr;
 
   if (!(jd->dock_target == AreaDockTarget::Center)) {
     eScreenAxis dir = ELEM(jd->dock_target, AreaDockTarget::Left, AreaDockTarget::Right) ?
@@ -4872,7 +4915,7 @@ void static area_docking_apply(bContext *C, wmOperator *op)
       fac = 1.0f - fac;
     }
 
-    ScrArea *newa = area_split(jd->win2, WM_window_get_active_screen(jd->win2), jd->sa2, dir, fac);
+    newa = area_split(jd->win2, WM_window_get_active_screen(jd->win2), jd->sa2, dir, fac);
 
     if (jd->factor <= 0.5f) {
       jd->sa2 = newa;
@@ -4884,6 +4927,14 @@ void static area_docking_apply(bContext *C, wmOperator *op)
   }
 
   if (same_area) {
+    if (tab_only && newa) {
+      /* Moritz: split the tab off its own area: the target half keeps only the dragged tab, the
+       * other half keeps the remaining tabs. */
+      ScrArea *area_tab = jd->sa2;
+      ScrArea *area_rest = (area_tab == newa) ? jd->sa1 : newa;
+      ED_area_tab_strip_inactive(area_tab);
+      ED_area_tab_close_active(C, area_rest);
+    }
     WM_event_add_notifier(C, NC_SCREEN | NA_EDITED, nullptr);
     return;
   }
@@ -4895,7 +4946,33 @@ void static area_docking_apply(bContext *C, wmOperator *op)
   screen_animate_area_highlight(
       jd->win2, CTX_wm_screen(C), &jd->sa2->totrct, inner, outline, AREA_DOCK_FADEOUT);
 
-  if (!aligned_neighbors || !screen_area_join(C, op->reports, CTX_wm_screen(C), jd->sa1, jd->sa2))
+  bool sa1_emptied = false;
+  if (jd->dock_target == AreaDockTarget::Center) {
+    /* Moritz: dropping on the center stacks the editor as a tab instead of replacing. */
+    sa1_emptied = !ED_area_tab_move(C, jd->sa1, jd->sa2, tab_only);
+  }
+  else if (tab_only) {
+    /* Moritz: the new area receives only the dragged tab. */
+    ED_area_tab_move(C, jd->sa1, jd->sa2, true);
+    ED_area_tab_strip_inactive(jd->sa2);
+  }
+
+  if (jd->dock_target == AreaDockTarget::Center || tab_only) {
+    if (sa1_emptied) {
+      if (BLI_listbase_is_single(&WM_window_get_active_screen(jd->win1)->areabase) &&
+          jd->win1->global_areas.areabase.is_empty())
+      {
+        jd->close_win = true;
+        WM_window_get_active_screen(jd->win1)->active_region = nullptr;
+        WM_window_get_active_screen(jd->win2)->active_region = nullptr;
+      }
+      else {
+        screen_area_close(C, op->reports, WM_window_get_active_screen(jd->win1), jd->sa1);
+      }
+    }
+  }
+  else if (!aligned_neighbors ||
+           !screen_area_join(C, op->reports, CTX_wm_screen(C), jd->sa1, jd->sa2))
   {
     ED_area_swapspace(C, jd->sa2, jd->sa1);
     if (BLI_listbase_is_single(&WM_window_get_active_screen(jd->win1)->areabase) &&
@@ -5230,6 +5307,15 @@ static void area_join_update_data(bContext *C, sAreaJoinData *jd, const wmEvent 
     jd->end_time = jd->start_time + AREA_DOCK_FADEIN;
   }
 
+  if (jd->sa1 == area && jd->header_drag) {
+    /* Moritz: a header drag only moves the area; it never splits its own area. */
+    jd->sa2 = area;
+    jd->dir = SCREEN_DIR_NONE;
+    jd->split_fac = 0.0f;
+    jd->dock_target = AreaDockTarget::None;
+    return;
+  }
+
   if (jd->sa1 == area) {
     const int drag_threshold = 20 * UI_SCALE_FAC;
     jd->sa2 = area;
@@ -5393,8 +5479,11 @@ static wmOperatorStatus area_join_modal(bContext *C, wmOperator *op, const wmEve
         area_join_dock_cb_window(jd, op);
         ED_area_tag_redraw(jd->sa1);
         ED_area_tag_redraw(jd->sa2);
-        if (jd->dir == SCREEN_DIR_NONE && jd->dock_target == AreaDockTarget::None &&
-            jd->split_fac == 0.0f && is_header_azone_location(jd->sa1, event))
+        /* Moritz: a header drag never opens the corner menu (its release can be left of the
+         * window, which also passes the location test). */
+        if (!jd->header_drag && jd->dir == SCREEN_DIR_NONE &&
+            jd->dock_target == AreaDockTarget::None && jd->split_fac == 0.0f &&
+            is_header_azone_location(jd->sa1, event))
         {
           screen_area_touch_menu_create(C, jd->sa1);
           area_join_cancel(C, op);
@@ -5407,8 +5496,15 @@ static wmOperatorStatus area_join_modal(bContext *C, wmOperator *op, const wmEve
           {
             /* We have to clear handlers or we get an error in wm_gizmomap_modal_get. */
             WM_event_modal_handler_region_replace(jd->win1, CTX_wm_region(C), nullptr);
-            area_dupli_open(C, jd->sa1, int2(event->xy[0], event->xy[1] - jd->sa1->winy));
-            if (!screen_area_close(C, op->reports, WM_window_get_active_screen(jd->win1), jd->sa1))
+            /* Moritz: a header drag of a tabbed area tears off only its active tab. */
+            const bool tab_only = jd->header_drag && ED_area_tab_count(jd->sa1) >= 2;
+            area_dupli_open(
+                C, jd->sa1, int2(event->xy[0], event->xy[1] - jd->sa1->winy), tab_only);
+            if (tab_only) {
+              ED_area_tab_close_active(C, jd->sa1);
+            }
+            else if (!screen_area_close(
+                         C, op->reports, WM_window_get_active_screen(jd->win1), jd->sa1))
             {
               if (BLI_listbase_is_single(&WM_window_get_active_screen(jd->win1)->areabase) &&
                   jd->win1->global_areas.areabase.is_empty())
@@ -5556,6 +5652,82 @@ static void SCREEN_OT_area_join(wmOperatorType *ot)
                      "",
                      INT_MIN,
                      INT_MAX);
+
+  PropertyRNA *prop = RNA_def_boolean(ot->srna,
+                                      "header_drag",
+                                      false,
+                                      "Header Drag",
+                                      "Move and dock the area by dragging its header");
+  RNA_def_property_flag(prop, PROP_HIDDEN | PROP_SKIP_SAVE);
+}
+
+/** \} */
+
+/* -------------------------------------------------------------------- */
+/** \name Area Tab Operators (Moritz)
+ * \{ */
+
+static bool area_tab_poll(bContext *C)
+{
+  const ScrArea *area = CTX_wm_area(C);
+  return area && !ED_area_is_global(area) && ED_area_tab_count(area) >= 2;
+}
+
+static wmOperatorStatus area_tab_activate_exec(bContext *C, wmOperator *op)
+{
+  ScrArea *area = CTX_wm_area(C);
+  const int space_type = RNA_int_get(op->ptr, "space_type");
+  const SpaceLink *sl_found = nullptr;
+  for (const SpaceLink &sl : area->spacedata) {
+    if (sl.spacetype == space_type && (sl.link_flag & SPACE_FLAG_TAB)) {
+      sl_found = &sl;
+      break;
+    }
+  }
+  if (sl_found == nullptr) {
+    return OPERATOR_CANCELLED;
+  }
+  /* Restore the sub-type (e.g. Shader or Geometry Nodes) stored in the space. */
+  area->butspacetype_subtype = -1;
+  ED_area_newspace(C, area, space_type, false);
+  ED_area_tag_redraw(area);
+  return OPERATOR_FINISHED;
+}
+
+static void SCREEN_OT_area_tab_activate(wmOperatorType *ot)
+{
+  ot->name = "Activate Tab";
+  ot->description = "Show this editor of the tabbed area";
+  ot->idname = "SCREEN_OT_area_tab_activate";
+
+  ot->exec = area_tab_activate_exec;
+  ot->poll = area_tab_poll;
+
+  ot->flag = OPTYPE_INTERNAL;
+
+  PropertyRNA *prop = RNA_def_int(
+      ot->srna, "space_type", SPACE_EMPTY, 0, SPACE_TYPE_NUM, "Space Type", "", 0, SPACE_TYPE_NUM);
+  RNA_def_property_flag(prop, PROP_HIDDEN | PROP_SKIP_SAVE);
+}
+
+static wmOperatorStatus area_tab_close_exec(bContext *C, wmOperator * /*op*/)
+{
+  ScrArea *area = CTX_wm_area(C);
+  if (!ED_area_tab_close_active(C, area)) {
+    return OPERATOR_CANCELLED;
+  }
+  WM_event_add_notifier(C, NC_SCREEN | NA_EDITED, nullptr);
+  return OPERATOR_FINISHED;
+}
+
+static void SCREEN_OT_area_tab_close(wmOperatorType *ot)
+{
+  ot->name = "Close Tab";
+  ot->description = "Close the active editor tab of this area";
+  ot->idname = "SCREEN_OT_area_tab_close";
+
+  ot->exec = area_tab_close_exec;
+  ot->poll = area_tab_poll;
 }
 
 /** \} */
@@ -6254,6 +6426,9 @@ void ED_screens_header_tools_menu_create(bContext *C, ui::Layout *layout, void *
     ED_screens_region_flip_menu_create(C, layout, nullptr);
     layout->separator();
     screen_area_menu_items(area, *layout);
+    if (ED_area_tab_count(area) >= 2) {
+      layout->op("SCREEN_OT_area_tab_close", IFACE_("Close Tab"), ICON_X);
+    }
   }
 }
 
@@ -8048,6 +8223,8 @@ void ED_operatortypes_screen()
   WM_operatortype_append(SCREEN_OT_edge_merge);
   WM_operatortype_append(SCREEN_OT_area_split);
   WM_operatortype_append(SCREEN_OT_area_join);
+  WM_operatortype_append(SCREEN_OT_area_tab_activate);
+  WM_operatortype_append(SCREEN_OT_area_tab_close);
   WM_operatortype_append(SCREEN_OT_area_close);
   WM_operatortype_append(SCREEN_OT_area_options);
   WM_operatortype_append(SCREEN_OT_area_dupli);
