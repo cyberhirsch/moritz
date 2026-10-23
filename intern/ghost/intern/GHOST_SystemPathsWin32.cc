@@ -32,7 +32,8 @@ const char *GHOST_SystemPathsWin32::getSystemDir(int, const char *versionstr) co
 
   if (hResult == S_OK) {
     conv_utf_16_to_8(knownpath_16, knownpath, MAX_PATH * 3);
-    strcat(knownpath, "\\Blender Foundation\\Blender\\");
+    /* Moritz: its own folders, so it never shares settings with a Blender install. */
+    strcat(knownpath, "\\Moritz\\");
     strcat(knownpath, versionstr);
     system_dir = knownpath;
   }
@@ -53,7 +54,7 @@ const char *GHOST_SystemPathsWin32::getUserDir(int, const char *versionstr) cons
 
   if (hResult == S_OK) {
     conv_utf_16_to_8(knownpath_16, knownpath, MAX_PATH * 3);
-    strcat(knownpath, "\\Blender Foundation\\Blender\\");
+    strcat(knownpath, "\\Moritz\\");
     strcat(knownpath, versionstr);
     user_dir = knownpath;
   }
