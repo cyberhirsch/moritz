@@ -681,10 +681,8 @@ static void wm_window_title_text(wmWindowManager *wm,
     win_title.append(project->get_name());
   }
 
-  /* Moritz: "Moritz 0.1 Alpha (Blender 5.3.0 Beta)". */
-  win_title.append(StringRef(" — Moritz " MORITZ_VERSION_STRING " (Blender "));
-  win_title.append(StringRef(BKE_blender_version_string()));
-  win_title.push_back(')');
+  /* Moritz: "Moritz 0.1 Alpha"; Blender's version is in About. */
+  win_title.append(StringRef(" — Moritz " MORITZ_VERSION_STRING));
 }
 
 static void wm_window_title_state_refresh(wmWindowManager *wm, wmWindow *win)

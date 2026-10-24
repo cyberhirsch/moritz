@@ -32,12 +32,18 @@ Areas dock into each other as tabs, Adobe-style; dragging empty header space mov
 - `source/blender/windowmanager/intern/wm_splash_screen.cc` — splash shows the Moritz version; About shows the Moritz logo and version
 - `release/datafiles/moritz_logo.png` (+ `editors/datafiles/CMakeLists.txt`, `ED_datafiles.h`) — the white logo, embedded for About
 - `scripts/startup/bl_operators/wm.py` — splash and About links: Moritz on GitHub first, Blender links named as Blender's
-- `source/blender/windowmanager/intern/wm_window.cc` — window title "Moritz 0.1 Alpha (Blender 5.3.0 Beta)"
-- `release/windows/icons/winblenderfile.ico` — `.blend` file icon, same m artwork
+- `source/blender/windowmanager/intern/wm_window.cc` — window title "Moritz 0.1 Alpha"
 - `release/datafiles/icons_svg/blender.svg` — the top-left menu icon, the m as a vector
 - `scripts/startup/bl_ui/space_topbar.py` — the top-left menu is called "Moritz"; About is "About Moritz"
 - Programs `moritz.exe` and `moritz-launcher.exe`: `OUTPUT_NAME` in `source/creator/CMakeLists.txt` (targets keep their names), `moritz.pdb`, the launcher (`blender_launcher_win32.c`), and the places that look for the executable by name: `GHOST_SystemWin32.cc`, `GHOST_WindowWin32.cc`, `winstuff.cc`, `system_win32.cc`
 - Logo in GenEi Kiwami Gothic, credit line in Medula One (both SIL OFL, `moritz/branding/src/fonts/`), built by `make_logo.py`
+
+## Keymaps
+
+- `scripts/presets/keyconfig/Max.py`, `Moritz.py` — the Max and Moritz keymaps; Maximize's operators are bound only while it is enabled
+- `scripts/presets/keyconfig/keymap_data/moritz_max_data.py` — copy of Maximize's `keymap_max.py`, keep in sync
+- `source/blender/blenkernel/intern/blendfile.cc` — the Moritz keymap is the factory default
+- `scripts/startup/bl_operators/wm.py` — Quick Setup offers Blender / Max / Moritz as buttons
 
 ## Repository
 

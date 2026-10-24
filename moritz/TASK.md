@@ -82,8 +82,10 @@ Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberh
 
 ### Shortcuts ([docs/shortcut_plan.md](https://github.com/cyberhirsch/maximize/blob/main/docs/shortcut_plan.md))
 - [x] Coverage check `tools/check_max_keymap.py` (Maximize repo) → [docs/shortcut_coverage.md](https://github.com/cyberhirsch/maximize/blob/main/docs/shortcut_coverage.md): 99 of 216 Max keys OK
-- [ ] Fix the 4 conflicts and bind the 33 unbound keys
-- [ ] Selection presets Max / Moritz (default) / Blender, as specified in the plan
+- [x] Fix the 4 conflicts and bind the 33 unbound keys: 136 of 216 Max keys OK, 0 conflicts, 0 unbound (the other 80 need features Moritz does not have yet)
+- [x] Keymap presets Blender / Max / Moritz in Moritz itself (`presets/keyconfig/Max.py`, `Moritz.py`, data copied from Maximize); chosen in the Quick Setup on first start; Moritz is the default. Maximize's keys (quad menu, tools, 1–6) are bound only while the add-on is enabled
+- [~] Moritz selection behavior from the plan: done are Ctrl+click toggle, double-click loop/children, Ctrl+Alt+double-click ring, Ctrl+Shift+click shortest path; open are window/crossing by drag direction, Q cycling region shapes, hover highlight, visible-only sub-objects
+- [ ] Sub-object levels 1–6 without the add-on: needs Moritz's own mesh editing (Phase 2)
 - [ ] Restore free Blender keys (numpad views)
 - [ ] Preferences: Maya navigation, F frames selection, Blender modal keys
 - [ ] Editors: Graph Editor / Dope Sheet, shader editor, Outliner F2

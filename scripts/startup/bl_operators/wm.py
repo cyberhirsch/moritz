@@ -3515,11 +3515,22 @@ class WM_MT_splash_quick_setup(Menu):
         kc = wm.keyconfigs.active
         kc_prefs = kc.preferences
 
-        sub = col.column(heading="Keymap")
-        text = bpy.path.display_name(kc.name)
-        if not text:
-            text = "Blender"
-        sub.menu("USERPREF_MT_keyconfigs", text=text)
+        # Moritz: the three keymaps as buttons; Blender's other keymaps stay in the menu below.
+        split = col.split(factor=0.4)
+        label = split.row()
+        label.alignment = 'RIGHT'
+        label.label(text="Keymap")
+        sub = split.column()
+        row = sub.row(align=True)
+        for name in ("Blender", "Max", "Moritz"):
+            filepath = bpy.utils.preset_find(name, "keyconfig")
+            if filepath:
+                props = row.operator("preferences.keyconfig_activate", text=name, depress=(kc.name == name))
+                props.filepath = filepath
+        if kc.name not in {"Blender", "Max", "Moritz"}:
+            sub.menu("USERPREF_MT_keyconfigs", text=bpy.path.display_name(kc.name))
+        else:
+            sub.menu("USERPREF_MT_keyconfigs", text="Other Keymaps")
 
         if hasattr(kc_prefs, "select_mouse"):
             col.row().prop(kc_prefs, "select_mouse", text="Mouse Select", expand=True)

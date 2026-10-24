@@ -1529,6 +1529,9 @@ UserDef *BKE_blendfile_userdef_from_defaults()
   userdef->versionfile = BLENDER_FILE_VERSION;
   userdef->subversionfile = BLENDER_FILE_SUBVERSION;
 
+  /* Moritz: the Moritz keymap (`presets/keyconfig/Moritz.py`) is the default. */
+  STRNCPY(userdef->keyconfigstr, "Moritz");
+
   /* Add-ons. */
   {
     const char *addons[] = {
