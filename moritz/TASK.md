@@ -21,12 +21,14 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
 - [ ] CI: Windows build on push (GitHub Actions or self-hosted)
 
 ### Rebrand
-- [ ] App name and window title: `source/creator/`, `source/blender/blenkernel/BKE_blender_version.h` (add a Moritz version alongside the Blender version)
-- [ ] Splash: `release/datafiles/splash.png`
-- [ ] App icons: `release/windows/icons/`, `release/datafiles/icons_svg/`
+- [x] Window title and Moritz version 0.1 Alpha (`BKE_moritz_version.h`, alongside the Blender version)
+- [x] Splash: `release/datafiles/splash.png`, Moritz links in the splash menu
+- [x] App icon: `release/windows/icons/winblender.ico`
+- [ ] `.blend` file icon (`winblenderfile.ico`) and the Blender logo icons in `release/datafiles/icons_svg/`
 - [x] Separate config directory on Windows (`%APPDATA%\Moritz\<version>`, `%PROGRAMDATA%\Moritz\<version>`): `intern/ghost/intern/GHOST_SystemPathsWin32.cc`
 - [ ] Same for Linux and macOS (`GHOST_SystemPathsUnix.cc`, `GHOST_SystemPathsCocoa.mm`)
-- [ ] Executable name `moritz.exe`; About dialog credits "based on Blender"
+- [x] About dialog: Moritz logo and version, "Based on Blender"
+- [ ] Executable name `moritz.exe`
 - [ ] Check that no Blender logo or trademark text is left in the UI
 
 ### Legal

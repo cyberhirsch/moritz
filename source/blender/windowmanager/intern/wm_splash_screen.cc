@@ -585,23 +585,23 @@ static ui::Block *wm_block_about_create(bContext *C, ARegion *region, void * /*a
                                         0,
                                         style);
 
-/* Blender logo. */
+/* Moritz logo. */
 #ifndef WITH_HEADLESS
-  constexpr bool show_color = false;
-  const float size = 0.2f * dialog_width;
-
-  ImBuf *ibuf = ui::svg_icon_bitmap(ICON_BLENDER_LOGO_LARGE, size, show_color);
-
+  ImBuf *ibuf = IMB_load_image_from_memory(reinterpret_cast<const uchar *>(datatoc_moritz_logo_png),
+                                           datatoc_moritz_logo_png_size,
+                                           ImBufFlags::ByteData,
+                                           "<moritz logo>");
   if (ibuf) {
-    const bTheme *btheme = ui::theme::theme_get();
-    const uchar *color = btheme->tui.wcol_menu_back.text_sel;
+    const int width = 0.32f * dialog_width;
+    IMB_scale(ibuf, width, (width * ibuf->y) / ibuf->x, IMBScaleFilter::Box, false);
+    IMB_premultiply_alpha(ibuf);
 
     /* The top margin. */
     layout.row(false).separator(0.2f);
 
     /* The logo image. */
     layout.row(false).alignment_set(ui::LayoutAlign::Left);
-    uiDefButImage(block, ibuf, 0, U.widget_unit, ibuf->x, ibuf->y, show_color ? nullptr : color);
+    uiDefButImage(block, ibuf, 0, U.widget_unit, ibuf->x, ibuf->y, nullptr);
 
     /* Padding below the logo. */
     layout.row(false).separator(2.7f);
@@ -610,7 +610,7 @@ static ui::Block *wm_block_about_create(bContext *C, ARegion *region, void * /*a
 
   ui::Layout &col = layout.column(true);
 
-  uiItemL_ex(&col, IFACE_("Blender"), ICON_NONE, true, false);
+  uiItemL_ex(&col, "Moritz " MORITZ_VERSION_STRING, ICON_NONE, true, false);
 
   MenuType *mt = WM_menutype_find("WM_MT_splash_about", true);
   if (mt) {
@@ -635,7 +635,7 @@ void WM_OT_splash_about(wmOperatorType *ot)
 {
   ot->name = "About Blender";
   ot->idname = "WM_OT_splash_about";
-  ot->description = "Open a window with information about Blender";
+  ot->description = "Open a window with information about Moritz";
 
   ot->invoke = wm_splash_about_invoke;
   ot->poll = WM_operator_winactive;

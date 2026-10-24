@@ -1084,6 +1084,8 @@ if(WITH_BLENDER)
 
     # Images.
     data_to_c_simple(../../../../release/datafiles/splash.png SRC)
+    # Moritz: the white logo for the About dialog.
+    data_to_c_simple(../../../../release/datafiles/moritz_logo.png SRC)
 
     unset(SVG_CONTENTS_H)
     unset(SVG_CONTENTS_C)
