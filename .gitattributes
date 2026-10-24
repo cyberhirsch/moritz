@@ -115,3 +115,4 @@ scripts/modules/_bpy_internal/assets/remote_library/*_openapi.py linguist-genera
 # Moritz: its own files are plain git; LFS objects come from upstream (see .lfsconfig).
 moritz/** !filter !diff !merge
 moritz/**/*.png binary
+release/datafiles/splash.png !filter !diff !merge binary

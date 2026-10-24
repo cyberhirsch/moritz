@@ -21,10 +21,14 @@ Areas dock into each other as tabs, Adobe-style; dragging empty header space mov
 - `source/blender/makesdna/DNA_userdef_types.h` — area drag grip (`USER_AREA_CORNER_HANDLE`) on by default
 - `scripts/presets/keyconfig/keymap_data/blender_default.py`, `industry_compatible_data.py` — header drag key
 
+## Branding
+
+- `release/datafiles/splash.png` — Moritz splash, built by `moritz/branding/src/make_splash.py` from the white logo
+
 ## Repository
 
 - `.lfsconfig` — Git LFS objects come from upstream; the fork stores none of its own
-- `.gitattributes` — files under `moritz/` (logos and other branding) are plain git, not LFS
+- `.gitattributes` — files under `moritz/` and the Moritz splash are plain git, not LFS
 - `moritz/` — roadmap, tasks, research and this file
 
 The Max workflow is not part of Moritz: it is the separate add-on [Maximize](https://github.com/cyberhirsch/maximize).
