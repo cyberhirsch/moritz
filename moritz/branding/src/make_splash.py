@@ -1,7 +1,7 @@
 """Build Moritz's splash image (release/datafiles/splash.png, 1000x500).
 
 Run from the repository root: python moritz/branding/src/make_splash.py
-Needs Pillow. The credit line is set in Slackey (Google Fonts, Apache 2.0, in `fonts/`).
+Needs Pillow. The credit line is set in Medula One (Google Fonts, SIL OFL, in `fonts/`).
 """
 import math
 import os
@@ -13,7 +13,7 @@ NAVY = (11, 29, 61)
 LIGHT = (32, 66, 122)
 LOGO = "moritz/branding/moritz_logo_white.png"
 OUT = "release/datafiles/splash.png"
-FONT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts", "Slackey-Regular.ttf")
+FONT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts", "MedulaOne-Regular.ttf")
 
 w, h = W * SS, H * SS
 
@@ -44,8 +44,8 @@ logo = Image.open(LOGO)
 lw = int(w * 0.46)
 logo = logo.resize((lw, round(logo.height * lw / logo.width)), Image.LANCZOS)
 img.alpha_composite(logo, (int(w * 0.06), int(h * 0.20)))
-font = ImageFont.truetype(FONT, 17 * SS)
-ImageDraw.Draw(img).text((int(w * 0.06), int(h * 0.86)), "Based on Blender", font=font,
+font = ImageFont.truetype(FONT, 24 * SS)
+ImageDraw.Draw(img).text((int(w * 0.06), int(h * 0.86)), "based on blender", font=font,
                          fill=(255, 255, 255, 150))
 
 img.convert("RGB").resize((W, H), Image.LANCZOS).save(OUT, optimize=True)

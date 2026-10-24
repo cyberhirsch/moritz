@@ -24,11 +24,16 @@ Areas dock into each other as tabs, Adobe-style; dragging empty header space mov
 ## Branding
 
 - `release/datafiles/splash.png` — Moritz splash, built by `moritz/branding/src/make_splash.py` from the white logo
+- `release/windows/icons/winblender.ico` — app icon (lower-case Medula One "m"), built by `make_icon.py`
+- `source/blender/blenkernel/BKE_moritz_version.h` (+ `CMakeLists.txt`) — Moritz version "0.1 Alpha"; Blender's version stays for files, add-ons and the config folder
+- `source/blender/windowmanager/intern/wm_splash_screen.cc` — splash shows the Moritz version
+- `source/blender/windowmanager/intern/wm_window.cc` — window title "Moritz 0.1 Alpha (Blender 5.3.0 Beta)"
+- Logo and credit line in Medula One (Google Fonts, SIL OFL, `moritz/branding/src/fonts/`), built by `make_logo.py`
 
 ## Repository
 
 - `.lfsconfig` — Git LFS objects come from upstream; the fork stores none of its own
-- `.gitattributes` — files under `moritz/` and the Moritz splash are plain git, not LFS
+- `.gitattributes` — files under `moritz/`, the Moritz splash and app icon are plain git, not LFS
 - `moritz/` — roadmap, tasks, research and this file
 
 The Max workflow is not part of Moritz: it is the separate add-on [Maximize](https://github.com/cyberhirsch/maximize).

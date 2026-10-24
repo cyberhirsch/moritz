@@ -474,6 +474,7 @@ set(SRC
   BKE_mesh_types.hh
   BKE_mesh_wrapper.hh
   BKE_modifier.hh
+  BKE_moritz_version.h
   BKE_movieclip.hh
   BKE_multires.hh
   BKE_nla.hh
