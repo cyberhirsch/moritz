@@ -30,7 +30,7 @@ static const char *GetApplicationSupportDir(const char *versionstr,
 
     snprintf(tempPath,
              len_tempPath,
-             "%s/Blender/%s",
+             "%s/Moritz/%s", /* Moritz: its own folders. */
              [basePath cStringUsingEncoding:NSASCIIStringEncoding],
              versionstr);
   }

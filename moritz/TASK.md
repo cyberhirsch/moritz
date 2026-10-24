@@ -14,9 +14,9 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
 - [x] `PATCHES.md`: list every core change with files touched, for rebasing
 
 ### Build
-- [ ] Install Visual Studio 2022 Build Tools, CMake and Git LFS
-- [ ] `make update` (fetches precompiled libs into `lib/`)
-- [ ] First build: `make.bat release`; record build time and size
+- [x] Install Visual Studio 2022 Build Tools, CMake and Git LFS
+- [x] `make update` (fetches precompiled libs into `lib/`)
+- [x] First build: `make.bat release`; gentle rebuilds run through `build_gentle.cmd` (low priority, 2 jobs)
 - [ ] Debug build plus a VS solution for core work (`make.bat full nobuild 2022`)
 - [ ] CI: Windows build on push (GitHub Actions or self-hosted)
 
@@ -24,15 +24,15 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
 - [x] Window title and Moritz version 0.1 Alpha (`BKE_moritz_version.h`, alongside the Blender version)
 - [x] Splash: `release/datafiles/splash.png`, Moritz links in the splash menu
 - [x] App icon: `release/windows/icons/winblender.ico`
-- [ ] `.blend` file icon (`winblenderfile.ico`) and the Blender logo icons in `release/datafiles/icons_svg/`
+- [x] `.blend` file icon (`winblenderfile.ico`) and the top-left menu icon (`icons_svg/blender.svg`)
 - [x] Separate config directory on Windows (`%APPDATA%\Moritz\<version>`, `%PROGRAMDATA%\Moritz\<version>`): `intern/ghost/intern/GHOST_SystemPathsWin32.cc`
-- [ ] Same for Linux and macOS (`GHOST_SystemPathsUnix.cc`, `GHOST_SystemPathsCocoa.mm`)
+- [x] Same for Linux and macOS (`GHOST_SystemPathsUnix.cc`, `GHOST_SystemPathsCocoa.mm`); not built or tested there yet
 - [x] About dialog: Moritz logo and version, "Based on Blender"
-- [ ] Executable name `moritz.exe`
+- [x] Executable name `moritz.exe` and `moritz-launcher.exe`
 - [ ] Check that no Blender logo or trademark text is left in the UI
 
 ### Legal
-- [ ] Keep `COPYING` and the license headers; add a Moritz `README.md` with a source link
+- [x] Keep `COPYING` and the license headers; add a Moritz `README.md` with a source link
 - [ ] A source link in every release package
 
 ## Basics — Adobe-style docking (core)

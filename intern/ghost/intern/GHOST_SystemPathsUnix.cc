@@ -88,7 +88,7 @@ const char *GHOST_SystemPathsUnix::getUserDir(int version, const char *versionst
       last_version = version;
 
       if (home) {
-        user_path = string(home) + "/.blender/" + versionstr;
+        user_path = string(home) + "/.moritz/" + versionstr;
       }
       else {
         return nullptr;
@@ -102,12 +102,12 @@ const char *GHOST_SystemPathsUnix::getUserDir(int version, const char *versionst
     last_version = version;
 
     if (home) {
-      user_path = string(home) + "/blender/" + versionstr;
+      user_path = string(home) + "/moritz/" + versionstr; /* Moritz. */
     }
     else {
       home = home_dir_get();
       if (home) {
-        user_path = string(home) + "/.config/blender/" + versionstr;
+        user_path = string(home) + "/.config/moritz/" + versionstr; /* Moritz. */
       }
       else {
         return nullptr;

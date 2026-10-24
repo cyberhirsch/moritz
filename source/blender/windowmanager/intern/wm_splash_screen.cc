@@ -633,7 +633,7 @@ static wmOperatorStatus wm_splash_about_invoke(bContext *C,
 
 void WM_OT_splash_about(wmOperatorType *ot)
 {
-  ot->name = "About Blender";
+  ot->name = "About Moritz";
   ot->idname = "WM_OT_splash_about";
   ot->description = "Open a window with information about Moritz";
 

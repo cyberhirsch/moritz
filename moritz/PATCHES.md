@@ -2,13 +2,16 @@
 
 Every change Moritz makes to Blender's own code, for rebasing onto upstream. Moritz is based on `blender-v5.3-release` at `4768a6eac54`. Each patch is marked with a `Moritz:` comment in the code.
 
-## Own config folders (Windows)
+## Own config folders
 
 Moritz keeps its settings in `%APPDATA%\Moritz\<version>` so it never shares them with a Blender install.
 
 - `intern/ghost/intern/GHOST_SystemPathsWin32.cc` — system and user dirs
 
-Still open: `GHOST_SystemPathsUnix.cc`, `GHOST_SystemPathsCocoa.mm`.
+- `intern/ghost/intern/GHOST_SystemPathsUnix.cc` — user settings in `~/.config/moritz/<version>` (system data stays in `share/blender`, matching the install layout)
+- `intern/ghost/intern/GHOST_SystemPathsCocoa.mm` — `~/Library/Application Support/Moritz/<version>`
+
+Linux and macOS are changed but not built or tested yet.
 
 ## Tabbed docking
 
@@ -30,6 +33,10 @@ Areas dock into each other as tabs, Adobe-style; dragging empty header space mov
 - `release/datafiles/moritz_logo.png` (+ `editors/datafiles/CMakeLists.txt`, `ED_datafiles.h`) — the white logo, embedded for About
 - `scripts/startup/bl_operators/wm.py` — splash and About links: Moritz on GitHub first, Blender links named as Blender's
 - `source/blender/windowmanager/intern/wm_window.cc` — window title "Moritz 0.1 Alpha (Blender 5.3.0 Beta)"
+- `release/windows/icons/winblenderfile.ico` — `.blend` file icon, same m artwork
+- `release/datafiles/icons_svg/blender.svg` — the top-left menu icon, the m as a vector
+- `scripts/startup/bl_ui/space_topbar.py` — the top-left menu is called "Moritz"; About is "About Moritz"
+- Programs `moritz.exe` and `moritz-launcher.exe`: `OUTPUT_NAME` in `source/creator/CMakeLists.txt` (targets keep their names), `moritz.pdb`, the launcher (`blender_launcher_win32.c`), and the places that look for the executable by name: `GHOST_SystemWin32.cc`, `GHOST_WindowWin32.cc`, `winstuff.cc`, `system_win32.cc`
 - Logo in GenEi Kiwami Gothic, credit line in Medula One (both SIL OFL, `moritz/branding/src/fonts/`), built by `make_logo.py`
 
 ## Repository

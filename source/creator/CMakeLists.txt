@@ -360,6 +360,9 @@ else()
     endif()
     target_compile_definitions(blender-launcher PRIVATE -D_UNICODE -DUNICODE)
     target_link_libraries(blender-launcher Pathcch.lib)
+    # Moritz: the programs are moritz.exe and moritz-launcher.exe (CMake targets keep their names).
+    set_target_properties(blender PROPERTIES OUTPUT_NAME moritz)
+    set_target_properties(blender-launcher PROPERTIES OUTPUT_NAME moritz-launcher)
   endif()
 endif()
 
@@ -1111,11 +1114,12 @@ elseif(WIN32)
     install(
       FILES ${CMAKE_BINARY_DIR}/blender.exe.manifest
       DESTINATION "."
+      RENAME moritz.exe.manifest
     )
     install(
       FILES ${CMAKE_BINARY_DIR}/blender.exe.manifest
       DESTINATION "."
-      RENAME blender-launcher.exe.manifest
+      RENAME moritz-launcher.exe.manifest
     )
   endif()
   windows_install_shared_manifest(
@@ -1266,14 +1270,14 @@ elseif(WIN32)
       install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/\${CMAKE_INSTALL_CONFIG_NAME}/blender_public.pdb
         DESTINATION "."
-        RENAME blender.pdb
+        RENAME moritz.pdb
         CONFIGURATIONS Release
       )
     else()
       install(
         FILES $<TARGET_PDB_FILE:blender>
         DESTINATION "."
-        RENAME blender.pdb
+        RENAME moritz.pdb
         CONFIGURATIONS Release
       )
     endif()
@@ -2224,7 +2228,7 @@ endif()
 # Setup launcher
 
 if(WIN32 AND NOT WITH_PYTHON_MODULE)
-  set(BLENDER_BIN "blender.exe")
+  set(BLENDER_BIN "moritz.exe")
   install(
     TARGETS blender blender-launcher
     COMPONENT Blender

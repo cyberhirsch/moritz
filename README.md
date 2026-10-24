@@ -4,6 +4,21 @@ linking to external resources instead of including content in-line.
 See 'release/text/readme.html' for the end user read-me.
 -->
 
+Moritz
+======
+
+Moritz is a 3D creation suite between 3ds Max and Blender: Blender's engine and tools, shaped for
+people who come from 3ds Max. It is based on Blender 5.3 and licensed under the GNU GPL like
+Blender.
+
+- Source: [github.com/cyberhirsch/moritz](https://github.com/cyberhirsch/moritz)
+- Roadmap, tasks and the list of changes to Blender: [`moritz/`](moritz/)
+- The Max workflow (keymap, quad menu, Max tools) is the separate add-on
+  [Maximize](https://github.com/cyberhirsch/maximize); Moritz runs without it.
+
+Moritz is not made or endorsed by the Blender Foundation. The rest of this file is Blender's own
+read-me.
+
 Blender
 =======
 
