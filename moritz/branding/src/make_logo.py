@@ -1,4 +1,4 @@
-"""Build the Moritz wordmark: "moritz" in lower-case Medula One, navy and white, transparent.
+"""Build the Moritz wordmark: "moritz" in lower-case GenEi Kiwami Gothic, navy and white, transparent.
 
 Writes moritz/branding/moritz_logo.png and moritz_logo_white.png.
 Run from the repository root: python moritz/branding/src/make_logo.py
@@ -8,7 +8,7 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 
 NAVY = (11, 29, 61)
-FONT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts", "MedulaOne-Regular.ttf")
+FONT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts", "GenEiKiwamiGo.ttf")
 OUT = "moritz/branding"
 
 font = ImageFont.truetype(FONT, 600)

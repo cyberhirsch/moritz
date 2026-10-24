@@ -28,7 +28,7 @@ Areas dock into each other as tabs, Adobe-style; dragging empty header space mov
 - `source/blender/blenkernel/BKE_moritz_version.h` (+ `CMakeLists.txt`) — Moritz version "0.1 Alpha"; Blender's version stays for files, add-ons and the config folder
 - `source/blender/windowmanager/intern/wm_splash_screen.cc` — splash shows the Moritz version
 - `source/blender/windowmanager/intern/wm_window.cc` — window title "Moritz 0.1 Alpha (Blender 5.3.0 Beta)"
-- Logo and credit line in Medula One (Google Fonts, SIL OFL, `moritz/branding/src/fonts/`), built by `make_logo.py`
+- Logo in GenEi Kiwami Gothic, credit line in Medula One (both SIL OFL, `moritz/branding/src/fonts/`), built by `make_logo.py`
 
 ## Repository
 
