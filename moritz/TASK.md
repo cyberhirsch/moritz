@@ -35,7 +35,7 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
 - [x] Keep `COPYING` and the license headers; add a Moritz `README.md` with a source link
 - [ ] A source link in every release package
 
-## Basics — Adobe-style docking (core)
+### Docking (Adobe-style, core)
 
 - [x] Header grip on by default (`USER_AREA_CORNER_HANDLE` in `DNA_userdef_types.h`)
 - [x] Drag empty header space to move/dock an area: `header_drag` mode of `SCREEN_OT_area_join` (`screen_ops.cc`), bound to LMB click-drag in the "Region Context Menu" keymap (`blender_default.py`, `industry_compatible_data.py`)
@@ -48,9 +48,9 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
 - [ ] Tab order by insertion, not by editor type; close button on tabs
 - [ ] More than one tab of the same editor type (an area stores one space per type)
 
-## Phase 1 — Feels like Max (`maximize` add-on)
+## Phase 1 — Feels like Max (Maximize + Moritz keymaps)
 
-Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberhirsch/maximize) (private). Moritz does not depend on it: the add-on writes its Max and Moritz keymap presets into the user's `presets/keyconfig` while enabled and switches to the Moritz keymap on first enable.
+Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberhirsch/maximize) (private). Moritz does not depend on it: Moritz ships its own Blender / Max / Moritz keymap presets, and the add-on adds its operators (quad menu, Max tools, 1–6) while enabled. In stock Blender the add-on writes the presets into the user's `presets/keyconfig` itself.
 
 - [x] Add-on skeleton
 - [x] **Max keymap** (`keymap_max.py`): Industry Compatible plus Max 2026 keys (views T/B/F/L/P/U/C, Z / Ctrl+Alt+Z / Ctrl+Shift+Z zoom extents, Alt+W, Alt+Q, Alt+X, F3/F4, G, 7, S/A snaps, H, Alt+A, F12, Insert, M, F9/F10/Shift+Q, K/N, `/` `,` `.` Home/End, Ctrl+Y redo, `;` repeat, Ctrl+V clone, Ctrl+C camera from view, 1–6 sub-object levels, Edit Poly keys); Ctrl+click adds and Alt+click removes from the selection; default keymap
@@ -85,49 +85,58 @@ Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberh
 - [x] Fix the 4 conflicts and bind the 33 unbound keys: 136 of 216 Max keys OK, 0 conflicts, 0 unbound (the other 80 need features Moritz does not have yet)
 - [x] Keymap presets Blender / Max / Moritz in Moritz itself (`presets/keyconfig/Max.py`, `Moritz.py`, data copied from Maximize); chosen in the Quick Setup on first start; Moritz is the default. Maximize's keys (quad menu, tools, 1–6) are bound only while the add-on is enabled
 - [~] Moritz selection behavior from the plan: done are Ctrl+click toggle, double-click loop/children, Ctrl+Alt+double-click ring, Ctrl+Shift+click shortest path; open are window/crossing by drag direction, Q cycling region shapes, hover highlight, visible-only sub-objects
-- [ ] Sub-object levels 1–6 without the add-on: needs Moritz's own mesh editing (Phase 2)
 - [ ] Restore free Blender keys (numpad views)
+- [ ] Both shortcuts in menus and tooltips (Max key and Blender key), so Blender tutorials stay usable
 - [ ] Preferences: Maya navigation, F frames selection, Blender modal keys
 - [ ] Editors: Graph Editor / Dope Sheet, shader editor, Outliner F2
 - [ ] Moritz column in the comparison page; assert keys in the background test
 
-## Phase 2 — The stack (core)
+## Phase 2 — Edit Poly in the stack
 
-- [ ] **Spike:** read the modifier evaluation path (`source/blender/blenkernel/intern/mesh_data_update.cc`, `modifier.cc`, `source/blender/modifiers/intern/MOD_*.cc`, `source/blender/makesdna/DNA_modifier_types.h`, `source/blender/makesrna/intern/rna_modifier.cc`) and write the design note
-- [ ] **Spike:** prototype edit storage: store edits as an operation log versus a delta mesh with ID mapping; choose one
-- [ ] `eModifierType_EditPoly` in DNA and RNA; `MOD_edit_poly.cc`
-- [ ] Tab into the modifier: Edit Mode works on the evaluated mesh from the stack below and writes deltas back
-- [ ] Topology tracking: map edits to stable element IDs; rebase by position when tracking fails
-- [ ] Stack UI: Max-style list with "Show end result" and collapse-to-here
-- [ ] Collapse To / Collapse All operators
-- [ ] Opening in stock Blender: unknown modifier → bake on save (`Edit Poly` → mesh), or a documented fallback
-- [ ] Unwrap UVW modifier built on the same edit storage
-- [ ] Sub-object gizmos for Simple Deform (Bend, Taper, Twist) and Lattice/FFD
+Rule: only what Max does better. Blender's modifier panel stays (no Max-style stack list); Blender's UV editor stays (no Unwrap UVW modifier).
+
+### 2a — Prototype in Maximize (add-on)
+- [ ] "Edit Poly" Geometry Nodes modifier: stores the base mesh it was made from and the edited mesh; applies the edit as per-element offsets while the input topology is unchanged (Max's index-based behavior); warns when the topology below changes
+- [ ] Tab into it: edit a hidden helper mesh built from the stack below, write the result back on Tab out
+- [ ] Collapse To / Collapse All
+- [ ] Opening in stock Blender works unchanged (it is only Geometry Nodes)
+- [ ] Background tests: evaluation, undo, save/reload
+
+### 2b — Core (once the workflow is right)
+- [ ] **Spike:** read the modifier evaluation path (`blenkernel/intern/mesh_data_update.cc`, `modifier.cc`, `modifiers/intern/MOD_*.cc`, `DNA_modifier_types.h`, `rna_modifier.cc`) and write the design note
+- [ ] `eModifierType_EditPoly` in DNA and RNA; `MOD_edit_poly.cc`, taking over the prototype's data
+- [ ] Edit Mode directly on the evaluated mesh from the stack below; speed on heavy meshes
+- [ ] Opening in stock Blender: unknown modifier → bake on save, or a documented fallback
+- [ ] Header: Max's five sub-object levels (Vertex, Edge, Border, Polygon, Element) in place of Blender's three select-mode buttons, Border and Element as real select modes (Blender's C header draws the buttons; icons exist in `maximize/icons`)
+- [ ] Sub-object levels 1–6 without the add-on
 - [ ] Tests in `tests/` for evaluation, undo and file round trips
-- [ ] Header: Max's five sub-object levels (Vertex, Edge, Border, Polygon, Element) in place of Blender's three select-mode buttons, with Border and Element as real select modes. Not possible in the add-on: Blender's C header draws the three buttons. Icons exist in `maximize/icons`
 
 ## Phase 3 — Splines
 
-- [ ] Audit the curve code (`source/blender/blenkernel/intern/curves*`, `source/blender/editors/curves/`) and decide: legacy Curve object versus new Curves
-- [ ] Editable Spline tools: Fillet, Chamfer, Outline, Trim/Extend, Weld, Refine, Break, Connect
-- [ ] 2D shape booleans (union, subtract, intersect)
-- [ ] Vertex types: Corner, Smooth, Bezier, Bezier Corner
-- [ ] Shape modifiers: Extrude, Lathe, Sweep, Loft, Renderable Spline
-- [ ] Line tool with snapping and AutoGrid
+Rule: only what Max does better. Kept from Blender: handle types, curve extrude and bevel (Renderable Spline), Screw (Lathe), text objects.
+- [ ] Decide legacy Curve object versus new Curves (`blenkernel/intern/curves*`, `editors/curves/`); the prototype goes into Maximize first
+- [ ] Parametric shapes: Rectangle (corner radius), Circle, Ellipse, Arc, NGon, Star, Helix, Donut — editable like the primitives
+- [ ] Line tool: click for corner, drag for Bezier, with snapping and AutoGrid
+- [ ] Fillet and Chamfer on spline vertices
+- [ ] Outline
+- [ ] Refine, Trim/Extend, Break, Connect
+- [ ] 2D shape booleans (union, subtract, intersect); may need a C++ 2D clipper in the core
+- [ ] Loft (path plus shapes)
 
-## Phase 4 — Scene and data (core)
+## Phase 4 — Core gaps no add-on can fill
 
-- [ ] **Freeze**: object flag in DNA, greyed drawing in the overlay engine (`source/blender/draw/`), unselectable
-- [ ] **Scene Explorer** editor: new space type (`source/blender/editors/space_*`); layers, Freeze, Hide, Display as Box, See-Through columns
+Smallest first.
+- [ ] **Imperial fractions**: unit display and parsing (`blenkernel/intern/unit.cc`)
+- [ ] **Freeze**: object flag in DNA, greyed drawing in the overlay engine (`draw/`), unselectable; a Freeze column in the Outliner (no separate Scene Explorer editor)
+- [ ] **Smoothing groups**: face attribute in the core, Shading panel UI, normal computation, FBX import/export (`io/fbx/`)
 - [ ] **Instance vs Reference**: a shared modifier stack across objects; Make Unique
-- [ ] **Smoothing groups**: face attribute in the core, Shading panel UI, normal computation, FBX import/export (`source/blender/io/fbx/`)
-- [ ] **Imperial fractions**: unit display and parsing (`source/blender/blenkernel/intern/unit.cc`)
+- [ ] **Modifier gizmos**: Simple Deform (Bend, Taper, Twist) and Lattice/FFD as part of the modifier
 - [ ] **Performance**: profile a 10k-object archviz scene (Outliner, undo, selection); fix the top three hotspots
 
 ## Phase 5 — Pipeline and release
 
-- [ ] Bundle the `.max` importer (Import Autodesk MAX extension), checking its license
-- [ ] V-Ray/Corona → Cycles material converter
+- [ ] Bundle the `.max` importer (Import Autodesk MAX extension), checking its license; no own importer
+- [ ] V-Ray/Corona → Cycles material converter (bundle an existing one if possible)
 - [ ] FBX presets: "From/To 3ds Max" (cm/mm, Z-up, smoothing groups)
 - [ ] Windows installer and portable zip
 - [ ] Docs: "Moritz for Max users" cheat sheet (Max term → Moritz location)
@@ -135,4 +144,4 @@ Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberh
 
 ## Upstream maintenance (recurring)
 - [ ] Merge each Blender release branch into `moritz/main`
-- [ ] Re-run the test suite and a smoke test of the Phase 1 add-on after each merge
+- [ ] Re-run the test suite and a smoke test of Maximize after each merge
