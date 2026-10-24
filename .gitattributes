@@ -111,3 +111,7 @@
 *.rgb filter=lfs diff=lfs merge=lfs -text
 *.btx filter=lfs diff=lfs merge=lfs -text
 scripts/modules/_bpy_internal/assets/remote_library/*_openapi.py linguist-generated=true
+
+# Moritz: its own files are plain git; LFS objects come from upstream (see .lfsconfig).
+moritz/** !filter !diff !merge
+moritz/**/*.png binary

@@ -24,6 +24,7 @@ Areas dock into each other as tabs, Adobe-style; dragging empty header space mov
 ## Repository
 
 - `.lfsconfig` — Git LFS objects come from upstream; the fork stores none of its own
+- `.gitattributes` — files under `moritz/` (logos and other branding) are plain git, not LFS
 - `moritz/` — roadmap, tasks, research and this file
 
 The Max workflow is not part of Moritz: it is the separate add-on [Maximize](https://github.com/cyberhirsch/maximize).
