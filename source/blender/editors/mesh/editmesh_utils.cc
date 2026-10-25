@@ -26,11 +26,15 @@
 #include "BKE_editmesh.hh"
 #include "BKE_editmesh_bvh.hh"
 #include "BKE_layer.hh"
+#include "BKE_lib_id.hh"
+#include "BKE_mesh.h"
 #include "BKE_mesh.hh"
 #include "BKE_mesh_mapping.hh"
 #include "BKE_report.hh"
 
 #include "DEG_depsgraph.hh"
+
+#include "MOD_edit_poly.hh"
 
 #include "WM_api.hh"
 #include "WM_types.hh"
@@ -343,6 +347,17 @@ void EDBM_mesh_load_ex(Main *bmain, Object *ob, bool free_data)
 {
   Mesh *mesh = id_cast<Mesh *>(ob->data);
   BMesh *bm = BKE_editmesh_bmesh_get_for_write(mesh);
+
+  /* Moritz: in an Edit Poly session the edit belongs to the modifier, not to the mesh. */
+  if (ModifierData *session_md = MOD_edit_poly_session_find(*ob)) {
+    BMeshToMeshParams params{};
+    params.calc_object_remap = false;
+    Mesh *edited = BKE_mesh_from_bmesh_nomain(bm, &params, mesh);
+    MOD_edit_poly_session_load(*bmain, *session_md, *edited);
+    BKE_id_free(nullptr, edited);
+    DEG_id_tag_update(&ob->id, ID_RECALC_GEOMETRY);
+    return;
+  }
 
   /* Workaround for #42360, 'ob->shapenr' should be 1 in this case.
    * however this isn't synchronized between objects at the moment. */

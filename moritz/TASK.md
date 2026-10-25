@@ -18,7 +18,8 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
 - [x] `make update` (fetches precompiled libs into `lib/`)
 - [x] First build: `make.bat release`; gentle rebuilds run through `build_gentle.cmd` (low priority, 2 jobs)
 - [x] VS solution: `build_windows_Full_x64_vc17_Release/Blender.sln` (Debug, Release, RelWithDebInfo); `build_gentle.cmd Debug` and `build_when_idle.ps1 -Config Debug` build the Debug config at low priority into `bin/Debug`
-- [ ] CI: Windows build on push (GitHub Actions or self-hosted)
+- [x] CI: Windows build workflow, started by hand (`.github/workflows/moritz-windows.yml`): build, Moritz and Maximize tests, portable zip, on a hosted or self-hosted runner
+- [ ] CI on every push (needs a self-hosted runner: a hosted one is likely too small for a full build)
 
 ### Rebrand
 - [x] Window title and Moritz version 0.1 Alpha (`BKE_moritz_version.h`, alongside the Blender version)
@@ -107,7 +108,8 @@ Rule: only what Max does better. Blender's modifier panel stays (no Max-style st
 - [x] **Spike:** read the modifier evaluation path (`blenkernel/intern/mesh_data_update.cc`, `modifier.cc`, `modifiers/intern/MOD_*.cc`, `DNA_modifier_types.h`, `rna_modifier.cc`) and write the design note (`moritz/docs/edit_poly_core_design.md`)
 - [x] `eModifierType_EditPoly` (200) and `EditPolyModifier` RNA with `store(input, edited)`, `edit_mode`, `result`; `MOD_edit_poly.cc` with Deform (offsets) and Topology (stored mesh + `mx_orig`) modes, topology fingerprint and warnings; add-menu entry
 - [x] Maximize drives the native modifier in Moritz (stand-in editing, then `store()`; GN prototype stays for stock Blender)
-- [ ] Edit Mode directly on the evaluated mesh from the stack below; speed on heavy meshes
+- [x] Edit Mode directly on the modifier's result, no stand-in object (core session: `session_begin`, enter/evaluate/load/exit branches; `moritz/tests/test_edit_poly_session.py`)
+- [ ] Speed on heavy meshes (the add-on still evaluates the stack twice to begin)
 - [x] Opening in stock Blender: the modifier is a plain `ModifierData` with its data in `system_properties`, so stock keeps it (disabled), keeps the modifiers above and saves the data back; Moritz revives it (`BKE_modifier_blend_read_data`). Tested through stock 5.2 (`moritz/tests/test_edit_poly_native.py`)
 - [x] Header: Max's five sub-object levels (Vertex, Edge, Border, Polygon, Element) in place of Blender's three select-mode buttons, through the `VIEW3D_HT_header.select_mode_draw` hook that Maximize fills
 - [ ] Border and Element as real select modes in the core
@@ -142,8 +144,9 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 
 ## Phase 5 — Pipeline and release
 
-- [ ] Bundle the `.max` importer (Import Autodesk MAX extension), checking its license; no own importer
-- [ ] V-Ray/Corona → Cycles material converter (bundle an existing one if possible)
+- [x] Max scene exchange without a closed-format parser: Max writes the scene with `maximize/max_side/moritz_export.ms`, Maximize imports it (File > Import > Max Scene (.mxscene), `max_scene.py`): polygons, UVs, Multi/Sub IDs, smoothing groups, hierarchy, pivots, units, layers, frozen/hidden, cameras, lights; `tests/test_max_scene.py` (the MaxScript side is untested without Max)
+- [x] V-Ray/Corona/Physical/Standard → Principled converter (`max_materials.py`), used by the import
+- [ ] Bundle the direct `.max` importer (Import Autodesk MAX extension) for files without Max at hand: license check pending
 - [x] FBX presets: "To 3ds Max" / "From 3ds Max" (scene units, smoothing groups, no leaf bones)
 - [x] Portable zip: `moritz/tools/make_portable_zip.py` (add-on copied in, no debug symbols or build tools); smoke-tested
 - [x] Windows installer: `moritz/tools/make_msi.py` (WiX 5, Program Files\Moritz, Start Menu shortcut, own upgrade code, no file associations)

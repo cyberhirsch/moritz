@@ -6,6 +6,7 @@ set(INC
   ../include
   ../uvedit
   ../../makesrna
+  ../../modifiers
   # RNA_prototypes.hh
   ${CMAKE_BINARY_DIR}/source/blender/makesrna
 )

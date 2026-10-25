@@ -87,6 +87,7 @@ enables on first start.
 | Track View, Dope Sheet | Graph Editor, Dope Sheet (K sets a key, Ctrl+Alt+Z frames) |
 | Auto Key / Set Key | N / K |
 | FBX to / from Max | File > Export / Import > FBX, operator presets "To 3ds Max" / "From 3ds Max" |
+| Opening a .max scene | In Max, Scripting > Run Script > `moritz_export.ms` (in the Maximize add-on folder, `max_side`) saves a .mxscene; in Moritz, File > Import > Max Scene (.mxscene). V-Ray, Corona, Physical and Standard materials become Principled materials; what could not be converted is listed in the material's `max_unconverted` property |
 
 ## Following Blender tutorials
 

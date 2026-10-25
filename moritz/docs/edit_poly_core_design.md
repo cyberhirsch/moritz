@@ -267,5 +267,28 @@ users. Moritz revives a stub saved by stock in `BKE_modifier_blend_read_data`.
 - Test: `moritz/tests/test_edit_poly_native.py` (deform and topology edits follow the stack
   below, save/reload, round trip through stock Blender)
 
-Still to do: stage 3 (the edit session in Edit Mode, replacing the add-on's stand-in object) and
-stage 4 (the add-on drives the native modifier).
+Stage 4 (the add-on drives the native modifier) is done in Maximize (`edit_poly.py`).
+
+## Implemented (stage 3, Edit Mode session)
+
+Smaller than planned: no DNA flag, no input cache.
+- Marker: the `session` system property (saved and undone like the rest of the edit).
+- Begin: RNA `EditPolyModifier.session_begin(input, edited)` stores the edit as a result mesh
+  (Topology layout even for a pure move) and sets the marker; refused for a mesh shared with
+  other objects, a mesh with shape keys, linked or overridden data, and outside Object Mode. The
+  add-on computes `input` and `edited` as before and then enters Edit Mode on the object itself.
+- Enter (`ED_object_editmode_enter_ex`): the edit-mesh is built from the result mesh
+  (`EDBM_mesh_make_from_mesh`), not from `ob->data`.
+- Evaluate (`editbmesh_calc_modifiers`): virtual modifiers, the modifiers below and the session
+  modifier are skipped (they are in the edit-mesh); the cage falls back to the edit-mesh.
+- Load (`EDBM_mesh_load_ex`, also on save, render and memfile undo flushes): the edit-mesh is
+  written into the result mesh, never into `ob->data`.
+- Exit (`editmode_load_free_ex` when the edit-mesh is freed): the marker is cleared and the edit
+  stored compactly again (offsets when counts, topology hash and `mx_orig` identity match).
+- The modifier reads the original result mesh (`DEG_get_original`): a mesh no object uses has no
+  geometry component in the depsgraph, so its evaluated copy would go stale.
+- Test: `moritz/tests/test_edit_poly_session.py`.
+
+Not done: blocking shape-key editing, sculpt and multi-object edit during a session (the begin
+checks make them unlikely; `ob->data` is never written, so they cannot corrupt the edit), and a
+"Show end result" toggle.

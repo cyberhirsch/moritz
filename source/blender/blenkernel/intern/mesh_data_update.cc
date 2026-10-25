@@ -45,6 +45,8 @@
 #include "DEG_depsgraph.hh"
 #include "DEG_depsgraph_query.hh"
 
+#include "MOD_edit_poly.hh"
+
 namespace blender::bke {
 
 /**
@@ -777,10 +779,20 @@ static GeometrySet editbmesh_calc_modifiers(Depsgraph &depsgraph,
     }
   }
 
+  /* Moritz: in an Edit Poly session the edit-mesh is that modifier's result, so the virtual
+   * modifiers, the modifiers below and the session modifier itself are already in it. */
+  const ModifierData *session_md = MOD_edit_poly_session_find(ob);
+
   bool non_deform_modifier_applied = false;
   bool deform_modifier_applied = false;
   for (int i = 0; md; i++, md = md->next, md_datamask = md_datamask->next) {
     const ModifierTypeInfo *mti = BKE_modifier_get_info(md->type);
+    if (session_md) {
+      if (md == session_md) {
+        session_md = nullptr;
+      }
+      continue;
+    }
     if (!editbmesh_modifier_is_enabled(&scene, &ob, md, non_deform_modifier_applied)) {
       continue;
     }

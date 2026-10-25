@@ -15,6 +15,7 @@ namespace blender {
 struct Main;
 struct Mesh;
 struct ModifierData;
+struct Object;
 struct ReportList;
 
 /** How the edit is stored. */
@@ -39,5 +40,18 @@ bool MOD_edit_poly_store(
 
 /** The stored result mesh (Topology mode), otherwise null. */
 Mesh *MOD_edit_poly_result(const ModifierData &md);
+
+/**
+ * Start an Edit Mode session: store the edit (as a result mesh) and mark the modifier, so that
+ * Edit Mode on the object edits the modifier's result instead of the object's mesh.
+ */
+bool MOD_edit_poly_session_begin(
+    Main &bmain, ModifierData &md, const Mesh &input, const Mesh &edited, ReportList *reports);
+/** The Edit Poly modifier of `ob` in an Edit Mode session, or null. */
+ModifierData *MOD_edit_poly_session_find(const Object &ob);
+/** Write the edit-mesh (converted to `edited`) into the session's result. */
+void MOD_edit_poly_session_load(Main &bmain, ModifierData &md, const Mesh &edited);
+/** End the session: clear the mark and store the edit compactly. */
+void MOD_edit_poly_session_end(Main &bmain, ModifierData &md);
 
 }  // namespace blender

@@ -20,8 +20,12 @@
  * - `offsets` (Deform): one float3 offset per input vertex.
  * - `base_positions` (Topology): the input positions at the last store.
  * - `result` (Topology): the edited mesh, with the int point attribute `mx_orig`.
+ * - `session`: 1 while the modifier is edited in Edit Mode (see #MOD_edit_poly_session_begin).
  */
 
+#include <array>
+
+#include "BLI_listbase_iterator.hh"
 #include "BLI_math_vector_types.hh"
 #include "BLI_span.hh"
 
@@ -29,6 +33,7 @@
 
 #include "DNA_mesh_types.h"
 #include "DNA_modifier_types.h"
+#include "DNA_object_types.h"
 #include "DNA_screen_types.h"
 
 #include "BKE_attribute.hh"
@@ -39,7 +44,7 @@
 #include "BKE_modifier.hh"
 #include "BKE_report.hh"
 
-#include "DEG_depsgraph_build.hh"
+#include "DEG_depsgraph_query.hh"
 
 #include "UI_interface_layout.hh"
 #include "UI_resources.hh"
@@ -132,10 +137,20 @@ static Span<float3> float3_prop(const ModifierData &md, const StringRef name)
   return Span<float3>(reinterpret_cast<const float3 *>(IDP_array_float_get(prop)), prop->len / 3);
 }
 
-bool MOD_edit_poly_store(
-    Main &bmain, ModifierData &md, const Mesh &input, const Mesh &edited, ReportList *reports)
+/**
+ * Store `edited` as the edit of an input described by its positions, counts and topology hash.
+ * `force_topology` keeps the result mesh even for a pure move (used during an Edit Mode session,
+ * which edits the result mesh).
+ */
+static bool store_from_base(Main &bmain,
+                            ModifierData &md,
+                            const Span<float3> base_positions,
+                            const std::array<int, 4> &counts,
+                            const int hash,
+                            const Mesh &edited,
+                            const bool force_topology,
+                            ReportList *reports)
 {
-  const Span<float3> input_positions = input.vert_positions();
   const Span<float3> edited_positions = edited.vert_positions();
 
   const bke::AttributeAccessor attributes = edited.attributes();
@@ -149,25 +164,23 @@ bool MOD_edit_poly_store(
     }
   }
 
-  const bool same_topology = identity && edited.verts_num == input.verts_num &&
-                             edited.edges_num == input.edges_num &&
-                             edited.faces_num == input.faces_num &&
-                             edited.corners_num == input.corners_num &&
-                             topology_hash(edited) == topology_hash(input);
+  const bool same_topology = !force_topology && identity && edited.verts_num == counts[0] &&
+                             edited.edges_num == counts[1] && edited.faces_num == counts[2] &&
+                             edited.corners_num == counts[3] &&
+                             base_positions.size() == counts[0] &&
+                             topology_hash(edited) == hash;
+
+  /* Copy first: `base_positions` may point into a property replaced below. */
+  const Array<float3> base(base_positions);
 
   prop_set(md, bke::idprop::create("mx_type", StringRefNull("EDIT_POLY")));
-  prop_set(md,
-           bke::idprop::create("base_counts",
-                               Span<int>({input.verts_num,
-                                          input.edges_num,
-                                          input.faces_num,
-                                          input.corners_num})));
-  prop_set(md, bke::idprop::create("base_hash", topology_hash(input)));
+  prop_set(md, bke::idprop::create("base_counts", Span<int>(counts.data(), 4)));
+  prop_set(md, bke::idprop::create("base_hash", hash));
 
   if (same_topology) {
-    Array<float3> offsets(input.verts_num);
+    Array<float3> offsets(counts[0]);
     for (const int i : offsets.index_range()) {
-      offsets[i] = edited_positions[i] - input_positions[i];
+      offsets[i] = edited_positions[i] - base[i];
     }
     prop_set(md, bke::idprop::create("offsets", offsets.as_span().cast<float>()));
     prop_set(md, bke::idprop::create("mode", int(EditPolyMode::Deform)));
@@ -191,17 +204,126 @@ bool MOD_edit_poly_store(
     bke::SpanAttributeWriter<int> map = dst.lookup_or_add_for_write_only_span<int>(
         ORIG_ATTR, bke::AttrDomain::Point);
     for (const int i : map.span.index_range()) {
-      map.span[i] = i < input.verts_num ? i : -1;
+      map.span[i] = i < counts[0] ? i : -1;
     }
     map.finish();
     BKE_report(reports, RPT_INFO, "Edit Poly: no vertex mapping, matched by index");
   }
   BKE_mesh_nomain_to_mesh(edited_copy, result, nullptr, false);
-  prop_set(md, bke::idprop::create("base_positions", input_positions.cast<float>()));
+  prop_set(md, bke::idprop::create("base_positions", base.as_span().cast<float>()));
   prop_set(md, bke::idprop::create("mode", int(EditPolyMode::Topology)));
   prop_remove(md, "offsets");
   return true;
 }
+
+static std::array<int, 4> mesh_counts(const Mesh &mesh)
+{
+  return {mesh.verts_num, mesh.edges_num, mesh.faces_num, mesh.corners_num};
+}
+
+bool MOD_edit_poly_store(
+    Main &bmain, ModifierData &md, const Mesh &input, const Mesh &edited, ReportList *reports)
+{
+  return store_from_base(bmain,
+                         md,
+                         input.vert_positions(),
+                         mesh_counts(input),
+                         topology_hash(input),
+                         edited,
+                         false,
+                         reports);
+}
+
+/* -------------------------------------------------------------------- */
+/** \name Edit Mode session
+ *
+ * While `session` is set, Edit Mode on the object edits the modifier's result instead of the
+ * object's mesh: entering builds the edit-mesh from `result`, evaluation skips this modifier and
+ * everything below it, and loading the edit-mesh writes into `result`. Leaving Edit Mode ends
+ * the session and stores the edit compactly again (offsets when the topology was kept).
+ * \{ */
+
+bool MOD_edit_poly_session_begin(
+    Main &bmain, ModifierData &md, const Mesh &input, const Mesh &edited, ReportList *reports)
+{
+  if (!store_from_base(bmain,
+                       md,
+                       input.vert_positions(),
+                       mesh_counts(input),
+                       topology_hash(input),
+                       edited,
+                       true,
+                       reports))
+  {
+    return false;
+  }
+  prop_set(md, bke::idprop::create("session", 1));
+  return true;
+}
+
+static bool session_active(const ModifierData &md)
+{
+  if (md.type != eModifierType_EditPoly) {
+    return false;
+  }
+  const IDProperty *prop = prop_get(md, "session");
+  return prop && prop->type == IDP_INT && IDP_int_get(prop) != 0;
+}
+
+ModifierData *MOD_edit_poly_session_find(const Object &ob)
+{
+  for (ModifierData &md : const_cast<Object &>(ob).modifiers) {
+    if (session_active(md)) {
+      return &md;
+    }
+  }
+  return nullptr;
+}
+
+/** The stored base of the edit: positions, counts and hash. */
+static bool stored_base(const ModifierData &md,
+                        Span<float3> &r_positions,
+                        std::array<int, 4> &r_counts,
+                        int &r_hash)
+{
+  const IDProperty *counts = prop_get(md, "base_counts");
+  const IDProperty *hash = prop_get(md, "base_hash");
+  r_positions = float3_prop(md, "base_positions");
+  if (counts == nullptr || counts->type != IDP_ARRAY || counts->len != 4 || hash == nullptr ||
+      r_positions.is_empty())
+  {
+    return false;
+  }
+  const int *c = IDP_array_int_get(counts);
+  r_counts = {c[0], c[1], c[2], c[3]};
+  r_hash = IDP_int_get(hash);
+  return true;
+}
+
+void MOD_edit_poly_session_load(Main &bmain, ModifierData &md, const Mesh &edited)
+{
+  Span<float3> base;
+  std::array<int, 4> counts;
+  int hash;
+  if (stored_base(md, base, counts, hash)) {
+    store_from_base(bmain, md, base, counts, hash, edited, true, nullptr);
+  }
+}
+
+void MOD_edit_poly_session_end(Main &bmain, ModifierData &md)
+{
+  prop_remove(md, "session");
+  Span<float3> base;
+  std::array<int, 4> counts;
+  int hash;
+  Mesh *result = MOD_edit_poly_result(md);
+  if (result && stored_base(md, base, counts, hash)) {
+    /* Back to offsets when only positions changed. */
+    store_from_base(bmain, md, base, counts, hash, *result, false, nullptr);
+  }
+}
+
+/** \} */
 
 static Mesh *modify_mesh(ModifierData *md, const ModifierEvalContext *ctx, Mesh *mesh)
 {
@@ -231,7 +353,13 @@ static Mesh *modify_mesh(ModifierData *md, const ModifierEvalContext *ctx, Mesh 
     return result;
   }
 
+  /* The original mesh: the depsgraph has no geometry component for a mesh that no object uses,
+   * so its evaluated copy would never be updated. Only the main thread writes it, outside of
+   * evaluation. */
   const Mesh *stored = MOD_edit_poly_result(*md);
+  if (stored != nullptr) {
+    stored = DEG_get_original(stored);
+  }
   if (stored == nullptr) {
     BKE_modifier_set_error(ctx->object, md, "Stored mesh is missing");
     return mesh;
@@ -258,12 +386,6 @@ static Mesh *modify_mesh(ModifierData *md, const ModifierEvalContext *ctx, Mesh 
   return result;
 }
 
-static void update_depsgraph(ModifierData *md, const ModifierUpdateDepsgraphContext *ctx)
-{
-  if (Mesh *stored = MOD_edit_poly_result(*md)) {
-    DEG_add_generic_id_relation(ctx->node, &stored->id, "Edit Poly Modifier");
-  }
-}
 
 static void panel_draw(const bContext * /*C*/, Panel *panel)
 {
@@ -282,6 +404,9 @@ static void panel_draw(const bContext * /*C*/, Panel *panel)
     case EditPolyMode::Topology:
       layout.label(IFACE_("Edited topology, follows the stack below"), ICON_NONE);
       break;
+  }
+  if (session_active(md)) {
+    layout.label(IFACE_("Editing in Edit Mode"), ICON_EDITMODE_HLT);
   }
   modifier_error_message_draw(layout, ptr);
 }
@@ -316,7 +441,7 @@ ModifierTypeInfo modifierType_EditPoly = {
     /*required_data_mask*/ nullptr,
     /*free_data*/ nullptr,
     /*is_disabled*/ nullptr,
-    /*update_depsgraph*/ update_depsgraph,
+    /*update_depsgraph*/ nullptr,
     /*depends_on_time*/ nullptr,
     /*depends_on_normals*/ nullptr,
     /*foreach_ID_link*/ nullptr,

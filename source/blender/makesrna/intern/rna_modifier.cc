@@ -2073,6 +2073,40 @@ static bool rna_EditPolyModifier_store(
   return true;
 }
 
+static bool rna_EditPolyModifier_session_begin(
+    ID *owner_id, ModifierData *md, Main *bmain, ReportList *reports, Mesh *input, Mesh *edited)
+{
+  Object *ob = id_cast<Object *>(owner_id);
+  const Mesh *mesh = (ob->type == OB_MESH) ? id_cast<const Mesh *>(ob->data) : nullptr;
+  if (mesh == nullptr || ID_REAL_USERS(&mesh->id) > 1 || mesh->key != nullptr ||
+      ob->mode != OB_MODE_OBJECT || ID_IS_LINKED(ob) || ID_IS_LINKED(mesh) ||
+      ID_IS_OVERRIDE_LIBRARY(ob))
+  {
+    BKE_report(reports,
+               RPT_ERROR,
+               "Edit Poly session needs an editable mesh object in Object Mode with a mesh of "
+               "its own and no shape keys");
+    return false;
+  }
+  if (MOD_edit_poly_session_find(*ob) != nullptr) {
+    BKE_report(reports, RPT_ERROR, "Another Edit Poly modifier of this object is being edited");
+    return false;
+  }
+  if (!MOD_edit_poly_session_begin(*bmain, *md, *input, *edited, reports)) {
+    return false;
+  }
+  DEG_id_tag_update(owner_id, ID_RECALC_GEOMETRY);
+  DEG_relations_tag_update(bmain);
+  WM_main_add_notifier(NC_OBJECT | ND_MODIFIER, owner_id);
+  return true;
+}
+
+static bool rna_EditPolyModifier_is_editing_get(PointerRNA *ptr)
+{
+  const Object *ob = id_cast<const Object *>(ptr->owner_id);
+  return MOD_edit_poly_session_find(*ob) == ptr->data_as<ModifierData>();
+}
+
 static bool rna_NodesModifier_is_input_visible(PointerRNA nmd_ptr,
                                                ReportList *reports,
                                                const char *identifier)
@@ -7445,6 +7479,25 @@ static void rna_def_modifier_edit_poly(BlenderRNA *brna)
   RNA_def_parameter_flags(parm, PROP_NEVER_NULL, PARM_REQUIRED);
   parm = RNA_def_boolean(func, "success", false, "", "");
   RNA_def_function_return(func, parm);
+
+  func = RNA_def_function(srna, "session_begin", "rna_EditPolyModifier_session_begin");
+  RNA_def_function_ui_description(
+      func,
+      "Store the edit and start an Edit Mode session: until Edit Mode is left, Edit Mode on the "
+      "object edits this modifier's result instead of the object's mesh");
+  RNA_def_function_flag(func, FUNC_USE_MAIN | FUNC_USE_SELF_ID | FUNC_USE_REPORTS);
+  parm = RNA_def_pointer(func, "input", "Mesh", "", "The modifier's input mesh");
+  RNA_def_parameter_flags(parm, PROP_NEVER_NULL, PARM_REQUIRED);
+  parm = RNA_def_pointer(func, "edited", "Mesh", "", "The current edited mesh");
+  RNA_def_parameter_flags(parm, PROP_NEVER_NULL, PARM_REQUIRED);
+  parm = RNA_def_boolean(func, "success", false, "", "");
+  RNA_def_function_return(func, parm);
+
+  prop = RNA_def_property(srna, "is_editing", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_EditPolyModifier_is_editing_get", nullptr);
+  RNA_def_property_clear_flag(prop, PROP_EDITABLE);
+  RNA_def_property_ui_text(
+      prop, "Is Editing", "The modifier's result is being edited in Edit Mode");
 }
 
 static void rna_def_modifier_weld(BlenderRNA *brna)

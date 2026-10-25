@@ -108,6 +108,7 @@
 #include "WM_toolsystem.hh"
 #include "WM_types.hh"
 
+#include "MOD_edit_poly.hh"
 #include "MOD_nodes.hh"
 
 #include "object_intern.hh" /* own include */
@@ -658,6 +659,11 @@ static bool editmode_load_free_ex(Main *bmain,
     if (free_data) {
       EDBM_mesh_free_data(mesh->runtime->edit_mesh.get());
       mesh->runtime->edit_mesh.reset();
+      /* Moritz: leaving Edit Mode ends an Edit Poly session. */
+      if (ModifierData *session_md = MOD_edit_poly_session_find(*obedit)) {
+        MOD_edit_poly_session_end(*bmain, *session_md);
+        DEG_id_tag_update(&obedit->id, ID_RECALC_GEOMETRY);
+      }
     }
     /* will be recalculated as needed. */
     {
@@ -892,7 +898,14 @@ bool editmode_enter_ex(Main *bmain, Scene *scene, Object *ob, int flag)
 
     const bool use_key_index = mesh_needs_keyindex(bmain, id_cast<const Mesh *>(ob->data));
 
-    EDBM_mesh_make(ob, scene->toolsettings->selectmode, use_key_index);
+    /* Moritz: in an Edit Poly session, edit the modifier's result. */
+    const ModifierData *session_md = MOD_edit_poly_session_find(*ob);
+    if (Mesh *session_mesh = session_md ? MOD_edit_poly_result(*session_md) : nullptr) {
+      EDBM_mesh_make_from_mesh(ob, session_mesh, scene->toolsettings->selectmode, false);
+    }
+    else {
+      EDBM_mesh_make(ob, scene->toolsettings->selectmode, use_key_index);
+    }
 
     BMEditMesh *em = BKE_editmesh_from_object(ob);
     if (em) [[likely]] {
