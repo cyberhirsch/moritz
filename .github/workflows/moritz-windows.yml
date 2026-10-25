@@ -1,0 +1,85 @@
+# Moritz: Windows build, tests and portable zip.
+#
+# Started by hand (Actions > Moritz Windows > Run workflow), so pushes cost nothing. A full build
+# takes hours: on GitHub's hosted runners (4 cores, 6 h limit, about 14 GB free disk) it may not
+# fit; pick "self-hosted" to run it on a machine registered as a runner with the labels
+# `self-hosted` and `windows` (Visual Studio 2022, CMake, Git LFS and Python installed).
+name: Moritz Windows
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: Where to build
+        type: choice
+        options: [windows-latest, self-hosted]
+        default: windows-latest
+
+jobs:
+  build:
+    runs-on: ${{ inputs.runner == 'self-hosted' && fromJSON('["self-hosted", "windows"]') || 'windows-latest' }}
+    timeout-minutes: 360
+    env:
+      # The fork's own LFS objects are not on GitHub; Blender's come from projects.blender.org.
+      GIT_LFS_SKIP_SMUDGE: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          path: blender
+
+      - name: Maximize add-on
+        uses: actions/checkout@v4
+        with:
+          repository: cyberhirsch/maximize
+          path: Maximize
+          # While the repository is private, a token with read access (secret MAXIMIZE_TOKEN).
+          token: ${{ secrets.MAXIMIZE_TOKEN || github.token }}
+
+      - name: LFS files and precompiled libraries
+        shell: pwsh
+        working-directory: blender
+        run: |
+          git lfs pull
+          if ($LASTEXITCODE -ne 0) { Write-Warning "some LFS files are missing" }
+          git -c submodule."lib/windows_x64".update=checkout submodule update --init --depth 1 lib/windows_x64
+          git -C lib/windows_x64 lfs pull
+
+      - name: Configure
+        shell: pwsh
+        run: cmake -S blender -B build -G "Visual Studio 17 2022" -A x64 -C blender/build_files/cmake/config/blender_release.cmake
+
+      - name: Build
+        shell: pwsh
+        run: cmake --build build --config Release --target install -- /m /nologo /v:m
+
+      - name: Link the add-on
+        shell: pwsh
+        run: |
+          $ver = (Get-ChildItem build/bin/Release -Directory | Where-Object Name -match '^\d+\.\d+$').Name
+          Copy-Item -Recurse Maximize/maximize "build/bin/Release/$ver/scripts/addons_core/maximize"
+
+      - name: Tests
+        shell: pwsh
+        run: |
+          $exe = "build/bin/Release/moritz.exe"
+          $failed = @()
+          foreach ($t in "test_edit_poly_native", "test_edit_poly_session") {
+            & $exe --factory-startup -b --python "blender/moritz/tests/$t.py" 2>&1 | Tee-Object -FilePath "$t.log"
+            if (Select-String -Path "$t.log" -Pattern "FAIL|Traceback" -Quiet) { $failed += $t }
+          }
+          foreach ($t in "test_background", "test_keymaps", "test_edit_poly", "test_splines", "test_phase4") {
+            & $exe --factory-startup -b --python "Maximize/tests/$t.py" 2>&1 | Tee-Object -FilePath "$t.log"
+            if (Select-String -Path "$t.log" -Pattern "FAIL|Traceback" -Quiet) { $failed += $t }
+          }
+          if ($failed) { Write-Error ("failed: " + ($failed -join ", ")); exit 1 }
+
+      - name: Portable zip
+        shell: pwsh
+        run: python blender/moritz/tools/make_portable_zip.py build/bin/Release Maximize .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: moritz-windows-x64
+          path: moritz-*-windows-x64.zip
+          retention-days: 14
