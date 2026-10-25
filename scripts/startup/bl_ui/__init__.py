@@ -20,6 +20,7 @@ _modules = [
     "node_add_menu_texture",
     "properties_animviz",
     "properties_constraint",
+    "properties_create",
     "properties_data_armature",
     "properties_data_bone",
     "properties_data_camera",
@@ -126,6 +127,8 @@ def register():
 
     space_filebrowser.register_props()
     properties_paint_common.register()
+    properties_create.register()
+    properties_data_modifier.register()
 
     from bpy.props import (
         EnumProperty,
@@ -184,6 +187,8 @@ def unregister():
     from bpy.utils import unregister_class
 
     properties_paint_common.unregister()
+    properties_create.unregister()
+    properties_data_modifier.unregister()
 
     for mod in reversed(_modules_loaded):
         for cls in reversed(mod.classes):

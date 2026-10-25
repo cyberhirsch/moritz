@@ -60,10 +60,67 @@ class DATA_PT_modifiers(ModifierButtonsPanel, Panel):
         ob = context.object
         return ob
 
-    def draw(self, _context):
+    def draw(self, context):
         layout = self.layout
         layout.operator("wm.call_menu", text="Add Modifier", icon='ADD').name = "OBJECT_MT_modifier_add"
+        # Moritz: Max's modifier stack, newest on top and the base object at the bottom.
+        _draw_modifier_stack(layout, context.object)
         layout.template_modifiers()
+
+
+class MODIFIER_UL_stack(bpy.types.UIList):
+    """Max's modifier stack: newest modifier first"""
+
+    def draw_item(self, _context, layout, _data, item, _icon, _active_data, _active_propname, _index):
+        row = layout.row(align=True)
+        row.prop(item, "show_viewport", text="", emboss=False)
+        row.prop(item, "name", text="", emboss=False, icon=ModifierAddMenu.MODIFIER_TYPES_TO_ICONS[item.type])
+
+    def filter_items(self, _context, data, propname):
+        count = len(getattr(data, propname))
+        return [], list(reversed(range(count)))
+
+
+def _modifier_stack_index_get(ob):
+    active = ob.modifiers.active
+    return ob.modifiers.find(active.name) if active else -1
+
+
+def _modifier_stack_index_set(ob, index):
+    if 0 <= index < len(ob.modifiers):
+        ob.modifiers.active = ob.modifiers[index]
+
+
+def _draw_modifier_stack(layout, ob):
+    if not ob.modifiers:
+        return
+    col = layout.column(align=True)
+    col.template_list("MODIFIER_UL_stack", "", ob, "modifiers", ob, "moritz_modifier_stack_index", rows=3)
+    box = col.box()
+    box.scale_y = 0.8
+    data = ob.data
+    box.label(text=data.name if data else ob.name, icon='OUTLINER_DATA_' + ob.type if data else 'OBJECT_DATA')
+    active = ob.modifiers.active
+    if active is not None and active.type == 'EDIT_POLY':
+        # The levels of an Edit Poly modifier, as Max expands them under its row.
+        row = layout.row(align=True)
+        for level, text in (('VERTEX', "Vertex"), ('EDGE', "Edge"), ('BORDER', "Border"),
+                            ('POLYGON', "Polygon"), ('ELEMENT', "Element")):
+            row.operator("object.subobject_level", text=text).level = level
+
+
+def register():
+    from bpy.props import IntProperty
+    # Not stored: the stack's selection is the active modifier.
+    bpy.types.Object.moritz_modifier_stack_index = IntProperty(
+        name="Modifier",
+        get=_modifier_stack_index_get,
+        set=_modifier_stack_index_set,
+    )
+
+
+def unregister():
+    del bpy.types.Object.moritz_modifier_stack_index
 
 
 class OBJECT_MT_modifier_add(ModifierAddMenu, Menu):
@@ -308,6 +365,7 @@ class AddModifierMenu(Operator):
 
 classes = (
     DATA_PT_modifiers,
+    MODIFIER_UL_stack,
     OBJECT_MT_modifier_add,
     OBJECT_MT_modifier_add_edit,
     OBJECT_MT_modifier_add_generate,

@@ -120,6 +120,8 @@ enum eSpaceButtons_Context : short {
   BCONTEXT_STRIP = 18,
   BCONTEXT_STRIP_MODIFIER = 19,
   BCONTEXT_COMPOSITOR = 20,
+  /** Moritz: Max's Create panel. Stock Blender falls back to the Object tab. */
+  BCONTEXT_CREATE = 21,
 
   /* Keep last. */
   BCONTEXT_TOT,
