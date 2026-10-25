@@ -129,6 +129,50 @@ Rule: only what Max does better. Kept from Blender: handle types, curve extrude 
 - [x] 2D shape booleans (union, subtract, intersect) through an exact mesh boolean of slabs, no C++ clipper needed
 - [x] Loft (path plus shape, both stay live)
 
+### Phase 3b — Splines exactly like Max (plan, 2026-10-25)
+
+Found: the parametric shapes are Geometry Nodes poly curves with a fixed point count ("Steps"),
+not Bezier splines. A Circle is 32 corner points, where Max's is 4 smooth Bezier vertices;
+converting gives those 32 corners. Only the Rectangle's corner radius and the Line tool make real
+Bezier handles. Goal: creating, editing and converting splines behaves exactly as in Max. The Boss
+asked for Max's behavior here, so this overrides "only what Max does better" for splines.
+
+- [ ] **Shapes are real Bezier splines with Max's vertex counts and handles**, so 1 (Convert to
+  Editable Spline) gives what Max gives: Circle 4 smooth vertices (handle length r·0.5523),
+  Ellipse 4, Arc 4 Bezier, Donut 2 × 4, Rectangle 4 corners (8 Bezier Corner vertices with a
+  corner radius), NGon N corners (Circumscribed/Inscribed, corner radius), Star 2N (Radius 1/2,
+  Distortion, Fillet Radius 1/2), Helix (Turns, Bias, CW/CCW) as Max builds it. Stays parametric
+  until converted. Engine: a real Curve object whose splines the add-on rebuilds when a parameter
+  changes (parameters kept as properties on the object), instead of a Geometry Nodes poly curve.
+  *Files: a Curve object with Bezier splines is plain Blender data; stock Blender shows the last
+  shape and only loses the parameter editing. Shapes saved with the current Geometry Nodes
+  version keep working (read and migrated on load).*
+- [ ] **Interpolation as in Max**: Steps per shape (default 6 = Blender resolution 7), Optimize
+  (straight segments get no extra points), Adaptive. *Optimize and Adaptive have no Blender
+  setting: a resample in the render geometry, or a small core change to curve tessellation
+  (warn before that: it would change how curves look in Moritz but not in stock).*
+- [ ] **Max vertex types** in the quad menu and the Modify tab: Corner, Smooth, Bezier, Bezier
+  Corner (Blender's Vector, Auto, Aligned, Free handles), Reset Tangents, Make First, Reverse.
+  *Files: unaffected (Blender's own handle types).*
+- [ ] **Editable Spline levels 1 Vertex, 2 Segment, 3 Spline**: a click picks the whole segment
+  or spline (as Border/Element do for polys), Segment and Spline transforms, Divide (segment),
+  Detach, Explode, Mirror (spline), Close, Attach / Attach Multiple, Weld / Fuse / Cross Insert,
+  Insert, Delete at each level, Bind/Unbind, Show Selected Segments, Lock Handles (Alike/All).
+- [ ] **Creation as in Max**: Line with Initial Type (Corner/Smooth) and Drag Type
+  (Corner/Smooth/Bezier), Backspace removes the last vertex, Shift for 90 degrees, closing asks
+  "Close spline?"; Keyboard Entry for every shape; AutoGrid; "Start New Shape" off adds the new
+  spline to the selected shape; Text, Section, Egg, Freehand shapes.
+- [ ] **Rendering as in Max**: Enable In Renderer / In Viewport, Radial (Thickness, Sides,
+  Angle) and Rectangular (Length, Width, Angle, Aspect), Auto Smooth, Generate Mapping Coords
+  (Blender's curve bevel with a round or rectangle profile). *Files: unaffected.*
+- [ ] **Edit Spline modifier** (spline edits in the stack, as Edit Poly does for meshes), so a
+  parametric shape can be edited without converting. Core work like Edit Poly stage 0-3; ask
+  before starting. *Files: would need the same stock-compatible storage as Edit Poly.*
+- [ ] Tests: vertex counts and handles of every converted shape against Max's (checked in 3ds Max
+  2026 with `3dsmaxbatch.exe` and the Moritz exporter), interpolation, levels
+- [ ] Max scene exchange carries splines: the exporter writes shapes as knots with in/out
+  vectors and vertex types, the importer makes Bezier Curve objects (today shapes are skipped)
+
 ## Phase 4 — Core gaps no add-on can fill
 
 Smallest first. Three of them turned out to be possible in Maximize after all (marked).
