@@ -222,7 +222,9 @@ Vector<eSpaceButtons_Context> ED_buttons_tabs_list(const SpaceProperties *sbuts,
   };
 
   auto add_tab = [&](eSpaceButtons_Context tab) {
-    if (sbuts->pathflag & (1 << tab) && (!apply_filter || filter & (1 << tab))) {
+    /* The Create tab needs no data, so it is there before the first redraw computes the path. */
+    const bool available = tab == BCONTEXT_CREATE || sbuts->pathflag & (1 << tab);
+    if (available && (!apply_filter || filter & (1 << tab))) {
       tabs.append(tab);
     }
   };
