@@ -3181,7 +3181,8 @@ int ED_area_header_switchbutton(const bContext *C, ui::Block *block, int yco)
     const uiFontStyle *fstyle = &ui::style_get_dpi()->widget;
     const SpaceLink *sl_active = area->spacedata.first_as<SpaceLink>();
     const ui::EmbossType emboss_prev = ui::block_emboss_get(block);
-    for (const SpaceLink *sl : tabs) {
+    for (const int tab_index : tabs.index_range()) {
+      const SpaceLink *sl = tabs[tab_index];
       const bool is_active = (sl == sl_active);
       const char *name = nullptr;
       int icon = ICON_NONE;
@@ -3216,6 +3217,7 @@ int ED_area_header_switchbutton(const bContext *C, ui::Block *block, int yco)
                                           U.widget_unit,
                                           std::nullopt);
       RNA_int_set(ui::button_operator_ptr_ensure(but), "space_type", sl->spacetype);
+      RNA_int_set(ui::button_operator_ptr_ensure(but), "tab", tab_index + 1);
       xco += width;
       /* A close button on each tab. */
       ui::block_emboss_set(block, ui::EmbossType::None);
@@ -3230,6 +3232,7 @@ int ED_area_header_switchbutton(const bContext *C, ui::Block *block, int yco)
                                             U.widget_unit,
                                             TIP_("Close this tab"));
       RNA_int_set(ui::button_operator_ptr_ensure(but_close), "space_type", sl->spacetype);
+      RNA_int_set(ui::button_operator_ptr_ensure(but_close), "tab", tab_index + 1);
       xco += 0.8f * U.widget_unit;
     }
     ui::block_emboss_set(block, emboss_prev);
@@ -3244,8 +3247,8 @@ int ED_area_header_switchbutton(const bContext *C, ui::Block *block, int yco)
 /* -------------------------------------------------------------------- */
 /** \name Area Tabs (Moritz)
  *
- * An area keeps one #SpaceLink per editor type it has shown, the active one first. Spaces marked
- * #SPACE_FLAG_TAB are shown as tabs. Inactive spaces store their regions in their own
+ * An area keeps the #SpaceLink of each editor it has shown, the active one first. Spaces marked
+ * #SPACE_FLAG_TAB are shown as tabs; several tabs may share an editor type. Inactive spaces store their regions in their own
  * `regionbase`, the active one has its regions in #ScrArea.regionbase.
  * \{ */
 
@@ -3382,12 +3385,14 @@ bool ED_area_tab_move(bContext *C, ScrArea *area_src, ScrArea *area_dst, const b
     if (sl != sl_src_active) {
       BLI_remlink(&area_src->spacedata, sl);
     }
-    /* An area holds one space per editor type: the incoming one wins. */
+    /* An area may hold several editors of one type (two Outliners, say): no merging. Inactive
+     * spaces of the target that were never tabs (kept from earlier editor switches) give way to
+     * the incoming one of their type, as in Blender. */
     for (SpaceLink *sl_other = area_dst->spacedata.first_as<SpaceLink>(), *sl_next; sl_other;
          sl_other = sl_next)
     {
       sl_next = sl_other->next;
-      if (sl_other->spacetype == sl->spacetype) {
+      if (sl_other->spacetype == sl->spacetype && !(sl_other->link_flag & SPACE_FLAG_TAB)) {
         BLI_remlink(&area_dst->spacedata, sl_other);
         area_space_free(sl_other);
       }
@@ -3449,26 +3454,90 @@ bool ED_area_tab_close_active(bContext *C, ScrArea *area)
   return true;
 }
 
-bool ED_area_tab_close(bContext *C, ScrArea *area, const int space_type)
+/** The tab at position `tab` (1 and up), else the first tab of `space_type`, else null. */
+static SpaceLink *area_tab_find(ScrArea *area, const int space_type, const int tab)
+{
+  const Vector<SpaceLink *> tabs = area_tabs_ordered(area);
+  if (tab > 0) {
+    return (tab <= tabs.size()) ? tabs[tab - 1] : nullptr;
+  }
+  /* The active one first: it is the one shown for its type. */
+  for (SpaceLink *sl : tabs) {
+    if (sl->spacetype == space_type && sl == area->spacedata.first()) {
+      return sl;
+    }
+  }
+  for (SpaceLink *sl : tabs) {
+    if (sl->spacetype == space_type) {
+      return sl;
+    }
+  }
+  return nullptr;
+}
+
+bool ED_area_tab_close(bContext *C, ScrArea *area, const int space_type, const int tab)
 {
   SpaceLink *sl_active = area->spacedata.first_as<SpaceLink>();
   if (ED_area_tab_count(area) < 2 || sl_active == nullptr) {
     return false;
   }
-  if (space_type == SPACE_EMPTY || sl_active->spacetype == space_type) {
+  if (tab <= 0 && space_type == SPACE_EMPTY) {
     return ED_area_tab_close_active(C, area);
   }
-  for (SpaceLink &sl : area->spacedata) {
-    if (sl.spacetype == space_type && (sl.link_flag & SPACE_FLAG_TAB) && &sl != sl_active) {
-      BLI_remlink(&area->spacedata, &sl);
-      area_space_free(&sl);
-      area_tabs_ordered(area);
-      area_tabs_clear_if_single(area);
-      ED_area_tag_redraw(area);
-      return true;
-    }
+  SpaceLink *sl = area_tab_find(area, space_type, tab);
+  if (sl == nullptr) {
+    return false;
   }
-  return false;
+  if (sl == sl_active) {
+    return ED_area_tab_close_active(C, area);
+  }
+  BLI_remlink(&area->spacedata, sl);
+  area_space_free(sl);
+  area_tabs_ordered(area);
+  area_tabs_clear_if_single(area);
+  ED_area_tag_redraw(area);
+  return true;
+}
+
+bool ED_area_tab_activate(bContext *C, ScrArea *area, const int space_type, const int tab)
+{
+  SpaceLink *sl = area_tab_find(area, space_type, tab);
+  SpaceLink *sl_active = area->spacedata.first_as<SpaceLink>();
+  if (sl == nullptr || sl_active == nullptr) {
+    return false;
+  }
+  if (sl == sl_active) {
+    return true;
+  }
+  /* Swap the regions directly (#ED_area_newspace finds spaces by type, and an area can hold
+   * several of one type). */
+  area_space_pack_active(C, area);
+  sl_active->link_flag |= SPACE_FLAG_TAB;
+  BLI_addhead(&area->spacedata, sl_active);
+  area_space_unpack(C, CTX_wm_window(C), area, sl);
+  return true;
+}
+
+bool ED_area_tab_duplicate(bContext *C, ScrArea *area)
+{
+  SpaceLink *sl_active = area->spacedata.first_as<SpaceLink>();
+  SpaceType *st = sl_active ? BKE_spacetype_from_id(sl_active->spacetype) : nullptr;
+  if (st == nullptr || st->duplicate == nullptr) {
+    return false;
+  }
+  /* The active space keeps its regions in the area. */
+  SpaceLink *sl_new = st->duplicate(sl_active);
+  sl_new->regionbase.clear_no_delete();
+  for (const ARegion &region : area->regionbase) {
+    BLI_addtail(&sl_new->regionbase, BKE_area_region_copy(st, &region));
+  }
+  sl_active->link_flag |= SPACE_FLAG_TAB;
+  area_tabs_ordered(area);
+  sl_new->link_flag |= SPACE_FLAG_TAB;
+  ED_area_tab_order_set(sl_new, 0);
+  BLI_addtail(&area->spacedata, sl_new);
+  area_tabs_ordered(area);
+  return ED_area_tab_activate(C, area, SPACE_EMPTY, ED_area_tab_count(area));
 }
 
 /** \} */

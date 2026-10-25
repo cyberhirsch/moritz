@@ -46,7 +46,7 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
 - [ ] Check by hand with a real mouse and a multi-monitor setup
 - [x] Drag a tab button itself to move, dock or tear it off (`but_area_tab_drag` in `interface_handlers.cc`, `tab_space_type` of `SCREEN_OT_area_join`)
 - [x] Tab order by insertion, not by editor type (kept in free bits of `SpaceLink.link_flag`, no file format change); close button on each tab, closing activates the neighbor
-- [ ] More than one tab of the same editor type (an area stores one space per type; `ED_area_newspace` looks spaces up by type, so this needs a space identity beyond the type)
+- [x] More than one tab of the same editor type: tabs are addressed by position (`tab` property of the tab operators and `screen.area_join`, `ED_area_tab_activate` swaps regions directly); Duplicate as Tab in the header context menu (`SCREEN_OT_area_tab_duplicate`); `moritz/tests/test_tabs_multi.py`
 
 ## Phase 1 — Feels like Max (Maximize + Moritz keymaps)
 
@@ -137,7 +137,8 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 - [x] **Modifier gizmos** *(Maximize, `modifier_gizmos.py`)*: Simple Deform (Bend, Twist, Taper, Stretch) dial and arrow; FFD stays Blender's Lattice
 - [x] **Performance**: profile a 10k-object scene (Outliner, undo, selection): `moritz/docs/performance.md`
 - [x] Undo hotspot: keep the depsgraph relations when an undo step changed none (800 ms -> 85 ms at 10k objects; `memfile_undo.cc`, `test_undo_relations.py`)
-- [ ] Whole-window redraw 66 ms at 10k objects; scene fingerprint so undo/redo pairs also keep relations
+- [x] Whole-window redraw at 10k objects measured per region (see `docs/performance.md`): the Outliner tree rebuild is half of it and only runs on structural changes; no change needed
+- [ ] Scene fingerprint so undo/redo pairs also keep relations (blocked: the depsgraph keys the master collection by its address, which changes when the scene is re-read)
 
 ## Phase 5 — Pipeline and release
 
@@ -145,7 +146,7 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 - [ ] V-Ray/Corona → Cycles material converter (bundle an existing one if possible)
 - [x] FBX presets: "To 3ds Max" / "From 3ds Max" (scene units, smoothing groups, no leaf bones)
 - [x] Portable zip: `moritz/tools/make_portable_zip.py` (add-on copied in, no debug symbols or build tools); smoke-tested
-- [ ] Windows installer
+- [x] Windows installer: `moritz/tools/make_msi.py` (WiX 5, Program Files\Moritz, Start Menu shortcut, own upgrade code, no file associations)
 - [x] Docs: "Moritz for Max users" cheat sheet (Max term → Moritz location): [docs/max_users.md](docs/max_users.md)
 - [x] CI for Maximize: background tests on Blender 5.3 (GitHub Actions)
 - [ ] 1.0 release

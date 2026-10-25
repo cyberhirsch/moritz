@@ -5155,7 +5155,10 @@ static bool do_but_ANY_drag_toggle(
  * Moritz: dragging an area tab moves, docks or tears off that editor, as dragging the empty
  * header space does for the whole area.
  */
-static void but_area_tab_drag(bContext *C, const int space_type, const wmEvent *event)
+static void but_area_tab_drag(bContext *C,
+                              const int space_type,
+                              const int tab,
+                              const wmEvent *event)
 {
   wmOperatorType *ot = WM_operatortype_find("SCREEN_OT_area_join", false);
   if (ot == nullptr) {
@@ -5164,6 +5167,7 @@ static void but_area_tab_drag(bContext *C, const int space_type, const wmEvent *
   PointerRNA ptr = WM_operator_properties_create_ptr(ot);
   RNA_boolean_set(&ptr, "header_drag", true);
   RNA_int_set(&ptr, "tab_space_type", space_type);
+  RNA_int_set(&ptr, "tab", tab);
   WM_operator_name_call_ptr(C, ot, wm::OpCallContext::InvokeDefault, &ptr, event);
   WM_operator_properties_free(&ptr);
 }
@@ -10641,9 +10645,10 @@ static int handle_button_event(bContext *C, const wmEvent *event, Button *but)
                 WM_event_drag_threshold(event))
         {
           const int space_type = RNA_int_get(but->opptr, "space_type");
+          const int tab = RNA_int_get(but->opptr, "tab");
           data->cancel = true;
           button_activate_state(C, but, BUTTON_STATE_EXIT);
-          but_area_tab_drag(C, space_type, event);
+          but_area_tab_drag(C, space_type, tab, event);
           retval = WM_UI_HANDLER_BREAK;
           break;
         }

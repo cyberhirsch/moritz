@@ -116,8 +116,18 @@ bool ED_area_tab_move(bContext *C, ScrArea *area_src, ScrArea *area_dst, bool on
 void ED_area_tab_strip_inactive(ScrArea *area);
 /** Close the active tab and activate the next one. \return false when the area has no tabs. */
 bool ED_area_tab_close_active(bContext *C, ScrArea *area);
-/** Close the tab of `space_type` (#SPACE_EMPTY: the active one). */
-bool ED_area_tab_close(bContext *C, ScrArea *area, int space_type);
+/**
+ * Close a tab: the one at position `tab` (1 and up, as shown), else the first of `space_type`,
+ * else (#SPACE_EMPTY) the active one.
+ */
+bool ED_area_tab_close(bContext *C, ScrArea *area, int space_type, int tab = 0);
+/**
+ * Activate a tab: the one at position `tab` (1 and up, as shown), else the first of
+ * `space_type`. An area may hold several editors of one type.
+ */
+bool ED_area_tab_activate(bContext *C, ScrArea *area, int space_type, int tab);
+/** Add a copy of the active editor as a new tab at the end of the strip and activate it. */
+bool ED_area_tab_duplicate(bContext *C, ScrArea *area);
 /** Insertion order of a tab, 1 and up (0: not ordered yet). */
 int ED_area_tab_order_get(const SpaceLink *sl);
 void ED_area_tab_order_set(SpaceLink *sl, int order);

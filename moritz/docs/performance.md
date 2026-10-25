@@ -48,10 +48,31 @@ rebuild). Moving objects and undoing, in a 10k-object scene:
 Steps that change relations (parent, modifiers, adding or deleting objects, any change to the
 scene datablock) still rebuild. Tested by `moritz/tests/test_undo_relations.py`.
 
+## Whole-window redraw (measured, no change)
+
+Timed again per region with `wm.redraw_timer` (10 objects vs 10 000):
+
+| | 10 objects | 10 000 objects |
+|---|---|---|
+| Whole window, with buffer swap | 6 ms | 40 ms |
+| Outliner | 0.9 ms | 21 ms |
+| 3D viewport | 1.1 ms | 13 ms |
+| Properties, Timeline | 0.5 ms | 1.4 ms |
+
+The Outliner's share is the tree rebuild (`outliner_build_tree` visits every object, also in
+collapsed collections, because collapsed rows show their children's icons). `wm.redraw_timer`
+forces that rebuild; in normal use the Outliner listener already redraws without rebuilding for
+selection, active object, transform and frame changes, so a move or a selection click costs the
+viewport plus a cheap Outliner draw. Only structural changes (add, delete, parent, rename)
+rebuild. Not worth a core change.
+
 ## Next steps
 
 - The scene datablock is often re-read right after an undo/redo pair, which still forces a
-  rebuild; scenes could get a fingerprint too (master collection and view layer bases are
-  re-allocated on re-read, so the depsgraph would need their new pointers).
+  rebuild. Scenes could get a fingerprint too, but the depsgraph keys the master collection's
+  node by its address and holds view layer bases, both re-allocated on re-read; keeping the
+  relations would need the depsgraph to re-key them (`DEG_graph_replace_owners` only swaps the
+  scene and view layer). Left alone: a stale pointer there crashes, and 0.5 s on some undo
+  steps is the stock behavior.
 - Repeat with 10k unique meshes and with instanced collections (the archviz case), and with
   Maximize enabled (its hover highlight and view tracking run on every redraw).

@@ -4616,6 +4616,7 @@ struct sAreaJoinData {
   bool close_win;             /* Close the source window when done. */
   bool header_drag;           /* Moritz: started by dragging the header, move/dock only. */
   int tab_space_type;         /* Moritz: the dragged tab (#SPACE_EMPTY: the active one). */
+  int tab;                    /* Moritz: its position (1 and up, 0: unknown). */
   void *draw_callback;        /* call #screen_draw_join_highlight */
   void *draw_dock_callback;   /* call #screen_draw_dock_highlight, overlay on draw_dock_win. */
 };
@@ -4855,6 +4856,7 @@ static wmOperatorStatus area_join_invoke(bContext *C, wmOperator *op, const wmEv
     sAreaJoinData *jd = static_cast<sAreaJoinData *>(op->customdata);
     jd->header_drag = true;
     jd->tab_space_type = RNA_int_get(op->ptr, "tab_space_type");
+    jd->tab = RNA_int_get(op->ptr, "tab");
     jd->sa2 = jd->sa1;
     jd->start_x = event->prev_press_xy[0];
     jd->start_y = event->prev_press_xy[1];
@@ -5480,11 +5482,8 @@ static wmOperatorStatus area_join_modal(bContext *C, wmOperator *op, const wmEve
     case LEFTMOUSE:
       if (event->val == KM_RELEASE) {
         /* Moritz: a dragged tab becomes the active one, which is the one that moves. */
-        if (jd->header_drag && jd->tab_space_type != SPACE_EMPTY && jd->sa1 &&
-            jd->sa1->spacetype != jd->tab_space_type)
-        {
-          jd->sa1->butspacetype_subtype = -1;
-          ED_area_newspace(C, jd->sa1, jd->tab_space_type, false);
+        if (jd->header_drag && jd->tab_space_type != SPACE_EMPTY && jd->sa1) {
+          ED_area_tab_activate(C, jd->sa1, jd->tab_space_type, jd->tab);
         }
         area_join_update_data(C, jd, event);
         area_join_dock_cb_window(jd, op);
@@ -5680,6 +5679,8 @@ static void SCREEN_OT_area_join(wmOperatorType *ot)
                      0,
                      SPACE_TYPE_NUM);
   RNA_def_property_flag(prop, PROP_HIDDEN | PROP_SKIP_SAVE);
+  prop = RNA_def_int(ot->srna, "tab", 0, 0, INT_MAX, "Tab", "Position of the tab (1 and up)", 0, 32);
+  RNA_def_property_flag(prop, PROP_HIDDEN | PROP_SKIP_SAVE);
 }
 
 /** \} */
@@ -5697,20 +5698,11 @@ static bool area_tab_poll(bContext *C)
 static wmOperatorStatus area_tab_activate_exec(bContext *C, wmOperator *op)
 {
   ScrArea *area = CTX_wm_area(C);
-  const int space_type = RNA_int_get(op->ptr, "space_type");
-  const SpaceLink *sl_found = nullptr;
-  for (const SpaceLink &sl : area->spacedata) {
-    if (sl.spacetype == space_type && (sl.link_flag & SPACE_FLAG_TAB)) {
-      sl_found = &sl;
-      break;
-    }
-  }
-  if (sl_found == nullptr) {
+  if (!ED_area_tab_activate(
+          C, area, RNA_int_get(op->ptr, "space_type"), RNA_int_get(op->ptr, "tab")))
+  {
     return OPERATOR_CANCELLED;
   }
-  /* Restore the sub-type (e.g. Shader or Geometry Nodes) stored in the space. */
-  area->butspacetype_subtype = -1;
-  ED_area_newspace(C, area, space_type, false);
   ED_area_tag_redraw(area);
   return OPERATOR_FINISHED;
 }
@@ -5729,12 +5721,16 @@ static void SCREEN_OT_area_tab_activate(wmOperatorType *ot)
   PropertyRNA *prop = RNA_def_int(
       ot->srna, "space_type", SPACE_EMPTY, 0, SPACE_TYPE_NUM, "Space Type", "", 0, SPACE_TYPE_NUM);
   RNA_def_property_flag(prop, PROP_HIDDEN | PROP_SKIP_SAVE);
+  prop = RNA_def_int(ot->srna, "tab", 0, 0, INT_MAX, "Tab", "Position of the tab (1 and up)", 0, 32);
+  RNA_def_property_flag(prop, PROP_HIDDEN | PROP_SKIP_SAVE);
 }
 
 static wmOperatorStatus area_tab_close_exec(bContext *C, wmOperator *op)
 {
   ScrArea *area = CTX_wm_area(C);
-  if (!ED_area_tab_close(C, area, RNA_int_get(op->ptr, "space_type"))) {
+  if (!ED_area_tab_close(
+          C, area, RNA_int_get(op->ptr, "space_type"), RNA_int_get(op->ptr, "tab")))
+  {
     return OPERATOR_CANCELLED;
   }
   WM_event_add_notifier(C, NC_SCREEN | NA_EDITED, nullptr);
@@ -5753,6 +5749,34 @@ static void SCREEN_OT_area_tab_close(wmOperatorType *ot)
   PropertyRNA *prop = RNA_def_int(
       ot->srna, "space_type", SPACE_EMPTY, 0, SPACE_TYPE_NUM, "Space Type", "", 0, SPACE_TYPE_NUM);
   RNA_def_property_flag(prop, PROP_HIDDEN | PROP_SKIP_SAVE);
+  prop = RNA_def_int(ot->srna, "tab", 0, 0, INT_MAX, "Tab", "Position of the tab (1 and up)", 0, 32);
+  RNA_def_property_flag(prop, PROP_HIDDEN | PROP_SKIP_SAVE);
+}
+
+static bool area_tab_duplicate_poll(bContext *C)
+{
+  const ScrArea *area = CTX_wm_area(C);
+  return area && !ED_area_is_global(area) && area->spacedata.first() &&
+         !ELEM(area->spacetype, SPACE_TOPBAR, SPACE_STATUSBAR);
+}
+
+static wmOperatorStatus area_tab_duplicate_exec(bContext *C, wmOperator * /*op*/)
+{
+  if (!ED_area_tab_duplicate(C, CTX_wm_area(C))) {
+    return OPERATOR_CANCELLED;
+  }
+  WM_event_add_notifier(C, NC_SCREEN | NA_EDITED, nullptr);
+  return OPERATOR_FINISHED;
+}
+
+static void SCREEN_OT_area_tab_duplicate(wmOperatorType *ot)
+{
+  ot->name = "Duplicate as Tab";
+  ot->description = "Add a copy of this editor as a new tab of the area";
+  ot->idname = "SCREEN_OT_area_tab_duplicate";
+
+  ot->exec = area_tab_duplicate_exec;
+  ot->poll = area_tab_duplicate_poll;
 }
 
 /** \} */
@@ -6451,6 +6475,7 @@ void ED_screens_header_tools_menu_create(bContext *C, ui::Layout *layout, void *
     ED_screens_region_flip_menu_create(C, layout, nullptr);
     layout->separator();
     screen_area_menu_items(area, *layout);
+    layout->op("SCREEN_OT_area_tab_duplicate", IFACE_("Duplicate as Tab"), ICON_DUPLICATE);
     if (ED_area_tab_count(area) >= 2) {
       layout->op("SCREEN_OT_area_tab_close", IFACE_("Close Tab"), ICON_X);
     }
@@ -8250,6 +8275,7 @@ void ED_operatortypes_screen()
   WM_operatortype_append(SCREEN_OT_area_join);
   WM_operatortype_append(SCREEN_OT_area_tab_activate);
   WM_operatortype_append(SCREEN_OT_area_tab_close);
+  WM_operatortype_append(SCREEN_OT_area_tab_duplicate);
   WM_operatortype_append(SCREEN_OT_area_close);
   WM_operatortype_append(SCREEN_OT_area_options);
   WM_operatortype_append(SCREEN_OT_area_dupli);

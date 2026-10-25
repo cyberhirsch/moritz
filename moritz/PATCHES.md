@@ -22,6 +22,7 @@ Areas dock into each other as tabs, Adobe-style; dragging empty header space mov
 - `source/blender/editors/screen/screen_ops.cc` — header drag and dock-as-tab in `screen.area_join`; `tab_space_type` for a dragged tab
 - `source/blender/editors/interface/interface_handlers.cc` — dragging a tab button starts the header drag (`but_area_tab_drag`)
 - Tab order: bits 3–7 of `SpaceLink.link_flag` (`ED_area_tab_order_get/set`); stock Blender ignores them
+- Several tabs of one editor type: tabs are addressed by position (`tab` operator property), `SCREEN_OT_area_tab_duplicate`; stock Blender opening such a file shows the first space of each type
 - `source/blender/makesdna/DNA_space_enums.h` — tab flags
 - `source/blender/makesdna/DNA_userdef_types.h` — area drag grip (`USER_AREA_CORNER_HANDLE`) on by default
 - `scripts/presets/keyconfig/keymap_data/blender_default.py`, `industry_compatible_data.py` — header drag key
