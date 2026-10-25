@@ -3,6 +3,19 @@
 Working list for [ROADMAP.md](ROADMAP.md). Paths are relative to `blender/`.
 Status: `[ ]` open · `[~]` in progress · `[x]` done.
 
+## Decisions (Seb, 2026-10-25)
+
+- **First release is Moritz 0.2** (not 1.0), on the Blender 5.3 base.
+- **CI:** a self-hosted GitHub runner on Seb's PC, but no build runs without his permission
+  (manual dispatch only, no build on push). Ask before installing the runner service.
+- **Scene undo:** the faster full-scene undo comes as a preference, off by default.
+- **Border / Element:** they stay in Maximize; no core selection modes.
+- **Installer:** per user (no admin rights), keeping the first-start setup.
+- **Edit Poly on instances:** as in Max, shared. Adding or editing it on one instance applies to all
+  (the add-on keeps the modifiers in sync; files stay plain Blender data).
+- **Repos stay private.**
+- **Phase 3b:** do every item in order, then report.
+
 ## Phase 0 — Foundation
 
 ### Repository
@@ -91,6 +104,18 @@ Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberh
 - [x] Preferences: Maya navigation, F frames selection, Blender modal keys (Preferences > Keymap, under the Max and Moritz keymaps)
 - [x] Editors: Graph Editor / Dope Sheet, shader editor, Outliner F2
 - [x] Moritz column in the comparison page; assert keys in the background test (`test_keymap_options.py`); 146 of 216 Max keys, 0 conflicts. Also Shift+Z/Y view undo, Alt+` Show End Result, F5–F8 axis constraints
+
+### Cameras (Seb, 2026-10-25) — all add-on work (Maximize), files unaffected
+- [ ] **Point-of-view menu** (Max's "[Camera001]" / "[Top]" label menu), also on V over a viewport. Entries: the scene's cameras (look through), Perspective, Orthographic, Top/Bottom/Front/Back/Left/Right, and:
+  - [ ] **Select Camera**: selects the camera you are looking through (in Blender today: click the camera frame's edge, or the Outliner)
+  - [ ] **Lock Camera to View**, on by default: pan, orbit and zoom in a camera view move the camera instead of leaving camera view (Blender's sidebar > View > View Lock > Camera to View)
+  - [ ] **Lock Camera**: the camera can't be moved by accident (location, rotation and scale locks; Blender's camera-to-view sync already respects them)
+- Suggestions, not decided yet:
+  - [ ] Camera navigation tools in camera view: Dolly (camera / target / both), Truck, Orbit, Pan Camera, Roll, Field of View, Perspective; button strip at the bottom right
+  - [ ] Target camera: drag from camera position to target; target is an empty with a Track To constraint
+  - [ ] Vertical tilt correction (2-point perspective) through lens shift
+  - [ ] Max's 45° default viewport field of view (lens 43.5 mm); larger far clip for cm archviz scenes
+  - Kept from Blender: Walk/Fly navigation, camera properties, the 3D view's own orbit/pan/zoom
 
 ## Phase 2 — Edit Poly in the stack
 
