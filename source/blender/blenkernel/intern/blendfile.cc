@@ -1543,6 +1543,8 @@ UserDef *BKE_blendfile_userdef_from_defaults()
         "cycles",
         "pose_library",
         "bl_pkg",
+        /* Moritz: the .max importer, bundled in `release/extensions/system`. */
+        "bl_ext.system.io_scene_max",
     };
     for (int i = 0; i < ARRAY_SIZE(addons); i++) {
       bAddon *addon = BKE_addon_new();

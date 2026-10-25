@@ -1,0 +1,14 @@
+Bundled with Moritz, unmodified.
+
+Import Autodesk MAX (.max) 1.9.2
+https://extensions.blender.org/add-ons/io-scene-max/
+https://github.com/nrgsille76/io_scene_max
+Maintainer: NRG Sille. Copyright 2023-2024 Sebastian Schrand, 2017-2022 Jens M. Plonka,
+2005-2018 Philippe Lagadec. License: GPL-3.0-or-later (see blender_manifest.toml).
+
+Downloaded 2026-10-25 from
+https://extensions.blender.org/download/sha256:ae11b8903ca7fcab78cd1163305b80a268335894139f251a502da0476ef77b43/add-on-io-scene-max-v1.9.2.zip
+SHA-256 of the zip: ae11b8903ca7fcab78cd1163305b80a268335894139f251a502da0476ef77b43
+
+Enabled by default in Moritz (BKE_blendfile_userdef_from_defaults). To update, replace the three
+files with a newer release and update this note.
