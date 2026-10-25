@@ -109,6 +109,7 @@
 #include "WM_types.hh"
 
 #include "MOD_edit_poly.hh"
+#include "MOD_edit_spline.hh"
 #include "MOD_nodes.hh"
 
 #include "object_intern.hh" /* own include */
@@ -713,6 +714,11 @@ static bool editmode_load_free_ex(Main *bmain,
 
     if (free_data) {
       ED_curve_editnurb_free(obedit);
+      /* Moritz: leaving Edit Mode ends an Edit Spline session. */
+      if (ModifierData *session_md = MOD_edit_spline_session_find(*obedit)) {
+        MOD_edit_spline_session_end(*bmain, *session_md);
+        DEG_id_tag_update(&obedit->id, ID_RECALC_GEOMETRY);
+      }
     }
   }
   else if (obedit->type == OB_FONT) {

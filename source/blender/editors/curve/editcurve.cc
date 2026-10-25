@@ -65,6 +65,14 @@
 
 #include "curve_intern.hh"
 
+#include "BLI_array.hh"
+
+#include "BKE_attribute.hh"
+#include "BKE_curve_legacy_convert.hh"
+#include "BKE_curves.hh"
+
+#include "MOD_edit_spline.hh"
+
 extern "C" {
 #include "curve_fit_nd.h"
 }
@@ -1297,12 +1305,78 @@ static void remap_hooks_and_vertex_parents(Main *bmain, Object *obedit)
   }
 }
 
+/**
+ * Moritz: write the edit-nurbs of an Edit Spline session into its modifier. Each edit knot maps
+ * through the key index to the stored knot it came from, and from there to that knot's input
+ * knot; knots added in Edit Mode map to none.
+ */
+static void edit_spline_session_load(Main *bmain,
+                                     Object *obedit,
+                                     ModifierData &session_md,
+                                     const ListBaseT<Nurb> &editnurb)
+{
+  Curve *cu = id_cast<Curve *>(obedit->data);
+  const Curves *stored = MOD_edit_spline_result(session_md);
+  /* The conversion's Optimize would change handle types of the stored splines. */
+  const eCurveFlag flag = eCurveFlag(cu->flag);
+  cu->flag = eCurveFlag(cu->flag & ~CU_OPTIMIZE);
+  Curves *edited = bke::curve_legacy_to_curves(*cu, editnurb);
+  cu->flag = flag;
+  if (edited == nullptr) {
+    return;
+  }
+  bke::CurvesGeometry &curves = edited->geometry.wrap();
+  bke::MutableAttributeAccessor attributes = curves.attributes_for_write();
+  bke::SpanAttributeWriter<int> orig = attributes.lookup_or_add_for_write_only_span<int>(
+      "mx_orig", bke::AttrDomain::Point);
+  bke::SpanAttributeWriter<int> material = attributes.lookup_or_add_for_write_only_span<int>(
+      "material_index", bke::AttrDomain::Curve);
+  OffsetIndices<int> stored_points;
+  Array<int> stored_orig;
+  if (stored) {
+    stored_points = stored->geometry.wrap().points_by_curve();
+    const VArraySpan<int> values = *stored->geometry.wrap().attributes().lookup_or_default<int>(
+        "mx_orig", bke::AttrDomain::Point, -1);
+    stored_orig = Array<int>(Span<int>(values));
+  }
+  auto source = [&](const void *cv) {
+    const CVKeyIndex *key = cu->editnurb->keyindex ? getCVKeyIndex(cu->editnurb, cv) : nullptr;
+    if (key == nullptr || stored == nullptr || key->nu_index >= stored_points.size() ||
+        key->pt_index >= stored_points[key->nu_index].size())
+    {
+      return -1;
+    }
+    return stored_orig[stored_points[key->nu_index][key->pt_index]];
+  };
+  int point = 0;
+  int curve = 0;
+  for (const Nurb &nu : editnurb) {
+    material.span[curve++] = nu.mat_nr;
+    for (int i = 0; i < nu.pntsu; i++) {
+      orig.span[point++] = nu.bezt ? source(&nu.bezt[i]) : source(&nu.bp[i]);
+    }
+  }
+  orig.finish();
+  material.finish();
+  MOD_edit_spline_session_load(*bmain, session_md, *edited);
+  BKE_id_free(nullptr, edited);
+  DEG_id_tag_update(&obedit->id, ID_RECALC_GEOMETRY);
+}
+
 void ED_curve_editnurb_load(Main *bmain, Object *obedit)
 {
   ListBaseT<Nurb> *editnurb = object_editcurve_get(obedit);
 
   if (obedit == nullptr) {
     return;
+  }
+
+  /* Moritz: in an Edit Spline session the edit belongs to the modifier, not to the curve. */
+  if (obedit->type == OB_CURVES_LEGACY) {
+    if (ModifierData *session_md = MOD_edit_spline_session_find(*obedit)) {
+      edit_spline_session_load(bmain, obedit, *session_md, *editnurb);
+      return;
+    }
   }
 
   if (ELEM(obedit->type, OB_CURVES_LEGACY, OB_SURF)) {
@@ -1359,14 +1433,28 @@ void ED_curve_editnurb_make(Object *obedit)
       cu->editnurb = editnurb;
     }
 
-    for (Nurb &nu : cu->nurb) {
+    /* Moritz: in an Edit Spline session, edit the modifier's result. */
+    ListBaseT<Nurb> session_nurbs = {nullptr, nullptr};
+    const ModifierData *session_md = obedit->type == OB_CURVES_LEGACY ?
+                                         MOD_edit_spline_session_find(*obedit) :
+                                         nullptr;
+    const Curves *stored = session_md ? MOD_edit_spline_result(*session_md) : nullptr;
+    if (stored) {
+      bke::curves_to_curve_legacy_nurbs(stored->geometry.wrap(), session_nurbs);
+      /* Shape keys belong to the curve, not to the modifier's result. */
+      actkey = nullptr;
+    }
+    ListBaseT<Nurb> &source = stored ? session_nurbs : cu->nurb;
+
+    for (Nurb &nu : source) {
       Nurb *newnu = BKE_nurb_duplicate(&nu);
       BLI_addtail(&editnurb->nurbs, newnu);
     }
 
     /* Animation could be added in edit-mode even if there was no animdata in
      * object mode hence we always need CVs index be created. */
-    init_editNurb_keyIndex(editnurb, &cu->nurb);
+    init_editNurb_keyIndex(editnurb, &source);
+    BKE_nurbList_free(&session_nurbs);
 
     if (actkey) {
       editnurb->shapenr = obedit->shapenr;

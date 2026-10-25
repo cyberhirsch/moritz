@@ -149,3 +149,14 @@ Test: `Maximize/tests/test_edit_spline.py`.
 
 The stand-in swap is the weak point of stage 0: the Outliner and selection briefly see another
 object. Stage 2 removes it, as Edit Poly's stage 3 did.
+
+**Done (2026-10-25):** stages 1 and 2, and stage 3 except migrating stage-0 setups.
+- The modifier always stores the edited splines (`result`, a Curves data-block) with `mx_orig`;
+  a knot count change below keeps them as they were and flags the output (`mx_topology_changed`).
+- Interpolation: `steps`, `use_optimize`, `use_adaptive` (about 6 degrees per step).
+- Session: `session_begin(input, edited)` in Object Mode, then Edit Mode on the object builds the
+  edit-nurbs from `result` (`curves_to_curve_legacy_nurbs`). Loading maps each edit knot through
+  the key index to its stored knot and on to that knot's input knot; knots made in Edit Mode map
+  to none. Evaluation in Edit Mode starts above the session modifier. Leaving ends the session.
+- Knots added through the Python data API (`bezier_points.add`) lose the key index mapping of
+  that spline; Blender's own tools (Subdivide, Extrude, …) keep it.

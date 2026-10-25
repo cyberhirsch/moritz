@@ -6,7 +6,10 @@
  * \ingroup bke
  */
 
+#include "MEM_guardedalloc.h"
+
 #include "BLI_listbase.hh"
+#include "BLI_math_vector_c.hh"
 #include "BLI_math_vector.hh"
 #include "BLI_task.hh"
 #include "BLI_vector.hh"
@@ -274,6 +277,111 @@ Curves *curve_legacy_to_curves(const Curve &curve_legacy, const ListBaseT<Nurb> 
 Curves *curve_legacy_to_curves(const Curve &curve_legacy)
 {
   return curve_legacy_to_curves(curve_legacy, *BKE_curve_nurbs_get_for_read(&curve_legacy));
+}
+
+static eBezTriple_Handle handle_type_to_legacy(const int8_t handle_type)
+{
+  switch (handle_type) {
+    case BEZIER_HANDLE_FREE:
+      return HD_FREE;
+    case BEZIER_HANDLE_AUTO:
+      return HD_AUTO;
+    case BEZIER_HANDLE_VECTOR:
+      return HD_VECT;
+    case BEZIER_HANDLE_ALIGN:
+      return HD_ALIGN;
+  }
+  return HD_FREE;
+}
+
+static int knots_flag_to_legacy(const int8_t mode)
+{
+  switch (mode) {
+    case NURBS_KNOT_MODE_ENDPOINT:
+    case NURBS_KNOT_MODE_CUSTOM:
+      return CU_NURB_ENDPOINT;
+    case NURBS_KNOT_MODE_BEZIER:
+      return CU_NURB_BEZIER;
+    case NURBS_KNOT_MODE_ENDPOINT_BEZIER:
+      return CU_NURB_ENDPOINT | CU_NURB_BEZIER;
+  }
+  return 0;
+}
+
+void curves_to_curve_legacy_nurbs(const CurvesGeometry &curves, ListBaseT<Nurb> &r_nurbs)
+{
+  const OffsetIndices points_by_curve = curves.points_by_curve();
+  const VArray<int8_t> types = curves.curve_types();
+  const VArray<bool> cyclic = curves.cyclic();
+  const VArray<int> resolution = curves.resolution();
+  const Span<float3> positions = curves.positions();
+  const AttributeAccessor attributes = curves.attributes();
+  const VArraySpan<float> radius = *attributes.lookup_or_default<float>(
+      "radius", AttrDomain::Point, 1.0f);
+  const VArraySpan<float> tilt = *attributes.lookup_or_default<float>(
+      "tilt", AttrDomain::Point, 0.0f);
+  const VArraySpan<int> material = *attributes.lookup_or_default<int>(
+      "material_index", AttrDomain::Curve, 0);
+  const std::optional<Span<float3>> left = curves.handle_positions_left();
+  const std::optional<Span<float3>> right = curves.handle_positions_right();
+  const VArray<int8_t> types_left = curves.handle_types_left();
+  const VArray<int8_t> types_right = curves.handle_types_right();
+  const VArray<int8_t> orders = curves.nurbs_orders();
+  const VArray<int8_t> knots_modes = curves.nurbs_knots_modes();
+  const std::optional<Span<float>> weights = curves.nurbs_weights();
+
+  for (const int c : curves.curves_range()) {
+    const IndexRange points = points_by_curve[c];
+    if (points.is_empty()) {
+      continue;
+    }
+    Nurb *nu = MEM_new<Nurb>(__func__);
+    nu->pntsv = 1;
+    nu->resolu = nu->resolv = short(std::max(resolution[c], 1));
+    nu->orderu = nu->orderv = 4;
+    nu->flag = CU_SMOOTH;
+    nu->flagu = eNurbKnotFlag(cyclic[c] ? CU_NURB_CYCLIC : 0);
+    nu->mat_nr = short(material[c]);
+    const bool bezier = types[c] == CURVE_TYPE_BEZIER && left.has_value();
+    if (bezier) {
+      nu->type = CU_BEZIER;
+      BKE_nurb_bezierPoints_add(nu, points.size());
+      for (const int i : points.index_range()) {
+        const int p = points[i];
+        BezTriple &bezt = nu->bezt[i];
+        copy_v3_v3(bezt.vec[0], (*left)[p]);
+        copy_v3_v3(bezt.vec[1], positions[p]);
+        copy_v3_v3(bezt.vec[2], (*right)[p]);
+        bezt.h1 = handle_type_to_legacy(types_left[p]);
+        bezt.h2 = handle_type_to_legacy(types_right[p]);
+        bezt.radius = radius[p];
+        bezt.tilt = tilt[p];
+        bezt.weight = 1.0f;
+      }
+    }
+    else {
+      const bool nurbs = types[c] == CURVE_TYPE_NURBS;
+      nu->type = nurbs ? CU_NURBS : CU_POLY;
+      if (nurbs) {
+        nu->orderu = nu->orderv = short(orders[c]);
+        nu->flagu = eNurbKnotFlag(nu->flagu | knots_flag_to_legacy(knots_modes[c]));
+      }
+      BKE_nurb_points_add(nu, points.size());
+      for (const int i : points.index_range()) {
+        const int p = points[i];
+        BPoint &bp = nu->bp[i];
+        copy_v3_v3(bp.vec, positions[p]);
+        bp.vec[3] = (nurbs && weights) ? (*weights)[p] : 1.0f;
+        bp.radius = radius[p];
+        bp.tilt = tilt[p];
+        bp.weight = 1.0f;
+      }
+      if (nurbs) {
+        BKE_nurb_knot_calc_u(nu);
+      }
+    }
+    BLI_addtail(&r_nurbs, nu);
+  }
 }
 
 }  // namespace blender::bke

@@ -323,8 +323,11 @@ asked for Max's behavior here, so this overrides "only what Max does better" for
   Moritz revives it on load.*
   - [x] The Interpolation rollout (Steps, Optimize, Adaptive) on the Edit Spline modifier, as Max
     shows it there (Seb, 2026-10-25)
-  - [ ] Stage 2: edit on the object itself in Edit Mode (no stand-in object), as Edit Poly's
-    session does
+  - [x] Stage 2 (2026-10-25): edit on the object itself in Edit Mode, no stand-in object. A
+    session (`EditSplineModifier.session_begin`) makes Edit Mode build the edit-nurbs from the
+    modifier's result; leaving writes back into the modifier, knots mapped through the edit-nurbs'
+    key index; the object's own splines stay as they were. Test:
+    `moritz/tests/test_edit_spline_session.py`.
   - [ ] Stage 3 rest: migrate stage-0 (Geometry Nodes) Edit Spline setups to the native modifier
 - [x] Tests: `test_shapes_max.py` (every shape against Max 2026, rendering, optimize),
   `test_splines.py` (levels, tools, creation), `test_max_shapes_import.py` (Max round trip)

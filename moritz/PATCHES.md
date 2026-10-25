@@ -90,6 +90,11 @@ The Max workflow is not part of Moritz: it is the separate add-on [Maximize](htt
   modifier, instead of forcing a mesh
 - `source/blender/blenkernel/intern/object.cc` — Edit Spline on legacy curve objects only
 - `scripts/startup/bl_ui/properties_data_modifier.py` — add-menu entry for curves
+- Edit Mode session: `editors/curve/editcurve.cc` (edit-nurbs from the modifier's result, load
+  back into it), `editors/object/object_edit.cc` (leaving ends the session),
+  `blenkernel/intern/displist.cc` (skip the session modifier and those below it in Edit Mode),
+  `blenkernel/intern/curve_legacy_convert.cc` + `BKE_curve_legacy_convert.hh`
+  (`curves_to_curve_legacy_nurbs`), `editors/curve/CMakeLists.txt`
 
 ## Undo speed
 

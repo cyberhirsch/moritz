@@ -15,6 +15,7 @@ namespace blender {
 struct Curves;
 struct Main;
 struct ModifierData;
+struct Object;
 struct ReportList;
 
 /** How the edit is stored. */
@@ -40,5 +41,18 @@ bool MOD_edit_spline_store(
 
 /** The stored result curves (Topology mode), otherwise null. */
 Curves *MOD_edit_spline_result(const ModifierData &md);
+
+/**
+ * Start an Edit Mode session: store the edit and mark the modifier, so that Edit Mode on the
+ * object edits the modifier's result instead of the object's splines.
+ */
+bool MOD_edit_spline_session_begin(
+    Main &bmain, ModifierData &md, const Curves &input, const Curves &edited, ReportList *reports);
+/** The Edit Spline modifier of `ob` in an Edit Mode session, or null. */
+ModifierData *MOD_edit_spline_session_find(const Object &ob);
+/** Write the edit-nurbs (converted to `edited`, knots mapped by `mx_orig`) into the result. */
+void MOD_edit_spline_session_load(Main &bmain, ModifierData &md, const Curves &edited);
+/** End the session. */
+void MOD_edit_spline_session_end(Main &bmain, ModifierData &md);
 
 }  // namespace blender

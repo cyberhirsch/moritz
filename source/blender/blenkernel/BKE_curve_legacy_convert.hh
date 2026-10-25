@@ -33,5 +33,12 @@ Curves *curve_legacy_to_curves(const Curve &curve_legacy, const ListBaseT<Nurb> 
  */
 KnotsMode knots_mode_from_legacy(short flag);
 
+/**
+ * Moritz: the reverse of #curve_legacy_to_curves, for Edit Spline sessions: append one legacy
+ * #Nurb per curve of `curves` to `r_nurbs` (Catmull Rom curves become poly splines, custom NURBS
+ * knots become endpoint knots).
+ */
+void curves_to_curve_legacy_nurbs(const CurvesGeometry &curves, ListBaseT<Nurb> &r_nurbs);
+
 }  // namespace bke
 }  // namespace blender

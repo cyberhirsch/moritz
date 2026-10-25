@@ -47,6 +47,8 @@
 #include "DEG_depsgraph.hh"
 #include "DEG_depsgraph_query.hh"
 
+#include "MOD_edit_spline.hh"
+
 namespace blender {
 
 static void displist_elem_free(DispList *dl)
@@ -944,7 +946,12 @@ void BKE_curve_calc_modifiers_pre(Depsgraph *depsgraph,
   const ModifierEvalContext mectx = {depsgraph, ob, apply_flag};
   ModifierData *pretessellatePoint = curve_get_tessellate_point(scene, ob, for_render, editmode);
 
-  if (pretessellatePoint) {
+  /* Moritz: in an Edit Spline session the edit-nurbs are that modifier's result, so the
+   * modifiers below it are already in them. The session modifier is constructive, so every
+   * modifier evaluated on the control points is below it. */
+  const bool in_session = editmode && MOD_edit_spline_session_find(*ob) != nullptr;
+
+  if (pretessellatePoint && !in_session) {
     VirtualModifierData virtual_modifier_data;
     for (ModifierData *md = BKE_modifiers_get_virtual_modifierlist(ob, &virtual_modifier_data); md;
          md = md->next)
@@ -1057,6 +1064,12 @@ static bke::GeometrySet curve_calc_modifiers_post(Depsgraph *depsgraph,
   ModifierData *md = pretessellatePoint == nullptr ?
                          BKE_modifiers_get_virtual_modifierlist(ob, &virtual_modifier_data) :
                          pretessellatePoint->next;
+  /* Moritz: in an Edit Spline session, start above the session modifier (see above). */
+  if (editmode) {
+    if (ModifierData *session_md = MOD_edit_spline_session_find(*ob)) {
+      md = session_md->next;
+    }
+  }
 
   bke::GeometrySet geometry_set;
   if (ob->type == OB_SURF ||

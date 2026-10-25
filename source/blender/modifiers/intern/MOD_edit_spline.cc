@@ -24,11 +24,15 @@
  *   `mx_orig`. While the input no longer matches, the output carries the bool point attribute
  *   `mx_topology_changed`.
  * - `steps`, `optimize`, `adaptive`: the Interpolation rollout (steps -1: keep the input's).
+ * - `session`: 1 while the modifier is edited in Edit Mode on the object itself (see
+ *   #MOD_edit_spline_session_begin).
  */
 
+#include <array>
 #include <cmath>
 
 #include "BLI_array.hh"
+#include "BLI_listbase_iterator.hh"
 #include "BLI_math_rotation.hh"
 #include "BLI_math_vector.hh"
 #include "BLI_math_vector_types.hh"
@@ -38,6 +42,7 @@
 
 #include "DNA_curves_types.h"
 #include "DNA_modifier_types.h"
+#include "DNA_object_types.h"
 #include "DNA_screen_types.h"
 
 #include "BKE_attribute.hh"
@@ -162,13 +167,16 @@ static bool input_matches(const ModifierData &md, const bke::CurvesGeometry &cur
   return IDP_int_get(hash) == topology_hash(curves);
 }
 
-bool MOD_edit_spline_store(
-    Main &bmain, ModifierData &md, const Curves &input_id, const Curves &edited_id, ReportList *reports)
+/** Store `edited` as the edit of an input described by its knots, counts and topology hash. */
+static bool store_from_base(Main &bmain,
+                            ModifierData &md,
+                            const Span<float3> base_knots,
+                            const std::array<int, 2> &counts_in,
+                            const int hash,
+                            const bke::CurvesGeometry &edited,
+                            ReportList *reports)
 {
-  const bke::CurvesGeometry &input = input_id.geometry.wrap();
-  const bke::CurvesGeometry &edited = edited_id.geometry.wrap();
-  const int counts[2] = {input.points_num(), input.curves_num()};
-  const int hash = topology_hash(input);
+  const int counts[2] = {counts_in[0], counts_in[1]};
 
   const VArraySpan<int> orig = *edited.attributes().lookup_or_default<int>(
       ORIG_ATTR, bke::AttrDomain::Point, -2);
@@ -185,7 +193,8 @@ bool MOD_edit_spline_store(
   const bool same_topology = identity && edited.points_num() == counts[0] &&
                              edited.curves_num() == counts[1] && topology_hash(edited) == hash &&
                              counts[0] == 0;
-  const Array<float3> base = knots(input);
+  /* Copy first: `base_knots` may point into a property replaced below. */
+  const Array<float3> base(base_knots);
 
   prop_set(md, bke::idprop::create("mx_type", StringRefNull("EDIT_SPLINE")));
   prop_set(md, bke::idprop::create("base_counts", Span<int>(counts, 2)));
@@ -231,6 +240,77 @@ bool MOD_edit_spline_store(
   prop_remove(md, "offsets");
   return true;
 }
+
+bool MOD_edit_spline_store(
+    Main &bmain, ModifierData &md, const Curves &input_id, const Curves &edited_id, ReportList *reports)
+{
+  const bke::CurvesGeometry &input = input_id.geometry.wrap();
+  return store_from_base(bmain,
+                         md,
+                         knots(input),
+                         {input.points_num(), input.curves_num()},
+                         topology_hash(input),
+                         edited_id.geometry.wrap(),
+                         reports);
+}
+
+/* -------------------------------------------------------------------- */
+/** 
+ame Edit Mode session
+ *
+ * While `session` is set, Edit Mode on the object edits the modifier's result instead of the
+ * object's splines: entering builds the edit-nurbs from `result`, evaluation in Edit Mode skips
+ * this modifier and everything below it, and loading the edit-nurbs writes into `result`.
+ * Leaving Edit Mode ends the session.
+ * \{ */
+
+bool MOD_edit_spline_session_begin(
+    Main &bmain, ModifierData &md, const Curves &input, const Curves &edited, ReportList *reports)
+{
+  if (!MOD_edit_spline_store(bmain, md, input, edited, reports)) {
+    return false;
+  }
+  if (MOD_edit_spline_mode(md) != EditSplineMode::Topology) {
+    BKE_report(reports, RPT_ERROR, "Edit Spline: nothing to edit");
+    return false;
+  }
+  prop_set(md, bke::idprop::create("session", 1));
+  return true;
+}
+
+static bool session_active(const ModifierData &md)
+{
+  return md.type == eModifierType_EditSpline && int_prop(md, "session", 0) != 0;
+}
+
+ModifierData *MOD_edit_spline_session_find(const Object &ob)
+{
+  for (ModifierData &md : const_cast<Object &>(ob).modifiers) {
+    if (session_active(md)) {
+      return &md;
+    }
+  }
+  return nullptr;
+}
+
+void MOD_edit_spline_session_load(Main &bmain, ModifierData &md, const Curves &edited)
+{
+  const IDProperty *counts = prop_get(md, "base_counts");
+  const IDProperty *hash = prop_get(md, "base_hash");
+  const Span<float3> base = float3_prop(md, "base_knots");
+  if (counts == nullptr || counts->type != IDP_ARRAY || counts->len != 2 || hash == nullptr) {
+    return;
+  }
+  const int *c = IDP_array_int_get(counts);
+  store_from_base(bmain, md, base, {c[0], c[1]}, IDP_int_get(hash), edited.geometry.wrap(), nullptr);
+}
+
+void MOD_edit_spline_session_end(Main & /*bmain*/, ModifierData &md)
+{
+  prop_remove(md, "session");
+}
+
+/** \} */
 
 /** Add per-knot offsets (position, left, right handle) to `curves`; `src` maps knots to `offsets`
  * slots (index into the input), or is empty for the identity. */
@@ -422,6 +502,9 @@ static void panel_draw(const bContext * /*C*/, Panel *panel)
   col.prop(ptr, "steps", UI_ITEM_NONE, std::nullopt, ICON_NONE);
   col.prop(ptr, "use_optimize", UI_ITEM_NONE, std::nullopt, ICON_NONE);
   col.prop(ptr, "use_adaptive", UI_ITEM_NONE, std::nullopt, ICON_NONE);
+  if (session_active(md)) {
+    layout.label(IFACE_("Editing in Edit Mode"), ICON_EDITMODE_HLT);
+  }
   modifier_error_message_draw(layout, ptr);
 }
 
