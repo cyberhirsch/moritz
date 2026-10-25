@@ -8,9 +8,13 @@
 
 #include <algorithm> /* For `min/max`. */
 #include <cctype>
+#include <cmath>
+#include <string>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+
+#include <fmt/format.h>
 
 #include "BLI_math_base_c.hh"
 #include "BLI_string.hh"
@@ -1926,6 +1930,55 @@ size_t BKE_unit_value_as_string_adaptive(char *str,
       str, str_maxncpy, value, prec, type, split, pad, do_unit_suffix, units);
 }
 
+/**
+ * Moritz: feet and fractional inches (3' 4 1/2"), rounded to 1/16 inch, as Max displays imperial
+ * lengths. Inches only when the length unit is set to inches.
+ */
+static size_t unit_as_string_fractions(char *str,
+                                       int str_maxncpy,
+                                       double value,
+                                       const UnitSettings &settings)
+{
+  constexpr int denominator = 16;
+  const bUnitDef *preferred = get_preferred_display_unit_if_used(
+      B_UNIT_LENGTH, preferred_units_from_UnitSettings(settings));
+  const bool inches_only = preferred != nullptr && STREQ(preferred->name, "inch");
+
+  const bool negative = value < 0.0;
+  /* Meters to sixteenths of an inch. */
+  long long n = llround(fabs(value) / 0.0254 * denominator);
+  const long long per_foot = 12 * denominator;
+  const long long feet = inches_only ? 0 : n / per_foot;
+  if (!inches_only) {
+    n %= per_foot;
+  }
+  const long long inches = n / denominator;
+  long long num = n % denominator;
+  long long den = denominator;
+  while (num != 0 && num % 2 == 0) {
+    num /= 2;
+    den /= 2;
+  }
+
+  std::string text = negative && (feet || inches || num) ? "-" : "";
+  if (feet) {
+    text += fmt::format("{}'", feet);
+  }
+  if (inches || num || !feet) {
+    if (feet) {
+      text += " ";
+    }
+    if (inches || !num) {
+      text += fmt::format("{}", inches);
+    }
+    if (num) {
+      text += fmt::format("{}{}/{}", inches ? " " : "", num, den);
+    }
+    text += "\"";
+  }
+  return BLI_strncpy_rlen(str, text.c_str(), str_maxncpy);
+}
+
 size_t BKE_unit_value_as_string(char *str,
                                 int str_maxncpy,
                                 double value,
@@ -1935,6 +1988,11 @@ size_t BKE_unit_value_as_string(char *str,
                                 bool pad,
                                 bool do_unit_suffix)
 {
+  if ((settings.flag & USER_UNIT_OPT_FRACTIONS) && settings.system == USER_UNIT_IMPERIAL &&
+      type == B_UNIT_LENGTH && do_unit_suffix)
+  {
+    return unit_as_string_fractions(str, str_maxncpy, value, settings);
+  }
   bool do_split = (settings.flag & USER_UNIT_OPT_SPLIT) != 0;
   PreferredUnits units = preferred_units_from_UnitSettings(settings);
   return unit_as_string_main(
@@ -2411,6 +2469,50 @@ double BKE_unit_apply_preferred_unit(const UnitSettings &settings, int type, dou
   return value * scalar + bias;
 }
 
+/** Moritz: "4 1/2" to "(4+1/2)", so a typed mixed number evaluates as one value. */
+static bool unit_mixed_fractions(char *str, int str_maxncpy)
+{
+  const std::string in = str;
+  std::string out;
+  bool changed = false;
+  size_t i = 0;
+  auto digits = [&](size_t p) {
+    size_t e = p;
+    while (e < in.size() && isdigit(uchar(in[e]))) {
+      e++;
+    }
+    return e;
+  };
+  while (i < in.size()) {
+    const bool at_number = isdigit(uchar(in[i])) && (i == 0 || !(isalnum(uchar(in[i - 1])) ||
+                                                                 ELEM(in[i - 1], '.', '/')));
+    if (at_number) {
+      const size_t whole_end = digits(i);
+      size_t p = whole_end;
+      while (p < in.size() && in[p] == ' ') {
+        p++;
+      }
+      const size_t num_end = (p > whole_end) ? digits(p) : p;
+      if (num_end > p && num_end < in.size() && in[num_end] == '/') {
+        const size_t den_end = digits(num_end + 1);
+        if (den_end > num_end + 1 && (den_end == in.size() || in[den_end] != '.')) {
+          out += "(" + in.substr(i, whole_end - i) + "+" + in.substr(p, num_end - p) + "/" +
+                 in.substr(num_end + 1, den_end - num_end - 1) + ")";
+          i = den_end;
+          changed = true;
+          continue;
+        }
+      }
+    }
+    out += in[i++];
+  }
+  if (changed && int(out.size()) < str_maxncpy) {
+    BLI_strncpy(str, out.c_str(), str_maxncpy);
+    return true;
+  }
+  return false;
+}
+
 bool BKE_unit_replace_string(
     char *str, int str_maxncpy, const char *str_prev, double scale_pref, int system, int type)
 {
@@ -2422,6 +2524,9 @@ bool BKE_unit_replace_string(
   double scale_pref_base = scale_pref;
   char str_tmp[TEMP_STR_SIZE];
   bool changed = false;
+
+  /* Moritz: mixed numbers such as `4 1/2"` (from fractional-inch display) become `(4+1/2)"`. */
+  changed |= unit_mixed_fractions(str, str_maxncpy);
 
   /* Fix cases like "-1m50cm" which would evaluate to -0.5m without this. */
   changed |= unit_distribute_negatives(str, str_maxncpy);

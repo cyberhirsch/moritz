@@ -1666,6 +1666,8 @@ std::string button_string_get_rna_tooltip(bContext &C, Button &but);
 std::string button_string_get_operator_keymap(bContext &C, Button &but);
 /** Use for properties that are bound to one of the context cycle, etc. keys. */
 std::string button_string_get_property_keymap(bContext &C, Button &but);
+/** Moritz: the button's shortcut in Blender's own keymap, empty if it is the same as the active one. */
+std::string button_string_get_blender_keymap(bContext &C, Button &but);
 
 std::string button_extra_icon_string_get_label(const ButtonExtraOpIcon &extra_icon);
 std::string button_extra_icon_string_get_tooltip(bContext &C, const ButtonExtraOpIcon &extra_icon);

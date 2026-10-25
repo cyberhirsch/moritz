@@ -751,6 +751,9 @@ def draw_topbar_grease_pencil_layer_panel(context, layout):
 
 class VIEW3D_HT_header(Header):
     bl_space_type = 'VIEW_3D'
+    # Moritz: `select_mode_draw(layout, context) -> bool`, set by an add-on to replace the Edit Mode
+    # select-mode buttons; returning False falls back to Blender's buttons.
+    select_mode_draw = None
 
     @staticmethod
     def draw_xform_template(layout, context):
@@ -901,7 +904,11 @@ class VIEW3D_HT_header(Header):
         )
         del act_mode_item
 
-        layout.template_header_3D_mode()
+        # Moritz: an add-on can draw its own select-mode buttons here (the Maximize add-on draws
+        # Max's five sub-object levels); see `VIEW3D_HT_header.select_mode_draw`.
+        select_mode_draw = VIEW3D_HT_header.select_mode_draw
+        if select_mode_draw is None or not select_mode_draw(layout, context):
+            layout.template_header_3D_mode()
 
         # Contains buttons like Mode, Pivot, Layer, Mesh Select Mode...
         if obj:

@@ -1,7 +1,6 @@
 # Moritz: a copy of `maximize/keymap_max.py` from the Maximize add-on
 # (github.com/cyberhirsch/maximize), the single source of the Max and Moritz keys. Keep the two
 # in sync; bindings to Maximize's operators are skipped while the add-on is not enabled.
-
 # SPDX-FileCopyrightText: 2026 Moritz Authors
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
@@ -84,7 +83,7 @@ class KeymapPatcher:
             self.items[keymap].append((idname, ev, {"properties": list(props.items())} if props else None))
 
 
-def apply(km, moritz=False):
+def apply(km, moritz=False, maya_navigation=False):
     # --------------------------------------------------------------------------
     # Navigation: MMB pan, Alt+MMB orbit, Ctrl+Alt+MMB zoom, wheel zoom.
     km.remove("3D View", "view3d.rotate", _event('LEFTMOUSE', alt=True))
@@ -144,7 +143,9 @@ def apply(km, moritz=False):
     km.bind("3D View", "view3d.select", _event('LEFTMOUSE', 'CLICK', alt=True), {"deselect": True})
     km.bind("3D View", "view3d.select", _event('LEFTMOUSE', 'CLICK', ctrl=True, shift=True),
             {"toggle": True, "enumerate": True})
-    _max_tool_selection(km)
+    if not maya_navigation:
+        # With Maya navigation, Alt+LMB orbits and the tools keep Shift/Ctrl.
+        _max_tool_selection(km)
 
     # --------------------------------------------------------------------------
     # Objects.
@@ -173,6 +174,10 @@ def apply(km, moritz=False):
         km.bind(om, "maximize.subobject", _event(key), {"level": level})
         km.bind("Mesh", "maximize.subobject", _event(key), {"level": level})
     km.bind("Mesh", "maximize.subobject", _event('SIX'), {"level": 'OBJECT'})
+    # Editable Spline: 1 vertex, 2 segment, 3 spline (one Edit Mode in Blender), 6 back to the object.
+    if "Curve" in km.items:
+        for key, level in (('ONE', 'VERTEX'), ('TWO', 'EDGE'), ('THREE', 'BORDER'), ('SIX', 'OBJECT')):
+            km.bind("Curve", "maximize.subobject", _event(key), {"level": level})
     # Border and Element have no Blender select mode: clicks there pick a whole border or element
     # (the operator passes the click through at the other levels).
     for mods, props in (({}, {}), ({"ctrl": True}, {"extend": True}), ({"alt": True}, {"deselect": True})):
@@ -187,8 +192,8 @@ def apply(km, moritz=False):
     # Double-click an edge: select its loop.
     km.bind(me, "mesh.loop_select", _event('LEFTMOUSE', 'DOUBLE_CLICK'), {"extend": True})
     if moritz:
-        km.bind(me, "mesh.loop_select", _event('LEFTMOUSE', 'DOUBLE_CLICK', ctrl=True, alt=True),
-                {"extend": True, "ring": True})
+        km.bind(me, "mesh.edgering_select", _event('LEFTMOUSE', 'DOUBLE_CLICK', ctrl=True, alt=True),
+                {"extend": True})
         km.bind(me, "mesh.shortest_path_pick", _event('LEFTMOUSE', 'CLICK', ctrl=True, shift=True))
     km.bind(me, "mesh.select_more", _event('PAGE_UP', ctrl=True))
     km.bind(me, "mesh.select_less", _event('PAGE_DOWN', ctrl=True))
@@ -289,11 +294,125 @@ def _max_keys(km):
     km.bind(me, "maximize.make_planar", _event('M', alt=True))
     km.bind(me, "mesh.subdivide", _event('M', ctrl=True), {"smoothness": 1.0})
     km.bind(me, "maximize.quickslice", _event('Q', ctrl=True, shift=True))
+    # Edit Poly keys that map onto Blender tools: Insert Loop, Spin Edge.
+    km.bind(me, "mesh.loopcut_slide", _event('THREE', alt=True))
+    km.bind(me, "mesh.edge_rotate", _event('FIVE', alt=True), {"use_ccw": False})
+    # Ignore Backfacing: select through (X-ray), Safe Frames, light view.
+    km.view("view3d.toggle_xray", _event('X', shift=True, alt=True))
+    km.view("wm.context_toggle", _event('F', shift=True), {"data_path": "scene.camera.data.show_safe_areas"})
+    km.view("view3d.object_as_camera", _event('FOUR', shift=True))
+    # Show End Result, viewport undo / redo.
+    for keymap in (om, me):
+        km.bind(keymap, "maximize.show_end_result", _event('ACCENT_GRAVE', alt=True))
+    km.view("maximize.view_history", _event('Z', shift=True), {"redo": False})
+    km.view("maximize.view_history", _event('Y', shift=True), {"redo": True})
+    # F5 / F6 / F7 constrain the transform to X / Y / Z, F8 to the planes, as in Max.
+    tm = "Transform Modal Map"
+    if tm in km.items:
+        for key, axis in (('F5', 'AXIS_X'), ('F6', 'AXIS_Y'), ('F7', 'AXIS_Z'), ('F8', 'PLANE_Z')):
+            km.items[tm].append((axis, _event(key), None))
 
 
-def generate_keymaps(industry_compatible, params, moritz=False, available=None):
+def _numpad_views(km):
+    """Blender's numpad views: Max leaves the numpad free, and Blender tutorials keep working."""
+    from math import pi
+    km.view("view3d.view_camera", _event('NUMPAD_0'))
+    for ctrl, pairs in ((False, (('NUMPAD_1', 'FRONT'), ('NUMPAD_3', 'RIGHT'), ('NUMPAD_7', 'TOP'))),
+                        (True, (('NUMPAD_1', 'BACK'), ('NUMPAD_3', 'LEFT'), ('NUMPAD_7', 'BOTTOM')))):
+        for key, view in pairs:
+            km.view("view3d.view_axis", _event(key, ctrl=ctrl), {"type": view})
+            km.view("view3d.view_axis", _event(key, ctrl=ctrl, shift=True), {"type": view, "align_active": True})
+    for key, orbit, pan in (('NUMPAD_2', 'ORBITDOWN', 'PANDOWN'), ('NUMPAD_4', 'ORBITLEFT', 'PANLEFT'),
+                            ('NUMPAD_6', 'ORBITRIGHT', 'PANRIGHT'), ('NUMPAD_8', 'ORBITUP', 'PANUP')):
+        km.view("view3d.view_orbit", _event(key, repeat=True), {"type": orbit})
+        km.view("view3d.view_pan", _event(key, ctrl=True, repeat=True), {"type": pan})
+    km.view("view3d.view_roll", _event('NUMPAD_4', shift=True, repeat=True), {"type": 'LEFT'})
+    km.view("view3d.view_roll", _event('NUMPAD_6', shift=True, repeat=True), {"type": 'RIGHT'})
+    km.view("view3d.view_orbit", _event('NUMPAD_9'), {"angle": pi, "type": 'ORBITRIGHT'})
+    km.view("view3d.view_persportho", _event('NUMPAD_5'))
+    km.view("view3d.view_selected", _event('NUMPAD_PERIOD'))
+    km.view("view3d.localview", _event('NUMPAD_SLASH'))
+
+
+def _moritz_selection(km):
+    """Moritz: window or crossing by drag direction."""
+    for name in ("3D View Tool: Select Box", "3D View Tool: Select Box (fallback)"):
+        items = km.items.get(name)
+        if items is None or not km.available("maximize.select_region", {}):
+            continue
+        # In front of Blender's box select, which stays for the modes the operator doesn't handle.
+        new = []
+        for idname, ev, props in items:
+            if idname == "view3d.select_box" and ev.get("type") == 'LEFTMOUSE':
+                new.append(("maximize.select_region", ev, props))
+            new.append((idname, ev, props))
+        items[:] = new
+
+
+def _editors(km):
+    """Max keys in the other editors where nothing clashes: F2 renames (Scene Explorer, Slate),
+    Ctrl+A/D/I select all/none/invert, K sets a key, Ctrl+Alt+Z frames all (Track View)."""
+    km.bind("Outliner", "outliner.item_rename", _event('F2'))
+    for keymap, prefix in (("Graph Editor", "graph"), ("Dopesheet", "action"), ("Node Editor", "node")):
+        if keymap not in km.items:
+            continue
+        km.bind(keymap, prefix + ".select_all", _event('A', ctrl=True), {"action": 'SELECT'})
+        km.bind(keymap, prefix + ".select_all", _event('D', ctrl=True), {"action": 'DESELECT'})
+        km.bind(keymap, prefix + ".select_all", _event('I', ctrl=True), {"action": 'INVERT'})
+        km.bind(keymap, prefix + ".duplicate_move", _event('D', shift=True))
+        if keymap != "Node Editor":
+            km.bind(keymap, prefix + ".keyframe_insert", _event('K'))
+            km.bind(keymap, prefix + ".view_all", _event('Z', ctrl=True, alt=True))
+    # Slate: H hides unused sockets, P shows the parameters, F2 renames the node.
+    km.bind("Node Editor", "node.hide_socket_toggle", _event('H'))
+    km.bind("Node Editor", "wm.context_toggle", _event('P'), {"data_path": "space_data.show_region_ui"})
+    km.bind("Node Editor", "wm.call_panel", _event('F2'), {"name": "TOPBAR_PT_name", "keep_open": False})
+
+
+def _maya_navigation(km):
+    """Preference "Maya navigation", Max's own switch: Alt+LMB orbit, Alt+MMB pan, Alt+RMB zoom,
+    Shift toggles and Ctrl removes from the selection."""
+    km.view("view3d.rotate", _event('LEFTMOUSE', alt=True))
+    km.view("view3d.move", _event('MIDDLEMOUSE', alt=True))
+    km.view("view3d.zoom", _event('RIGHTMOUSE', alt=True))
+    items = km.items["3D View"]
+    items[:] = [it for it in items if not (it[0] == "view3d.select" and it[1].get("type") == 'LEFTMOUSE'
+                                           and it[1].get("value") == 'CLICK')]
+    km.bind("3D View", "view3d.select", _event('LEFTMOUSE', 'CLICK'), {"deselect_all": True})
+    km.bind("3D View", "view3d.select", _event('LEFTMOUSE', 'CLICK', shift=True), {"toggle": True})
+    km.bind("3D View", "view3d.select", _event('LEFTMOUSE', 'CLICK', ctrl=True), {"deselect": True})
+    km.bind("3D View", "view3d.select", _event('LEFTMOUSE', 'CLICK', ctrl=True, shift=True), {"extend": True})
+
+
+def _f_frames_selection(km):
+    """Preference "F frames selection" (Maya, Unreal): F frames, Ctrl+F is the front view."""
+    km.view("view3d.view_selected", _event('F'), {"use_all_regions": False})
+    km.view("view3d.view_axis", _event('F', ctrl=True), {"type": 'FRONT'})
+
+
+def _blender_modal_keys(km):
+    """Preference "Blender modal keys": Ctrl+Shift+G/R/S start Blender's free modal transforms."""
+    for keymap in ("Object Mode", "Mesh"):
+        for key, idname in (('G', "transform.translate"), ('R', "transform.rotate"), ('S', "transform.resize")):
+            km.bind(keymap, idname, _event(key, ctrl=True, shift=True))
+
+
+def generate_keymaps(industry_compatible, params, moritz=False, available=None, options=None):
+    """`options`: the keymap preferences (`use_maya_navigation`, `use_f_frames_selection`,
+    `use_blender_modal_keys`)."""
+    options = options or {}
     keyconfig_data = industry_compatible.generate_keymaps(params)
     km = KeymapPatcher(keyconfig_data, available)
-    apply(km, moritz)
+    apply(km, moritz, options.get("use_maya_navigation", False))
     _max_keys(km)
+    _numpad_views(km)
+    _editors(km)
+    if moritz:
+        _moritz_selection(km)
+    if options.get("use_maya_navigation"):
+        _maya_navigation(km)
+    if options.get("use_f_frames_selection"):
+        _f_frames_selection(km)
+    if options.get("use_blender_modal_keys"):
+        _blender_modal_keys(km)
     return keyconfig_data

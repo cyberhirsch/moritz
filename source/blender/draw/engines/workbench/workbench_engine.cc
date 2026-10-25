@@ -138,6 +138,10 @@ class Instance : public DrawEngine {
 
   Material get_material(ObjectRef ob_ref, eV3DShadingColorType color_type, int slot = 0)
   {
+    /* Moritz: frozen objects (see #ObjectState::is_frozen). */
+    if ((ob_ref.object->visibility_flag & OB_HIDE_SELECT) && !this->draw_ctx->is_scene_render()) {
+      return Material(float3(0.25f));
+    }
     switch (color_type) {
       case V3D_SHADING_OBJECT_COLOR:
         return Material(*ob_ref.object);

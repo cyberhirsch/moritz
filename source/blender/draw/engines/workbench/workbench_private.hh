@@ -220,6 +220,8 @@ struct ObjectState {
   bool draw_shadow = false;
   bool use_per_material_batches = false;
   bool sculpt_pbvh = false;
+  /** Moritz: drawn in plain gray (unselectable). */
+  bool is_frozen = false;
 
   ObjectState(const DRWContext *draw_ctx,
               const SceneState &scene_state,

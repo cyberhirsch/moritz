@@ -1044,6 +1044,7 @@ static std::unique_ptr<TooltipData> tooltip_data_from_button_or_extra_icon(
   std::string but_tip_label;
   std::string op_keymap;
   std::string prop_keymap;
+  std::string blender_keymap;
   std::string rna_struct;
   std::string rna_prop;
   std::string enum_label;
@@ -1079,6 +1080,7 @@ static std::unique_ptr<TooltipData> tooltip_data_from_button_or_extra_icon(
         op_keymap = button_string_get_operator_keymap(*C, *but);
         prop_keymap = button_string_get_property_keymap(*C, *but);
       }
+      blender_keymap = button_string_get_blender_keymap(*C, *but);
       rna_struct = button_string_get_rna_struct_identifier(*but);
       rna_prop = button_string_get_rna_property_identifier(*but);
     }
@@ -1171,6 +1173,16 @@ static std::unique_ptr<TooltipData> tooltip_data_from_button_or_extra_icon(
                            TIP_STYLE_NORMAL,
                            TIP_LC_VALUE,
                            true);
+  }
+
+  /* Moritz: the shortcut in Blender's own keymap, when the active keymap uses another one. */
+  if (!blender_keymap.empty()) {
+    tooltip_text_field_add(*data,
+                           fmt::format(fmt::runtime(TIP_("Blender Shortcut: {}")), blender_keymap),
+                           {},
+                           TIP_STYLE_NORMAL,
+                           TIP_LC_VALUE,
+                           op_keymap.empty() && prop_keymap.empty() && !data->fields.is_empty());
   }
 
   if (ELEM(but->type, ButtonType::TextBox, ButtonType::Text, ButtonType::SearchMenu)) {

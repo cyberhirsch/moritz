@@ -235,6 +235,14 @@ std::optional<std::string> WM_key_event_operator_string(const bContext *C,
                                                         IDProperty *properties,
                                                         bool is_strict);
 
+/**
+ * Moritz: while active, shortcut look-ups use Blender's own keymap (the default key configuration)
+ * instead of the active one, so the UI can show both. Returns false (and does nothing) when the
+ * active key configuration already is Blender's.
+ */
+bool WM_keymap_lookup_blender_begin(const bContext *C);
+void WM_keymap_lookup_blender_end();
+
 wmKeyMapItem *WM_key_event_operator_from_keymap(wmKeyMap *keymap,
                                                 const char *opname,
                                                 IDProperty *properties,

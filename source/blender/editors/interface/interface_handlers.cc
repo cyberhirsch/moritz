@@ -5151,6 +5151,23 @@ static bool do_but_ANY_drag_toggle(
 }
 #endif /* USE_DRAG_TOGGLE */
 
+/**
+ * Moritz: dragging an area tab moves, docks or tears off that editor, as dragging the empty
+ * header space does for the whole area.
+ */
+static void but_area_tab_drag(bContext *C, const int space_type, const wmEvent *event)
+{
+  wmOperatorType *ot = WM_operatortype_find("SCREEN_OT_area_join", false);
+  if (ot == nullptr) {
+    return;
+  }
+  PointerRNA ptr = WM_operator_properties_create_ptr(ot);
+  RNA_boolean_set(&ptr, "header_drag", true);
+  RNA_int_set(&ptr, "tab_space_type", space_type);
+  WM_operator_name_call_ptr(C, ot, wm::OpCallContext::InvokeDefault, &ptr, event);
+  WM_operator_properties_free(&ptr);
+}
+
 static int do_but_BUT(bContext *C, Button *but, HandleButtonData *data, const wmEvent *event)
 {
 #ifdef USE_DRAG_TOGGLE
@@ -10617,6 +10634,19 @@ static int handle_button_event(bContext *C, const wmEvent *event, Button *but)
         break;
       }
       case MOUSEMOVE: {
+        /* Moritz: dragging an area tab moves, docks or tears off that editor. */
+        if (but->optype && but->opptr &&
+            STREQ(but->optype->idname, "SCREEN_OT_area_tab_activate") &&
+            len_manhattan_v2v2_int(event->xy, event->prev_press_xy) >
+                WM_event_drag_threshold(event))
+        {
+          const int space_type = RNA_int_get(but->opptr, "space_type");
+          data->cancel = true;
+          button_activate_state(C, but, BUTTON_STATE_EXIT);
+          but_area_tab_drag(C, space_type, event);
+          retval = WM_UI_HANDLER_BREAK;
+          break;
+        }
         /* deselect the button when moving the mouse away */
         /* also de-activate for buttons that only show highlights */
         if (button_contains_point_px(but, region, event->xy)) {

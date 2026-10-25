@@ -79,6 +79,9 @@ class SCENE_PT_unit(SceneButtonsPanel, Panel):
         col.enabled = unit.system != 'NONE'
         col.prop(unit, "scale_length")
         col.prop(unit, "use_separate")
+        # Moritz: feet and fractional inches.
+        if unit.system == 'IMPERIAL':
+            col.prop(unit, "use_fractions")
 
         col = layout.column()
         col.prop(unit, "system_rotation", text="Rotation")

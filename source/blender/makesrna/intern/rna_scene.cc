@@ -5056,6 +5056,15 @@ static void rna_def_unit_settings(BlenderRNA *brna)
   RNA_def_property_ui_text(prop, "Separate Units", "Display units in pairs (e.g. 1m 0cm)");
   RNA_def_property_update(prop, NC_WINDOW, nullptr);
 
+  /* Moritz. */
+  prop = RNA_def_property(srna, "use_fractions", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_sdna(prop, nullptr, "flag", USER_UNIT_OPT_FRACTIONS);
+  RNA_def_property_ui_text(prop,
+                           "Fractional Inches",
+                           "Display imperial lengths as feet and fractional inches, "
+                           "rounded to 1/16 inch (e.g. 3' 4 1/2\")");
+  RNA_def_property_update(prop, NC_WINDOW, nullptr);
+
   prop = RNA_def_property(srna, "length_unit", PROP_ENUM, PROP_NONE);
   RNA_def_property_enum_items(prop, rna_enum_dummy_DEFAULT_items);
   RNA_def_property_enum_funcs(prop, nullptr, nullptr, "rna_UnitSettings_length_unit_itemf");

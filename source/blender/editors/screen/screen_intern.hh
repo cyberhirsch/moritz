@@ -116,6 +116,11 @@ bool ED_area_tab_move(bContext *C, ScrArea *area_src, ScrArea *area_dst, bool on
 void ED_area_tab_strip_inactive(ScrArea *area);
 /** Close the active tab and activate the next one. \return false when the area has no tabs. */
 bool ED_area_tab_close_active(bContext *C, ScrArea *area);
+/** Close the tab of `space_type` (#SPACE_EMPTY: the active one). */
+bool ED_area_tab_close(bContext *C, ScrArea *area, int space_type);
+/** Insertion order of a tab, 1 and up (0: not ordered yet). */
+int ED_area_tab_order_get(const SpaceLink *sl);
+void ED_area_tab_order_set(SpaceLink *sl, int order);
 /* for quick toggle, can skip fades */
 void region_toggle_hidden(bContext *C, ARegion *region, bool do_fade);
 

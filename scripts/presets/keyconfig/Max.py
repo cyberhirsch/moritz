@@ -8,6 +8,7 @@
 
 import os
 import bpy
+from bpy.props import BoolProperty
 
 DIRNAME, FILENAME = os.path.split(__file__)
 IDNAME = os.path.splitext(FILENAME)[0]
@@ -15,6 +16,35 @@ IDNAME = os.path.splitext(FILENAME)[0]
 
 def update_fn(_self, _context):
     load()
+
+
+class Prefs(bpy.types.KeyConfigPreferences):
+    bl_idname = IDNAME
+
+    use_maya_navigation: BoolProperty(
+        name="Maya Navigation",
+        description=(
+            "Alt+LMB orbits, Alt+MMB pans and Alt+RMB zooms; Shift toggles and Ctrl removes from the "
+            "selection (Max's own Maya navigation switch)"
+        ),
+        update=update_fn,
+    )
+    use_f_frames_selection: BoolProperty(
+        name="F Frames Selection",
+        description="F frames the selection as in Maya and Unreal; the front view moves to Ctrl+F",
+        update=update_fn,
+    )
+    use_blender_modal_keys: BoolProperty(
+        name="Blender Modal Keys",
+        description="Ctrl+Shift+G, R and S start Blender's free move, rotate and scale",
+        update=update_fn,
+    )
+
+    def draw(self, layout):
+        col = layout.column()
+        col.prop(self, "use_maya_navigation")
+        col.prop(self, "use_f_frames_selection")
+        col.prop(self, "use_blender_modal_keys")
 
 
 industry_compatible = bpy.utils.execfile(os.path.join(DIRNAME, "keymap_data", "industry_compatible_data.py"))
@@ -37,8 +67,10 @@ def load():
     prefs = bpy.context.preferences
 
     kc = bpy.context.window_manager.keyconfigs.new(IDNAME)
+    kc_prefs = kc.preferences
+    options = {name: getattr(kc_prefs, name) for name in Prefs.__annotations__} if kc_prefs else {}
     params = industry_compatible.Params(use_mouse_emulate_3_button=prefs.inputs.use_mouse_emulate_3_button)
-    keyconfig_data = moritz_max.generate_keymaps(industry_compatible, params, moritz=False, available=_available)
+    keyconfig_data = moritz_max.generate_keymaps(industry_compatible, params, moritz=False, available=_available, options=options)
 
     if platform == "darwin":
         from bl_keymap_utils.platform_helpers import keyconfig_data_oskey_from_ctrl_for_macos
@@ -48,4 +80,5 @@ def load():
 
 
 if __name__ == "__main__":
+    bpy.utils.register_class(Prefs)
     load()

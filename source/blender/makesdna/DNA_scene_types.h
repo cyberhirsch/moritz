@@ -2498,6 +2498,8 @@ enum eUnit_System : char {
 enum eUnit_Flag : char {
   USER_UNIT_OPT_SPLIT = 1,
   USER_UNIT_ROT_RADIANS_DEPRECATED = 2,
+  /** Moritz: imperial lengths as feet and fractional inches (3' 4 1/2"), as in Max. */
+  USER_UNIT_OPT_FRACTIONS = 4,
 };
 ENUM_OPERATORS(eUnit_Flag)
 

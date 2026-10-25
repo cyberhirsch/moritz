@@ -4615,6 +4615,7 @@ struct sAreaJoinData {
   wmWindow *draw_dock_win;    /* Window getting docking highlight. */
   bool close_win;             /* Close the source window when done. */
   bool header_drag;           /* Moritz: started by dragging the header, move/dock only. */
+  int tab_space_type;         /* Moritz: the dragged tab (#SPACE_EMPTY: the active one). */
   void *draw_callback;        /* call #screen_draw_join_highlight */
   void *draw_dock_callback;   /* call #screen_draw_dock_highlight, overlay on draw_dock_win. */
 };
@@ -4853,6 +4854,7 @@ static wmOperatorStatus area_join_invoke(bContext *C, wmOperator *op, const wmEv
     }
     sAreaJoinData *jd = static_cast<sAreaJoinData *>(op->customdata);
     jd->header_drag = true;
+    jd->tab_space_type = RNA_int_get(op->ptr, "tab_space_type");
     jd->sa2 = jd->sa1;
     jd->start_x = event->prev_press_xy[0];
     jd->start_y = event->prev_press_xy[1];
@@ -5339,7 +5341,9 @@ static void area_join_update_data(bContext *C, sAreaJoinData *jd, const wmEvent 
 
   jd->sa2 = area;
   jd->win2 = WM_window_find_by_area(CTX_wm_manager(C), jd->sa2);
-  jd->dir = area_getorientation(jd->sa1, jd->sa2);
+  /* Moritz: a header or tab drag moves and docks; it never joins with a neighbor, which would
+   * swallow the neighbor when dropping near the shared edge. */
+  jd->dir = jd->header_drag ? SCREEN_DIR_NONE : area_getorientation(jd->sa1, jd->sa2);
   jd->dock_target = area_docking_target(jd, event);
 }
 
@@ -5475,6 +5479,13 @@ static wmOperatorStatus area_join_modal(bContext *C, wmOperator *op, const wmEve
     }
     case LEFTMOUSE:
       if (event->val == KM_RELEASE) {
+        /* Moritz: a dragged tab becomes the active one, which is the one that moves. */
+        if (jd->header_drag && jd->tab_space_type != SPACE_EMPTY && jd->sa1 &&
+            jd->sa1->spacetype != jd->tab_space_type)
+        {
+          jd->sa1->butspacetype_subtype = -1;
+          ED_area_newspace(C, jd->sa1, jd->tab_space_type, false);
+        }
         area_join_update_data(C, jd, event);
         area_join_dock_cb_window(jd, op);
         ED_area_tag_redraw(jd->sa1);
@@ -5659,6 +5670,16 @@ static void SCREEN_OT_area_join(wmOperatorType *ot)
                                       "Header Drag",
                                       "Move and dock the area by dragging its header");
   RNA_def_property_flag(prop, PROP_HIDDEN | PROP_SKIP_SAVE);
+  prop = RNA_def_int(ot->srna,
+                     "tab_space_type",
+                     SPACE_EMPTY,
+                     0,
+                     SPACE_TYPE_NUM,
+                     "Tab",
+                     "Editor type of the dragged tab",
+                     0,
+                     SPACE_TYPE_NUM);
+  RNA_def_property_flag(prop, PROP_HIDDEN | PROP_SKIP_SAVE);
 }
 
 /** \} */
@@ -5710,10 +5731,10 @@ static void SCREEN_OT_area_tab_activate(wmOperatorType *ot)
   RNA_def_property_flag(prop, PROP_HIDDEN | PROP_SKIP_SAVE);
 }
 
-static wmOperatorStatus area_tab_close_exec(bContext *C, wmOperator * /*op*/)
+static wmOperatorStatus area_tab_close_exec(bContext *C, wmOperator *op)
 {
   ScrArea *area = CTX_wm_area(C);
-  if (!ED_area_tab_close_active(C, area)) {
+  if (!ED_area_tab_close(C, area, RNA_int_get(op->ptr, "space_type"))) {
     return OPERATOR_CANCELLED;
   }
   WM_event_add_notifier(C, NC_SCREEN | NA_EDITED, nullptr);
@@ -5723,11 +5744,15 @@ static wmOperatorStatus area_tab_close_exec(bContext *C, wmOperator * /*op*/)
 static void SCREEN_OT_area_tab_close(wmOperatorType *ot)
 {
   ot->name = "Close Tab";
-  ot->description = "Close the active editor tab of this area";
+  ot->description = "Close an editor tab of this area (the active one by default)";
   ot->idname = "SCREEN_OT_area_tab_close";
 
   ot->exec = area_tab_close_exec;
   ot->poll = area_tab_poll;
+
+  PropertyRNA *prop = RNA_def_int(
+      ot->srna, "space_type", SPACE_EMPTY, 0, SPACE_TYPE_NUM, "Space Type", "", 0, SPACE_TYPE_NUM);
+  RNA_def_property_flag(prop, PROP_HIDDEN | PROP_SKIP_SAVE);
 }
 
 /** \} */
@@ -7648,7 +7673,7 @@ static wmOperatorStatus drivers_editor_show_exec(bContext *C, wmOperator *op)
   ui::Button *but = ui::context_active_but_prop_get(C, &ptr, &prop, &index);
 
   /* changes context! */
-  if (WM_window_open_temp(C, IFACE_("Blender Drivers Editor"), SPACE_GRAPH, false)) {
+  if (WM_window_open_temp(C, IFACE_("Moritz Drivers Editor"), SPACE_GRAPH, false)) {
     ED_drivers_editor_init(C, CTX_wm_area(C));
 
     /* activate driver F-Curve for the property under the cursor */
@@ -7705,7 +7730,7 @@ static void SCREEN_OT_drivers_editor_show(wmOperatorType *ot)
 static wmOperatorStatus info_log_show_exec(bContext *C, wmOperator *op)
 {
   /* changes context! */
-  if (WM_window_open_temp(C, IFACE_("Blender Info Log"), SPACE_INFO, false)) {
+  if (WM_window_open_temp(C, IFACE_("Moritz Info Log"), SPACE_INFO, false)) {
     return OPERATOR_FINISHED;
   }
   BKE_report(op->reports, RPT_ERROR, "Failed to open window!");

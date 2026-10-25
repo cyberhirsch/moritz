@@ -12,6 +12,7 @@
 
 #include "MEM_guardedalloc.h"
 
+#include "DNA_action_types.h"
 #include "DNA_userdef_types.h"
 
 #include "BLI_linklist.hh"
@@ -3035,10 +3036,12 @@ void ED_area_newspace(bContext *C, ScrArea *area, int type, const bool skip_regi
       }
     }
 
-    /* Moritz: changing the editor type of a tab keeps it a tab. */
+    /* Moritz: changing the editor type of a tab keeps it a tab, in its place. */
     if (slold && sl && (slold->link_flag & SPACE_FLAG_TAB) && !(sl->link_flag & SPACE_FLAG_TAB)) {
       sl->link_flag |= SPACE_FLAG_TAB;
+      ED_area_tab_order_set(sl, ED_area_tab_order_get(slold));
       slold->link_flag &= ~SPACE_FLAG_TAB;
+      ED_area_tab_order_set(slold, 0);
     }
 
     /* Sync header alignment. */
@@ -3144,6 +3147,8 @@ void ED_area_prevspace(bContext *C, ScrArea *area)
   WM_event_add_notifier(C, NC_SPACE | ND_SPACE_CHANGED, area);
 }
 
+static Vector<SpaceLink *> area_tabs_ordered(ScrArea *area);
+
 int ED_area_header_switchbutton(const bContext *C, ui::Block *block, int yco)
 {
   ScrArea *area = CTX_wm_area(C);
@@ -3170,16 +3175,8 @@ int ED_area_header_switchbutton(const bContext *C, ui::Block *block, int yco)
 
   /* Moritz: tab strip for areas holding several editors. */
   if (ED_area_tab_count(area) >= 2) {
-    Vector<const SpaceLink *> tabs;
-    for (const SpaceLink &sl : area->spacedata) {
-      if (sl.link_flag & SPACE_FLAG_TAB) {
-        tabs.append(&sl);
-      }
-    }
-    /* Stable order: the active space always moves to the front of the list. */
-    std::sort(tabs.begin(), tabs.end(), [](const SpaceLink *a, const SpaceLink *b) {
-      return a->spacetype < b->spacetype;
-    });
+    /* In the order the tabs were added (the active space is always first in the list). */
+    const Vector<SpaceLink *> tabs = area_tabs_ordered(area);
 
     const uiFontStyle *fstyle = &ui::style_get_dpi()->widget;
     const SpaceLink *sl_active = area->spacedata.first_as<SpaceLink>();
@@ -3195,9 +3192,16 @@ int ED_area_header_switchbutton(const bContext *C, ui::Block *block, int yco)
       else {
         RNA_enum_name_from_value(rna_enum_space_type_items, sl->spacetype, &name);
         RNA_enum_icon_from_value(rna_enum_space_type_items, sl->spacetype, &icon);
+        /* The Timeline is a mode of the Dope Sheet but named as an editor of its own. */
+        if (sl->spacetype == SPACE_ACTION &&
+            reinterpret_cast<const SpaceAction *>(sl)->mode == SACTCONT_TIMELINE)
+        {
+          name = "Timeline";
+          icon = ICON_TIME;
+        }
       }
       name = (name != nullptr) ? IFACE_(name) : "";
-      const int width = ui::fontstyle_string_width(fstyle, name) + 2.0f * U.widget_unit;
+      const int width = ui::fontstyle_string_width(fstyle, name) + 1.6f * U.widget_unit;
       /* The active tab is drawn as a button, the others flat. */
       ui::block_emboss_set(block, is_active ? ui::EmbossType::Emboss : ui::EmbossType::None);
       ui::Button *but = uiDefIconTextButO(block,
@@ -3213,6 +3217,20 @@ int ED_area_header_switchbutton(const bContext *C, ui::Block *block, int yco)
                                           std::nullopt);
       RNA_int_set(ui::button_operator_ptr_ensure(but), "space_type", sl->spacetype);
       xco += width;
+      /* A close button on each tab. */
+      ui::block_emboss_set(block, ui::EmbossType::None);
+      ui::Button *but_close = uiDefIconButO(block,
+                                            ui::ButtonType::But,
+                                            "SCREEN_OT_area_tab_close",
+                                            wm::OpCallContext::InvokeDefault,
+                                            ICON_PANEL_CLOSE,
+                                            xco - 0.1f * U.widget_unit,
+                                            yco,
+                                            0.8f * U.widget_unit,
+                                            U.widget_unit,
+                                            TIP_("Close this tab"));
+      RNA_int_set(ui::button_operator_ptr_ensure(but_close), "space_type", sl->spacetype);
+      xco += 0.8f * U.widget_unit;
     }
     ui::block_emboss_set(block, emboss_prev);
     xco += 0.5f * U.widget_unit;
@@ -3230,6 +3248,41 @@ int ED_area_header_switchbutton(const bContext *C, ui::Block *block, int yco)
  * #SPACE_FLAG_TAB are shown as tabs. Inactive spaces store their regions in their own
  * `regionbase`, the active one has its regions in #ScrArea.regionbase.
  * \{ */
+
+/* The insertion order of a tab is kept in the free high bits of #SpaceLink.link_flag
+ * (1..31, 0 = not ordered yet), so the file format stays Blender's. */
+#define TAB_ORDER_SHIFT 3
+#define TAB_ORDER_MAX 31
+
+int ED_area_tab_order_get(const SpaceLink *sl)
+{
+  return (int(uint8_t(sl->link_flag)) >> TAB_ORDER_SHIFT) & TAB_ORDER_MAX;
+}
+
+void ED_area_tab_order_set(SpaceLink *sl, const int order)
+{
+  sl->link_flag = eSpace_Link_Flag((int(uint8_t(sl->link_flag)) & ((1 << TAB_ORDER_SHIFT) - 1)) |
+                                   (std::clamp(order, 0, TAB_ORDER_MAX) << TAB_ORDER_SHIFT));
+}
+
+/** The tabs in display order: ordered ones first, then new ones in list order; renumbered. */
+static Vector<SpaceLink *> area_tabs_ordered(ScrArea *area)
+{
+  Vector<SpaceLink *> tabs;
+  for (SpaceLink &sl : area->spacedata) {
+    if (sl.link_flag & SPACE_FLAG_TAB) {
+      tabs.append(&sl);
+    }
+  }
+  std::stable_sort(tabs.begin(), tabs.end(), [](const SpaceLink *a, const SpaceLink *b) {
+    const int oa = ED_area_tab_order_get(a), ob = ED_area_tab_order_get(b);
+    return (oa ? oa : TAB_ORDER_MAX + 1) < (ob ? ob : TAB_ORDER_MAX + 1);
+  });
+  for (const int i : tabs.index_range()) {
+    ED_area_tab_order_set(tabs[i], i + 1);
+  }
+  return tabs;
+}
 
 int ED_area_tab_count(const ScrArea *area)
 {
@@ -3249,6 +3302,7 @@ static void area_tabs_clear_if_single(ScrArea *area)
   }
   for (SpaceLink &sl : area->spacedata) {
     sl.link_flag &= ~SPACE_FLAG_TAB;
+    ED_area_tab_order_set(&sl, 0);
   }
 }
 
@@ -3307,17 +3361,18 @@ bool ED_area_tab_move(bContext *C, ScrArea *area_src, ScrArea *area_dst, const b
     return true;
   }
 
-  /* The dragged editor, plus the other tabs of its area when the whole group moves. */
+  /* The dragged editor, plus the other tabs of its area (in their order) when the group moves. */
   Vector<SpaceLink *> moving = {sl_src_active};
   if (!only_active) {
-    for (SpaceLink &sl : area_src->spacedata) {
-      if (&sl != sl_src_active && (sl.link_flag & SPACE_FLAG_TAB)) {
-        moving.append(&sl);
+    for (SpaceLink *sl : area_tabs_ordered(area_src)) {
+      if (sl != sl_src_active) {
+        moving.append(sl);
       }
     }
   }
 
   /* Store the regions of both active spaces with their space. */
+  area_tabs_ordered(area_dst);
   SpaceLink *sl_dst_active = area_space_pack_active(C, area_dst);
   sl_dst_active->link_flag |= SPACE_FLAG_TAB;
   BLI_addhead(&area_dst->spacedata, sl_dst_active);
@@ -3338,19 +3393,22 @@ bool ED_area_tab_move(bContext *C, ScrArea *area_src, ScrArea *area_dst, const b
       }
     }
     sl->link_flag |= SPACE_FLAG_TAB;
+    /* Incoming tabs go to the end of the strip. */
+    ED_area_tab_order_set(sl, 0);
     BLI_addtail(&area_dst->spacedata, sl);
   }
 
+  /* Number the tabs before the dragged one moves to the front of the list. */
+  area_tabs_ordered(area_dst);
   area_space_unpack(C, win, area_dst, sl_src_active);
   area_tabs_clear_if_single(area_dst);
 
   /* Activate the next tab of the source area, if it has one left. */
-  for (SpaceLink &sl : area_src->spacedata) {
-    if (sl.link_flag & SPACE_FLAG_TAB) {
-      area_space_unpack(C, win, area_src, &sl);
-      area_tabs_clear_if_single(area_src);
-      return true;
-    }
+  const Vector<SpaceLink *> left = area_tabs_ordered(area_src);
+  if (!left.is_empty()) {
+    area_space_unpack(C, win, area_src, left.first());
+    area_tabs_clear_if_single(area_src);
+    return true;
   }
   return false;
 }
@@ -3374,16 +3432,43 @@ bool ED_area_tab_close_active(bContext *C, ScrArea *area)
     return false;
   }
   wmWindow *win = CTX_wm_window(C);
-  SpaceLink *sl_old = area_space_pack_active(C, area);
-  area_space_free(sl_old);
-  for (SpaceLink &sl : area->spacedata) {
-    if (sl.link_flag & SPACE_FLAG_TAB) {
-      area_space_unpack(C, win, area, &sl);
-      break;
-    }
+  /* The neighbor of the closed tab becomes active, as in other apps. */
+  const Vector<SpaceLink *> tabs = area_tabs_ordered(area);
+  SpaceLink *sl_old = area->spacedata.first_as<SpaceLink>();
+  const int64_t index = tabs.first_index_of_try(sl_old);
+  SpaceLink *sl_next = (index + 1 < tabs.size()) ? tabs[index + 1] :
+                                                   tabs[std::max<int64_t>(index - 1, 0)];
+  if (sl_next == sl_old) {
+    return false;
   }
+  area_space_pack_active(C, area);
+  area_space_free(sl_old);
+  area_space_unpack(C, win, area, sl_next);
+  area_tabs_ordered(area);
   area_tabs_clear_if_single(area);
   return true;
+}
+
+bool ED_area_tab_close(bContext *C, ScrArea *area, const int space_type)
+{
+  SpaceLink *sl_active = area->spacedata.first_as<SpaceLink>();
+  if (ED_area_tab_count(area) < 2 || sl_active == nullptr) {
+    return false;
+  }
+  if (space_type == SPACE_EMPTY || sl_active->spacetype == space_type) {
+    return ED_area_tab_close_active(C, area);
+  }
+  for (SpaceLink &sl : area->spacedata) {
+    if (sl.spacetype == space_type && (sl.link_flag & SPACE_FLAG_TAB) && &sl != sl_active) {
+      BLI_remlink(&area->spacedata, &sl);
+      area_space_free(&sl);
+      area_tabs_ordered(area);
+      area_tabs_clear_if_single(area);
+      ED_area_tag_redraw(area);
+      return true;
+    }
+  }
+  return false;
 }
 
 /** \} */

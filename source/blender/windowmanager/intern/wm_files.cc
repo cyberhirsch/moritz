@@ -2915,7 +2915,7 @@ static wmOperatorStatus wm_userpref_read_invoke(bContext *C,
                         IFACE_(display_name));
   }
   else {
-    title = IFACE_("Load Factory Blender Preferences");
+    title = IFACE_("Load Factory Moritz Preferences");
   }
 
   return WM_operator_confirm_ex(

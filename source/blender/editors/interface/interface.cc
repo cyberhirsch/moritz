@@ -1761,6 +1761,30 @@ static std::string but_pie_direction_string(const Button *but)
 /** \name Menu Block Shortcuts
  * \{ */
 
+/**
+ * Moritz: the shortcut in Blender's own keymap, when the active keymap (Max, Moritz) uses another
+ * one, so Blender tutorials stay usable.
+ */
+static std::optional<std::string> but_event_blender_string(const bContext *C, Button *but)
+{
+  std::optional<std::string> active = but_event_operator_string(C, but);
+  if (!active) {
+    active = but_event_property_operator_string(C, but);
+  }
+  if (!WM_keymap_lookup_blender_begin(C)) {
+    return std::nullopt;
+  }
+  std::optional<std::string> blender = but_event_operator_string(C, but);
+  if (!blender) {
+    blender = but_event_property_operator_string(C, but);
+  }
+  WM_keymap_lookup_blender_end();
+  if (blender == active) {
+    return std::nullopt;
+  }
+  return blender;
+}
+
 static void menu_block_set_keymaps(const bContext *C, Block *block)
 {
   BLI_assert(block->flag & (BLOCK_LOOP | BLOCK_SHOW_SHORTCUT_ALWAYS));
@@ -1798,11 +1822,15 @@ static void menu_block_set_keymaps(const bContext *C, Block *block)
         continue;
       }
 
-      if (const std::optional<std::string> str = but_event_operator_string(C, &but)) {
-        button_add_shortcut(&but, str->c_str(), false);
+      std::optional<std::string> str = but_event_operator_string(C, &but);
+      if (!str) {
+        str = but_event_property_operator_string(C, &but);
       }
-      else if (const std::optional<std::string> str = but_event_property_operator_string(C, &but))
-      {
+      /* Moritz: Blender's own shortcut in parentheses when the active keymap differs. */
+      if (const std::optional<std::string> blender = but_event_blender_string(C, &but)) {
+        str = str ? fmt::format("{}  ({})", *str, *blender) : fmt::format("({})", *blender);
+      }
+      if (str) {
         button_add_shortcut(&but, str->c_str(), false);
       }
     }
@@ -6854,6 +6882,11 @@ std::string button_string_get_operator_keymap(bContext &C, Button &but)
 std::string button_string_get_property_keymap(bContext &C, Button &but)
 {
   return but_event_property_operator_string(&C, &but).value_or("");
+}
+
+std::string button_string_get_blender_keymap(bContext &C, Button &but)
+{
+  return but_event_blender_string(&C, &but).value_or("");
 }
 
 std::string button_extra_icon_string_get_label(const ButtonExtraOpIcon &extra_icon)

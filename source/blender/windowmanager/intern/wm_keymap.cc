@@ -383,6 +383,26 @@ static wmKeyConfig *WM_keyconfig_active(wmWindowManager *wm)
   return wm->runtime->defaultconf;
 }
 
+/* Moritz: see #WM_keymap_lookup_blender_begin. */
+static wmKeyConfig *g_lookup_keyconf = nullptr;
+
+bool WM_keymap_lookup_blender_begin(const bContext *C)
+{
+  wmWindowManager *wm = CTX_wm_manager(C);
+  if (wm == nullptr || wm->runtime->defaultconf == nullptr ||
+      WM_keyconfig_active(wm) == wm->runtime->defaultconf)
+  {
+    return false;
+  }
+  g_lookup_keyconf = wm->runtime->defaultconf;
+  return true;
+}
+
+void WM_keymap_lookup_blender_end()
+{
+  g_lookup_keyconf = nullptr;
+}
+
 void WM_keyconfig_set_active(wmWindowManager *wm, const char *idname)
 {
   /* Setting a different key configuration as active:
@@ -1444,6 +1464,14 @@ static wmKeyMapItem *wm_keymap_item_find_handlers(const bContext *C,
       WM_event_get_keymaps_from_handler(wm, win, handler, &km_result);
       for (int km_index = 0; km_index < km_result.keymaps_len; km_index++) {
         wmKeyMap *keymap = km_result.keymaps[km_index];
+        if (g_lookup_keyconf) {
+          /* Moritz: the keymap of the same name in Blender's own key configuration. */
+          keymap = WM_keymap_list_find(
+              &g_lookup_keyconf->keymaps, keymap->idname, keymap->spaceid, keymap->regionid);
+          if (keymap == nullptr) {
+            continue;
+          }
+        }
         if (WM_keymap_poll(const_cast<bContext *>(C), keymap)) {
           wmKeyMapItem *kmi = wm_keymap_item_find_in_keymap(
               keymap, opname, properties, is_strict, params);

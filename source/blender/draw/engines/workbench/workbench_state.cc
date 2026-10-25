@@ -349,6 +349,12 @@ ObjectState::ObjectState(const DRWContext *draw_ctx,
     color_type = V3D_SHADING_MATERIAL_COLOR;
   }
 
+  /* Moritz: frozen (unselectable) objects draw in plain gray, as Max's "Show Frozen in Gray". */
+  is_frozen = (ob->visibility_flag & OB_HIDE_SELECT) && !draw_ctx->is_scene_render();
+  if (is_frozen) {
+    color_type = V3D_SHADING_MATERIAL_COLOR;
+  }
+
   if (sculpt_pbvh) {
     if (color_type == V3D_SHADING_TEXTURE_COLOR &&
         !ELEM(bke::object::pbvh_get(*ob)->type(), bke::pbvh::Type::Mesh, bke::pbvh::Type::Grids))
