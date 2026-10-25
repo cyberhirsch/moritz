@@ -112,7 +112,7 @@ Rule: only what Max does better. Blender's modifier panel stays (no Max-style st
 - [x] Header: Max's five sub-object levels (Vertex, Edge, Border, Polygon, Element) in place of Blender's three select-mode buttons, through the `VIEW3D_HT_header.select_mode_draw` hook that Maximize fills
 - [ ] Border and Element as real select modes in the core
 - [ ] Sub-object levels 1–6 without the add-on
-- [ ] Tests in `tests/` for evaluation, undo and file round trips
+- [x] Tests for evaluation and file round trips (`moritz/tests/test_edit_poly_native.py`, incl. stock Blender); undo in Edit Mode follows with the edit session
 
 ## Phase 3 — Splines
 
