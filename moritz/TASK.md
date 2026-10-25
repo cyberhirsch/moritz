@@ -144,16 +144,47 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 
 ## Phase 5 — Pipeline and release
 
-- [x] Max scene exchange without a closed-format parser: Max writes the scene with `maximize/max_side/moritz_export.ms`, Maximize imports it (File > Import > Max Scene (.mxscene), `max_scene.py`): polygons, UVs, Multi/Sub IDs, smoothing groups, hierarchy, pivots, units, layers, frozen/hidden, cameras, lights; `tests/test_max_scene.py` (the MaxScript side is untested without Max)
+- [x] Max scene exchange without a closed-format parser: Max writes the scene with `maximize/max_side/moritz_export.ms`, Maximize imports it (File > Import > Max Scene (.mxscene), `max_scene.py`): polygons, UVs, Multi/Sub IDs, smoothing groups, hierarchy, pivots, units, layers, frozen/hidden, cameras, lights; `tests/test_max_scene.py` (tested with 3ds Max 2026 on the same kitchen: 33 objects, 228k vertices, textures, in 3.7 s; `3dsmaxbatch.exe moritz_export.ms -sceneFile x.max` with `MORITZ_EXPORT_PATH` exports without a dialog)
 - [x] V-Ray/Corona/Physical/Standard → Principled converter (`max_materials.py`), used by the import
 - [x] License check of the direct `.max` importer: "Import Autodesk MAX (.max)" 1.9.2 (extensions.blender.org/add-ons/io-scene-max, Sebastian Sille et al.) is GPL-3.0-or-later, compatible with Moritz; imports meshes, UVs and Standard/Physical/V-Ray/Corona materials, Blender 4.2+
-- [ ] Bundle it with Moritz (needs the download approved)
+- [x] Bundled unmodified in `release/extensions/system/io_scene_max` (the System extensions repository), enabled by default (File > Import > Autodesk MAX (.max)); tested on a real 33 MB kitchen scene: 22 meshes, 233k vertices in 10 s; Physical material textures fail inside the extension (upstream bug), so the exporter route stays the better one when Max is at hand
 - [x] FBX presets: "To 3ds Max" / "From 3ds Max" (scene units, smoothing groups, no leaf bones)
 - [x] Portable zip: `moritz/tools/make_portable_zip.py` (add-on copied in, no debug symbols or build tools); smoke-tested
 - [x] Windows installer: `moritz/tools/make_msi.py` (WiX 5, Program Files\Moritz, Start Menu shortcut, own upgrade code, no file associations)
 - [x] Docs: "Moritz for Max users" cheat sheet (Max term → Moritz location): [docs/max_users.md](docs/max_users.md)
 - [x] CI for Maximize: background tests on Blender 5.3 (GitHub Actions)
 - [ ] 1.0 release
+
+## Phase 6 — Command Panel (plan, 2026-10-25)
+
+Max's Command Panel replaces the look of Blender's Properties editor: the same editor, renamed, with
+Max's two most used tabs first. Standing rule: say for every step whether it breaks files coming
+from Blender (or going back to it).
+
+- [ ] **Rename the Properties editor to "Command Panel"** (editor type menu, header, tooltips,
+  manual links). Only the label changes: `SpaceProperties` and the Python type `'PROPERTIES'` stay,
+  so scripts and add-ons that look for it keep working. *Files: UI only, unaffected.*
+- [ ] **Rename the Modifiers tab to "Modify"** (label and tooltip of `BCONTEXT_MODIFIER`). *Files:
+  UI only, unaffected.*
+- [ ] **Modify tab as in Max**: the Max-style stack list on top (newest modifier first, base object
+  at the bottom, on/off toggles, Edit Poly rows expand into the five sub-object levels, click to
+  make a level active, reorder), the selected modifier's settings below; Blender's full modifier
+  panels stay available underneath. *Files: UI only, unaffected.*
+- [ ] **New "Create" tab** (new `BCONTEXT_CREATE`, first in the tab column, shown with or without
+  a selected object), Max's categories: Geometry, Shapes, Lights, Cameras, Helpers, Space Warps,
+  Systems; "Object Type" buttons and Name and Color, as in Max. All parametric objects live here:
+  the editable primitives (Box, Sphere, Cylinder, Cone, Tube, Torus, Plane), the parametric shapes
+  (Rectangle, Circle, Ellipse, Arc, NGon, Star, Helix, Donut, Line), Loft, lights, cameras,
+  empties. *Files: the open tab is saved as a number (`SpaceProperties.mainb`); stock Blender does
+  not know the new one and falls back to the Object tab (`buttons_context.cc`), so nothing breaks
+  in either direction. Objects made here are ordinary Blender objects (the parametric ones are
+  Geometry Nodes modifiers, which stock Blender evaluates).*
+- [ ] Move Maximize's sidebar Create and Modify panels (Max tab) into the Command Panel tabs; keep
+  the sidebar Max tab for the other tools
+- [ ] Without Maximize, the Create tab offers Blender's own primitives (not parametric after the
+  first redo); with it, the parametric ones
+- [ ] Docs: `max_users.md` (Command Panel, Create, Modify), PATCHES.md, tests for the tab order and
+  the renamed labels
 
 ## Upstream maintenance (recurring)
 - [ ] Merge each Blender release branch into `moritz/main` (last: 31 fixes from `blender-v5.3-release`, 2026-10-25, no conflicts, tests pass)
