@@ -137,16 +137,15 @@ converting gives those 32 corners. Only the Rectangle's corner radius and the Li
 Bezier handles. Goal: creating, editing and converting splines behaves exactly as in Max. The Boss
 asked for Max's behavior here, so this overrides "only what Max does better" for splines.
 
-- [ ] **Shapes are real Bezier splines with Max's vertex counts and handles**, so 1 (Convert to
-  Editable Spline) gives what Max gives: Circle 4 smooth vertices (handle length r·0.5523),
-  Ellipse 4, Arc 4 Bezier, Donut 2 × 4, Rectangle 4 corners (8 Bezier Corner vertices with a
-  corner radius), NGon N corners (Circumscribed/Inscribed, corner radius), Star 2N (Radius 1/2,
-  Distortion, Fillet Radius 1/2), Helix (Turns, Bias, CW/CCW) as Max builds it. Stays parametric
-  until converted. Engine: a real Curve object whose splines the add-on rebuilds when a parameter
-  changes (parameters kept as properties on the object), instead of a Geometry Nodes poly curve.
-  *Files: a Curve object with Bezier splines is plain Blender data; stock Blender shows the last
-  shape and only loses the parameter editing. Shapes saved with the current Geometry Nodes
-  version keep working (read and migrated on load).*
+- [x] **Shapes are real Bezier splines with Max's vertex counts and handles** (done 2026-10-25),
+  so 1 (Convert to Editable Spline) gives what Max gives: Circle, Ellipse, Arc, Donut, Rectangle,
+  NGon, Star and Helix with every parameter, matching a Max 2026 dump to 1e-5
+  (`Maximize/tests/test_shapes_max.py`; rules in [docs/splines_max_design.md](docs/splines_max_design.md)).
+  Engine: a Curve object whose splines the add-on rebuilds when a parameter changes (parameters
+  on the curve data, `maximize/shapes.py`). Steps = curve resolution, Thickness = round bevel.
+  *Files: plain Blender Bezier curves; stock Blender shows the shape and only loses the parameter
+  editing. Shapes saved before stay Geometry Nodes poly curves and keep working (editable,
+  convertible); new ones are Bezier. Egg is not built yet.*
 - [ ] **Interpolation as in Max**: Steps per shape (default 6 = Blender resolution 7), Optimize
   (straight segments get no extra points), Adaptive. *Optimize and Adaptive have no Blender
   setting: a resample in the render geometry, or a small core change to curve tessellation
