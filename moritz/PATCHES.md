@@ -79,6 +79,18 @@ The Max workflow is not part of Moritz: it is the separate add-on [Maximize](htt
 - `source/blender/blenkernel/intern/modifier.cc` — revive an Edit Poly saved by stock Blender
 - `scripts/startup/bl_ui/properties_data_modifier.py` — add-menu entry
 
+## Edit Spline modifier (core)
+
+- `source/blender/makesdna/DNA_modifier_types.h` — `eModifierType_EditSpline = 201` (Moritz only)
+- `source/blender/modifiers/intern/MOD_edit_spline.cc`, `MOD_edit_spline.hh`, `MOD_util.cc`, `MOD_modifiertypes.hh`, `CMakeLists.txt`
+- `source/blender/makesrna/intern/rna_modifier.cc` — `EditSplineModifier` (`store`, `steps`,
+  `use_optimize`, `use_adaptive`), enum item `EDIT_SPLINE`
+- `source/blender/blenkernel/intern/modifier.cc` — revive an Edit Spline saved by stock Blender
+- `source/blender/blenkernel/intern/displist.cc` — Edit Spline gets the curves, as the nodes
+  modifier, instead of forcing a mesh
+- `source/blender/blenkernel/intern/object.cc` — Edit Spline on legacy curve objects only
+- `scripts/startup/bl_ui/properties_data_modifier.py` — add-menu entry for curves
+
 ## Undo speed
 
 - `source/blender/editors/undo/memfile_undo.cc` — keep the depsgraph relations when an undo step

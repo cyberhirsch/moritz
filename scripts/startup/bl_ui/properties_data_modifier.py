@@ -181,6 +181,8 @@ class OBJECT_MT_modifier_add_edit(ModifierAddMenu, Menu):
         if ob_type == 'MESH':
             self.operator_modifier_add(layout, 'DATA_TRANSFER')
             self.operator_modifier_add(layout, 'EDIT_POLY')
+        if ob_type == 'CURVE':
+            self.operator_modifier_add(layout, 'EDIT_SPLINE')
         if ob_type in {'MESH', 'CURVE', 'FONT', 'SURFACE', 'LATTICE'}:
             self.operator_modifier_add(layout, 'MESH_CACHE')
         if ob_type in {'MESH', 'CURVE', 'CURVES', 'FONT', 'POINTCLOUD'}:

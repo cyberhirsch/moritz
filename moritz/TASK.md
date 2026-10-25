@@ -313,12 +313,19 @@ asked for Max's behavior here, so this overrides "only what Max does better" for
   threshold, Generate Mapping Coords, for shapes and editable splines, as a "Rendering" Geometry
   Nodes modifier. *Files: a normal Geometry Nodes modifier; stock Blender renders it the same.*
 - [~] **Edit Spline modifier**: stage 0 done in Maximize (2026-10-25, `edit_spline.py`): edits
-  on a parametric shape follow its parameters while the knot count below holds. Core stages 1-3
-  (native modifier, Edit Mode session on the object itself) are planned in
-  [docs/splines_max_design.md](docs/splines_max_design.md). *Files: stage 0 is a GN modifier plus
-  helper objects; the native modifier will store its data like Edit Poly (file-safe in stock).*
-  - [ ] The Interpolation rollout (Steps, Optimize, Adaptive) on the Edit Spline modifier too, as
-    Max shows it there (Seb, 2026-10-25)
+  on a parametric shape follow its parameters while the knot count below holds. Stage 1 done
+  (2026-10-25): the native `EDIT_SPLINE` modifier (type 201, `MOD_edit_spline.cc`) stores the
+  edited splines with each knot's input index; edits follow the splines below while their knots
+  hold, and stay as they were (flagged) when the knot count below changes. Stage 3 partly done:
+  Maximize adds and stores into the native modifier when the build has it (no helper objects).
+  Tests: `moritz/tests/test_edit_spline_native.py`, Maximize `tests/test_edit_spline_native.py`.
+  *Files: stock Blender keeps the modifier disabled with its data and shows the unedited splines;
+  Moritz revives it on load.*
+  - [x] The Interpolation rollout (Steps, Optimize, Adaptive) on the Edit Spline modifier, as Max
+    shows it there (Seb, 2026-10-25)
+  - [ ] Stage 2: edit on the object itself in Edit Mode (no stand-in object), as Edit Poly's
+    session does
+  - [ ] Stage 3 rest: migrate stage-0 (Geometry Nodes) Edit Spline setups to the native modifier
 - [x] Tests: `test_shapes_max.py` (every shape against Max 2026, rendering, optimize),
   `test_splines.py` (levels, tools, creation), `test_max_shapes_import.py` (Max round trip)
 - [x] Max scene exchange carries splines (done 2026-10-25): the exporter writes knots with in/out
@@ -431,7 +438,7 @@ Layout from top to bottom, as in Max's Modify panel:
    object's parameters when the base is selected (Max shows one entry at a time).
 
 Steps:
-- [~] Stage 1, Python (`bl_ui/properties_data_modifier.py`, the fork session's draft, being reviewed
+- [x] Stage 1, Python (`bl_ui/properties_data_modifier.py`, committed d71c9ca72de; reviewed
   by the main session): list newest first, on/off toggle, base object row, Edit Poly levels below
   the list. Blender's modifier panels stay below.
 - [ ] Stage 2, Python: expandable sub-object levels per row, level icon, italic instances, warning

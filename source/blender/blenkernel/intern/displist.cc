@@ -1019,7 +1019,8 @@ static bool do_curve_implicit_mesh_conversion(const Curve *curve,
   ModifierData *md = first_modifier;
   for (; md; md = md->next) {
     if (BKE_modifier_is_enabled(scene, md, required_mode)) {
-      if (md->type == eModifierType_Nodes) {
+      /* Moritz: Edit Spline edits the curves too. */
+      if (ELEM(md->type, eModifierType_Nodes, eModifierType_EditSpline)) {
         break;
       }
       return true;
@@ -1077,7 +1078,9 @@ static bke::GeometrySet curve_calc_modifiers_post(Depsgraph *depsgraph,
 
     bke::ScopedModifierTimer modifier_timer{*md};
 
-    if (md->type == eModifierType_Nodes) {
+    if (md->type == eModifierType_Nodes ||
+        (md->type == eModifierType_EditSpline && !geometry_set.has_mesh()))
+    {
       mti->modify_geometry_set(md, &mectx_apply, &geometry_set);
       continue;
     }

@@ -42,6 +42,10 @@
 #include "NOD_eval_log.hh"
 
 #include "MOD_edit_poly.hh"
+#include "MOD_edit_spline.hh"
+
+#include "BKE_idprop.hh"
+#include "DNA_curves_types.h"
 
 namespace blender {
 
@@ -225,6 +229,11 @@ const EnumPropertyItem rna_enum_object_modifier_type_items[] = {
      ICON_EDITMODE_HLT,
      "Edit Poly",
      "Edit vertices, edges and faces in the stack, following the modifiers below"},
+    {eModifierType_EditSpline,
+     "EDIT_SPLINE",
+     ICON_CURVE_BEZCURVE,
+     "Edit Spline",
+     "Edit knots and splines in the stack, following the modifiers below"},
     {eModifierType_Weld,
      "WELD",
      ICON_AUTOMERGE_OFF,
@@ -2101,6 +2110,75 @@ static bool rna_EditPolyModifier_session_begin(
   DEG_relations_tag_update(bmain);
   WM_main_add_notifier(NC_OBJECT | ND_MODIFIER, owner_id);
   return true;
+}
+
+static int rna_EditSplineModifier_edit_mode_get(PointerRNA *ptr)
+{
+  return int(MOD_edit_spline_mode(*ptr->data_as<ModifierData>()));
+}
+
+static PointerRNA rna_EditSplineModifier_result_get(PointerRNA *ptr)
+{
+  Curves *curves = MOD_edit_spline_result(*ptr->data_as<ModifierData>());
+  return RNA_id_pointer_create(curves ? &curves->id : nullptr);
+}
+
+static bool rna_EditSplineModifier_store(
+    ID *owner_id, ModifierData *md, Main *bmain, ReportList *reports, Curves *input, Curves *edited)
+{
+  if (!MOD_edit_spline_store(*bmain, *md, *input, *edited, reports)) {
+    return false;
+  }
+  DEG_id_tag_update(owner_id, ID_RECALC_GEOMETRY);
+  DEG_relations_tag_update(bmain);
+  WM_main_add_notifier(NC_OBJECT | ND_MODIFIER, owner_id);
+  return true;
+}
+
+/* The Interpolation settings live in `system_properties` too, so stock Blender keeps them. */
+static int edit_spline_int(PointerRNA *ptr, const char *name, const int fallback)
+{
+  const ModifierData *md = ptr->data_as<ModifierData>();
+  const IDProperty *prop = md->system_properties ?
+                               IDP_GetPropertyFromGroup_null(md->system_properties, name) :
+                               nullptr;
+  return (prop && prop->type == IDP_INT) ? IDP_int_get(prop) : fallback;
+}
+
+static void edit_spline_int_set(PointerRNA *ptr, const char *name, const int value)
+{
+  ModifierData *md = ptr->data_as<ModifierData>();
+  if (md->system_properties == nullptr) {
+    md->system_properties = bke::idprop::create_group("").release();
+  }
+  IDP_ReplaceInGroup(md->system_properties, bke::idprop::create(name, value).release());
+  IDP_ReplaceInGroup(md->system_properties,
+                     bke::idprop::create("mx_type", StringRefNull("EDIT_SPLINE")).release());
+}
+
+static int rna_EditSplineModifier_steps_get(PointerRNA *ptr)
+{
+  return edit_spline_int(ptr, "steps", -1);
+}
+static void rna_EditSplineModifier_steps_set(PointerRNA *ptr, int value)
+{
+  edit_spline_int_set(ptr, "steps", value);
+}
+static bool rna_EditSplineModifier_optimize_get(PointerRNA *ptr)
+{
+  return edit_spline_int(ptr, "optimize", 0) != 0;
+}
+static void rna_EditSplineModifier_optimize_set(PointerRNA *ptr, bool value)
+{
+  edit_spline_int_set(ptr, "optimize", value);
+}
+static bool rna_EditSplineModifier_adaptive_get(PointerRNA *ptr)
+{
+  return edit_spline_int(ptr, "adaptive", 0) != 0;
+}
+static void rna_EditSplineModifier_adaptive_set(PointerRNA *ptr, bool value)
+{
+  edit_spline_int_set(ptr, "adaptive", value);
 }
 
 static bool rna_EditPolyModifier_is_editing_get(PointerRNA *ptr)
@@ -7505,6 +7583,83 @@ static void rna_def_modifier_edit_poly(BlenderRNA *brna)
       prop, "Is Editing", "The modifier's result is being edited in Edit Mode");
 }
 
+static void rna_def_modifier_edit_spline(BlenderRNA *brna)
+{
+  StructRNA *srna;
+  PropertyRNA *prop;
+  FunctionRNA *func;
+  PropertyRNA *parm;
+
+  static const EnumPropertyItem mode_items[] = {
+      {int(EditSplineMode::None), "NONE", 0, "None", "Nothing stored yet"},
+      {int(EditSplineMode::Deform),
+       "DEFORM",
+       0,
+       "Deform",
+       "Knot and handle offsets on the input"},
+      {int(EditSplineMode::Topology),
+       "TOPOLOGY",
+       0,
+       "Topology",
+       "Stored splines that follow the input"},
+      {0, nullptr, 0, nullptr, nullptr},
+  };
+
+  srna = RNA_def_struct(brna, "EditSplineModifier", "Modifier");
+  RNA_def_struct_ui_text(
+      srna, "Edit Spline Modifier", "Spline edits in the stack that follow the modifiers below");
+  RNA_def_struct_sdna(srna, "ModifierData");
+  RNA_def_struct_ui_icon(srna, ICON_CURVE_BEZCURVE);
+
+  prop = RNA_def_property(srna, "edit_mode", PROP_ENUM, PROP_NONE);
+  RNA_def_property_enum_items(prop, mode_items);
+  RNA_def_property_enum_funcs(prop, "rna_EditSplineModifier_edit_mode_get", nullptr, nullptr);
+  RNA_def_property_clear_flag(prop, PROP_EDITABLE);
+  RNA_def_property_ui_text(prop, "Edit Mode", "How the edit is stored");
+
+  prop = RNA_def_property(srna, "result", PROP_POINTER, PROP_NONE);
+  RNA_def_property_struct_type(prop, "Curves");
+  RNA_def_property_pointer_funcs(
+      prop, "rna_EditSplineModifier_result_get", nullptr, nullptr, nullptr);
+  RNA_def_property_clear_flag(prop, PROP_EDITABLE);
+  RNA_def_property_ui_text(prop, "Result", "The stored edited splines (Topology mode)");
+
+  prop = RNA_def_property(srna, "steps", PROP_INT, PROP_NONE);
+  RNA_def_property_int_funcs(
+      prop, "rna_EditSplineModifier_steps_get", "rna_EditSplineModifier_steps_set", nullptr);
+  RNA_def_property_range(prop, -1, 100);
+  RNA_def_property_ui_text(
+      prop, "Steps", "Points between knots (-1: keep the steps of the splines below)");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_optimize", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(
+      prop, "rna_EditSplineModifier_optimize_get", "rna_EditSplineModifier_optimize_set");
+  RNA_def_property_ui_text(prop, "Optimize", "Straight segments get no steps");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_adaptive", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(
+      prop, "rna_EditSplineModifier_adaptive_get", "rna_EditSplineModifier_adaptive_set");
+  RNA_def_property_ui_text(
+      prop, "Adaptive", "Steps by curvature: as many as a spline's curviest segment needs");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  func = RNA_def_function(srna, "store", "rna_EditSplineModifier_store");
+  RNA_def_function_ui_description(
+      func,
+      "Store an edit: `edited` is the edited version of `input`, the modifier's input curves. "
+      "An int point attribute `mx_orig` on `edited` maps its knots to input knots (-1 for new "
+      "ones)");
+  RNA_def_function_flag(func, FUNC_USE_MAIN | FUNC_USE_SELF_ID | FUNC_USE_REPORTS);
+  parm = RNA_def_pointer(func, "input", "Curves", "", "The modifier's input curves");
+  RNA_def_parameter_flags(parm, PROP_NEVER_NULL, PARM_REQUIRED);
+  parm = RNA_def_pointer(func, "edited", "Curves", "", "The edited curves");
+  RNA_def_parameter_flags(parm, PROP_NEVER_NULL, PARM_REQUIRED);
+  parm = RNA_def_boolean(func, "success", false, "", "");
+  RNA_def_function_return(func, parm);
+}
+
 static void rna_def_modifier_weld(BlenderRNA *brna)
 {
   StructRNA *srna;
@@ -11834,6 +11989,7 @@ void RNA_def_modifier(BlenderRNA *brna)
   rna_def_modifier_laplaciandeform(brna);
   rna_def_modifier_weld(brna);
   rna_def_modifier_edit_poly(brna);
+  rna_def_modifier_edit_spline(brna);
   rna_def_modifier_wireframe(brna);
   rna_def_modifier_datatransfer(brna);
   rna_def_modifier_normaledit(brna);

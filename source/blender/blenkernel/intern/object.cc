@@ -1470,6 +1470,11 @@ bool BKE_object_support_modifier_type_check(const Object *ob, int modifier_type)
     return false;
   }
 
+  /* Moritz: Edit Spline edits legacy curve objects only. */
+  if (modifier_type == eModifierType_EditSpline) {
+    return ob->type == OB_CURVES_LEGACY;
+  }
+
   /* Empties only support geometry nodes modifiers. */
   if (ob->type == OB_EMPTY) {
     return modifier_type == eModifierType_Nodes;

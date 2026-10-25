@@ -1381,14 +1381,19 @@ void BKE_modifier_blend_read_data(BlendDataReader *reader, ListBaseT<ModifierDat
     BLO_read_struct(reader, IDProperty, &md->system_properties);
     IDP_BlendDataRead(reader, &md->system_properties);
 
-    /* Moritz: an Edit Poly modifier saved by stock Blender comes back as a "None" modifier with
-     * its data intact; revive it. Both are plain #ModifierData. */
+    /* Moritz: an Edit Poly or Edit Spline modifier saved by stock Blender comes back as a "None"
+     * modifier with its data intact; revive it. All three are plain #ModifierData. */
     if (md->type == eModifierType_None && md->system_properties) {
       const IDProperty *mx_type = IDP_GetPropertyFromGroup_null(md->system_properties,
                                                                  "mx_type");
       if (mx_type && mx_type->type == IDP_STRING && STREQ(IDP_string_get(mx_type), "EDIT_POLY"))
       {
         md->type = eModifierType_EditPoly;
+      }
+      else if (mx_type && mx_type->type == IDP_STRING &&
+               STREQ(IDP_string_get(mx_type), "EDIT_SPLINE"))
+      {
+        md->type = eModifierType_EditSpline;
       }
     }
 

@@ -290,6 +290,7 @@ void modifier_type_init(ModifierTypeInfo *types[])
   INIT_TYPE(GreasePencilBuild);
   INIT_TYPE(GreasePencilTexture);
   INIT_TYPE(EditPoly);
+  INIT_TYPE(EditSpline);
 #undef INIT_TYPE
 }
 

@@ -128,6 +128,8 @@ enum ModifierType : int {
   /* Moritz only. A high, fixed value so a future upstream type cannot take it. Stored as a plain
    * #ModifierData with its data in `system_properties` (see `MOD_edit_poly.cc`). */
   eModifierType_EditPoly = 200,
+  /* Moritz only, stored like Edit Poly (see `MOD_edit_spline.cc`). */
+  eModifierType_EditSpline = 201,
   NUM_MODIFIER_TYPES,
 };
 
