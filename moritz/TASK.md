@@ -134,7 +134,8 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 - [x] **Smoothing groups** *(Maximize, `smoothing.py`)*: face attribute `smoothing_groups`, the 32-button panel, Auto Smooth, Select By SG, Groups From Sharp Edges; sharp edges follow the groups, FBX writes them as smoothing groups
 - [x] **Instance vs Reference** *(Maximize)*: instances and references share the mesh and the original's modifier stack (a Shared Stack Geometry Nodes modifier); Make Unique. Open: modifiers added to an instance don't reach the original
 - [x] **Modifier gizmos** *(Maximize, `modifier_gizmos.py`)*: Simple Deform (Bend, Twist, Taper, Stretch) dial and arrow; FFD stays Blender's Lattice
-- [ ] **Performance**: profile a 10k-object archviz scene (Outliner, undo, selection); fix the top three hotspots
+- [x] **Performance**: profile a 10k-object scene (Outliner, undo, selection): `moritz/docs/performance.md`
+- [ ] Fix the hotspots: undo step 0.75 s at 10k objects (depsgraph/view layer rebuild), whole-window redraw 66 ms
 
 ## Phase 5 — Pipeline and release
 
