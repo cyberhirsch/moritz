@@ -141,6 +141,118 @@ Rule: only what Max does better. Blender's modifier panel stays (no Max-style st
 - [x] Sub-object levels 1–6 without the add-on: core `object.subobject_level` (`bl_operators/moritz_subobject.py`), bound by the Max keymap while Maximize is off; Border and Element act as Edge and Polygon there (`moritz/tests/test_subobject_core.py`)
 - [x] Tests for evaluation and file round trips (`moritz/tests/test_edit_poly_native.py`, incl. stock Blender); undo in Edit Mode follows with the edit session
 
+### Edit Poly Modify panel by priority (Seb's screenshots of Max's Edit Poly, all five levels, 2026-10-25)
+
+Max's rollouts: Edit Poly Mode, Selection, Soft Selection, Edit (Vertices / Edges / Borders /
+Polygons / Elements, per level), Edit Geometry, Paint Deformation, and at Polygon / Element level
+Material IDs and Smoothing Groups. Order the Modify tab's Edit Poly rollouts and their buttons by
+this list (most used first); rare controls go into closed sub-panels. The small box next to a
+button opens its settings caddy (Max's "Settings"), so each of those tools needs a redo panel.
+Max's caddy (Seb's Weld Vertices screenshot): a small panel at the selection in the viewport with
+the tool's values (live preview), a result line ("Before: 97, After: 97"), and three buttons: OK,
+Apply and Continue (apply, then run the tool again on the result), Cancel. Blender's Adjust Last
+Operation panel covers the live values but sits in the corner and has no Apply and Continue
+(today: Shift+R) and no Cancel (today: Ctrl+Z).
+- [ ] Decide: Max-style caddy (an add-on popup at the mouse with OK / Apply and Continue / Cancel)
+  or Blender's Adjust Last Operation panel
+1. Daily:
+   - Selection: the five levels, Grow / Shrink, Ring / Loop, Backface culling (Ignore Backfacing)
+   - Polygons: Extrude, Inset, Bevel, Bridge, Outline, Flip
+   - Edges: Chamfer, Connect, Remove, Extrude, Bridge, Split
+   - Vertices: Remove, Weld, Target Weld, Chamfer, Connect, Break
+   - Borders: Cap, Bridge, Extrude
+   - Edit Geometry: Repeat Last, Attach, Detach, Collapse, Cut, QuickSlice, Hide Selected / Unhide
+     All / Hide Unselected
+   - Material IDs: Set ID, Select ID; Smoothing Groups: the 32 groups, Auto Smooth
+2. Weekly:
+   - Edit Geometry: Slice Plane (Split, Slice, Reset Plane), Make Planar and X / Y / Z, Relax,
+     MSmooth, Tessellate, Constraints (None / Edge / Face / Normal), Preserve UVs, Named Selections
+     Copy / Paste, Delete Isolated Vertices
+   - Polygons: Hinge From Edge, Extrude Along Spline, Insert Vertex
+   - Edges: Create Shape, Insert Vertex, Weld, Target Weld, Edge Properties (Crease, Weight, Hard /
+     Smooth), Turn
+   - Vertices: Extrude, Remove Isolated Vertices
+   - Borders: Chamfer, Connect, Create Shape, Insert Vertex
+   - Selection: By Angle, Soft Selection (Use, Falloff, Pinch, Bubble, Edge Distance, Affect
+     Backfacing)
+   - Smoothing Groups: Select By SG, Clear All; Material IDs: select by name, Clear Selection
+3. Rare:
+   - Edit Poly Mode: Model / Animate, Commit, Settings, Cancel, Show Cage (with its two colors)
+   - Selection: Use Stack Selection, Get Stack Selection, By Vertex, Occluded culling, Preview
+     Selection (Off / SubObj / Multi)
+   - Soft Selection: Shaded Face Toggle, Lock Soft Selection, Paint Soft Selection (Paint, Blur,
+     Revert, Selection Value, Brush Size, Brush Strength, Brush Options)
+   - Paint Deformation: Push/Pull, Relax, Revert, Push/Pull Direction (Original / Deformed Normals,
+     Transform axis X / Y / Z), Push/Pull Value, Brush Size, Brush Strength, Brush Options, Commit /
+     Cancel
+   - Edit Geometry: Create, View Align, Grid Align
+   - Edges: Edge Properties Depth, Display Hard Edges (with color), Edit Tri.
+   - Vertices: Remove Unused Map Verts, vertex Weight / Crease
+   - Polygons / Elements: Edit Triangulation, Retriangulate, Turn
+- [x] Checked against Maximize's code (2026-10-25). Built as Max tools: levels, Grow / Shrink /
+  Loop / Ring, Ignore Backfacing, Extrude, Inset, Bevel, Bridge, Flip, Chamfer (edge and vertex),
+  Connect, Remove, Weld, Target Weld, Cap, Repeat Last, Attach, Detach, Collapse, Cut, QuickSlice,
+  Swift Loop, Hide / Unhide, Make Planar, Relax, Tessellate, Soft Selection toggle, smoothing groups
+  (Auto Smooth, Select By SG, Clear All), hover preview.
+- [ ] **Fix Cap** (Seb, 2026-10-25): `maximize.cap` runs Blender's Fill (`mesh.fill`), which fills
+  the border with triangles. New behavior (Seb's choice; Max itself makes a single polygon):
+  - **Click: quad cap** by default, a quad grid (Grid Fill, `mesh.fill_grid`); with an odd number
+    of border edges the grid gets one triangle to make it fit
+  - **Ctrl+click: n-gon**, one polygon (Make Edge/Face, `mesh.edge_face_add`), as Max does
+  - **Shift+click: quad cap + inset**: first an inset ring along the border, then the quad grid
+    inside it, so the cap's edge flow stays clean
+  - The same three variants for the Cap key and the quad menu entry; the redo panel can switch
+    between them
+- [x] Max buttons for Blender tools (Maximize, tests/test_poly_tools.py), in per-level Edit
+  rollouts (Edit Vertices / Edges / Borders / Polygons / Elements): edge Split, vertex Break,
+  Material IDs (Set ID, Select ID with Clear Selection), Preserve UVs, Hard / Smooth, Turn, Remove
+  Isolated Vertices, Create, Display Hard Edges; also built: Select By Angle, Make Planar X / Y / Z,
+  Create Shape
+- [ ] Still without a Max button: Material IDs select by name, Slice Plane, Insert Vertex, edge
+  Crease / Weight, vertex Crease
+- [ ] Missing, to build (Seb, 2026-10-25; Outline done): Max-style edge / border / vertex
+  Extrude (Height and Width), Extrude Along Spline, Slice Plane's Split and Reset Plane, Named Selections Copy / Paste,
+  Material ID Clear Selection, Show Cage (with its two colors), Hinge From Edge (low priority);
+  Apply and Continue for Blender's Adjust Last Operation panel
+- Omitted (Seb agreed, 2026-10-25), because Blender does it as well or it is Max-only:
+  - Edit Poly Mode (Model / Animate, Commit, Settings, Cancel): rare; Blender has shape keys
+  - Paint Deformation: Blender's Sculpt Mode is better (at most a button that switches to it)
+  - Soft Selection extras (Paint, Blur, Revert, Lock, Shaded Face Toggle): Blender's proportional
+    editing covers the daily part
+  - Use / Get Stack Selection, By Vertex, Preview Selection Multi: rare
+  - Remove Unused Map Verts: Blender's UVs are per corner, no orphan map vertices
+  - Edit Triangulation, Retriangulate, edge Depth: Blender's Triangulate and Rotate Edge (Turn keeps
+    its Max name)
+  - View Align, Grid Align: rare; scale to 0 on an axis
+  - MSmooth: Blender's Subdivision Surface / smooth subdivide
+  - Constraints Edge / Face / Normal: map Edge to vertex / edge slide (G G) and Normal to Shrink /
+    Fatten (Alt+S), no rebuild
+  - Delete Isolated Vertices option: deleting faces already removes loose vertices
+  - Full Max caddies: Blender's Adjust Last Operation panel plus Apply and Continue instead
+### Sculpt modifier (Seb's decision, 2026-10-25; after Phase 3b)
+
+One **Sculpt** modifier that unifies Blender's Multires modifier and the sculpt brush settings,
+modeled on 3ds Max's Retopology modifier: it can sit mid-stack, with limitations.
+- [ ] The modifier panel holds both the Multires controls (levels for viewport / sculpt / render,
+  Subdivide, Simple, Linear, Unsubdivide, Delete Higher, Apply Base, Rebuild Subdivisions) and the
+  brush settings (brush, radius, strength, falloff, symmetry, Dyntopo), so sculpting is set up
+  in one place. Selecting it and entering its level starts Sculpt Mode on it.
+- [ ] **Dyntopo on** applies the current subdivisions first (bakes the Multires levels into the mesh),
+  then sculpts with dynamic topology. Ask before applying (it can't keep the levels).
+- [ ] **Mid-stack:** allowed, with a warning symbol next to the modifier in the stack list
+  (tooltip says why: what's below must keep its topology; Dyntopo and remesh are off there).
+  Sculpt edits are stored as per-vertex offsets (like Edit Poly's Deform mode) on the stack below.
+- [ ] Limitations to spell out, as in Max's Retopology: a topology change below invalidates the
+  sculpt (warn and offer to rebase, as Edit Poly does); mid-stack evaluation is slower; Dyntopo
+  only at the bottom of the stack.
+- Engine: core change (Multires and Sculpt Mode are core; the Edit Poly session shows the way:
+  `session_begin`, offsets written back on exit). Warn before starting: needs a rebuild.
+- *Files: keep it a Multires modifier underneath where possible, so stock Blender opens it as a
+  normal Multires; a mid-stack sculpt layer needs Edit Poly-style storage (stock keeps it disabled
+  and saves it back). Check and warn about both directions before building.*
+- Open: what the brush settings in the modifier do when two Sculpt modifiers are in one stack (shared
+  tool settings in Blender, per modifier in the panel?)
+
 ## Phase 3 — Splines
 
 Rule: only what Max does better. Kept from Blender: handle types, curve extrude and bevel (Renderable Spline), Screw (Lathe), text objects.
@@ -171,31 +283,79 @@ asked for Max's behavior here, so this overrides "only what Max does better" for
   *Files: plain Blender Bezier curves; stock Blender shows the shape and only loses the parameter
   editing. Shapes saved before stay Geometry Nodes poly curves and keep working (editable,
   convertible); new ones are Bezier. Egg is not built yet.*
-- [ ] **Interpolation as in Max**: Steps per shape (default 6 = Blender resolution 7), Optimize
-  (straight segments get no extra points), Adaptive. *Optimize and Adaptive have no Blender
-  setting: a resample in the render geometry, or a small core change to curve tessellation
-  (warn before that: it would change how curves look in Moritz but not in stock).*
-- [ ] **Max vertex types** in the quad menu and the Modify tab: Corner, Smooth, Bezier, Bezier
+- [~] **Interpolation as in Max**: Steps per shape (default 6 = Blender resolution 7) done.
+  Optimize: core flag `CU_OPTIMIZE` / `Curve.use_optimize` (`curve_legacy_convert.cc` turns
+  segments whose handles lie on the chord into vector segments, so they evaluate to their end points),
+  on for new shapes; written, waiting for the rebuild. *Files: a new bit in `Curve.flag`; stock
+  Blender ignores it and draws straight segments with Steps points, so the shape looks the same.*
+  Adaptive: open (Blender has one resolution per curve, not per segment).
+- [x] **Max vertex types** (done 2026-10-25, `spline_tools.py`; Edit Spline quad menu and the
+  Max Spline Tools menu; the Modify tab entry comes with Phase 6) in the quad menu and the Modify tab: Corner, Smooth, Bezier, Bezier
   Corner (Blender's Vector, Auto, Aligned, Free handles), Reset Tangents, Make First, Reverse.
   *Files: unaffected (Blender's own handle types).*
-- [ ] **Editable Spline levels 1 Vertex, 2 Segment, 3 Spline**: a click picks the whole segment
-  or spline (as Border/Element do for polys), Segment and Spline transforms, Divide (segment),
-  Detach, Explode, Mirror (spline), Close, Attach / Attach Multiple, Weld / Fuse / Cross Insert,
-  Insert, Delete at each level, Bind/Unbind, Show Selected Segments, Lock Handles (Alike/All).
-- [ ] **Creation as in Max**: Line with Initial Type (Corner/Smooth) and Drag Type
-  (Corner/Smooth/Bezier), Backspace removes the last vertex, Shift for 90 degrees, closing asks
-  "Close spline?"; Keyboard Entry for every shape; AutoGrid; "Start New Shape" off adds the new
-  spline to the selected shape; Text, Section, Egg, Freehand shapes.
-- [ ] **Rendering as in Max**: Enable In Renderer / In Viewport, Radial (Thickness, Sides,
-  Angle) and Rectangular (Length, Width, Angle, Aspect), Auto Smooth, Generate Mapping Coords
-  (Blender's curve bevel with a round or rectangle profile). *Files: unaffected.*
-- [ ] **Edit Spline modifier** (spline edits in the stack, as Edit Poly does for meshes), so a
-  parametric shape can be edited without converting. Core work like Edit Poly stage 0-3; ask
-  before starting. *Files: would need the same stock-compatible storage as Edit Poly.*
-- [ ] Tests: vertex counts and handles of every converted shape against Max's (checked in 3ds Max
-  2026 with `3dsmaxbatch.exe` and the Moritz exporter), interpolation, levels
-- [ ] Max scene exchange carries splines: the exporter writes shapes as knots with in/out
-  vectors and vertex types, the importer makes Bezier Curve objects (today shapes are skipped)
+- [~] **Editable Spline levels 1 Vertex, 2 Segment, 3 Spline** (done 2026-10-25, `spline_tools.py`):
+  a click at 2/3 picks a whole segment or spline (Ctrl adds, Alt removes), transforms of the picked
+  vertices, Delete per level, Divide, Detach, Explode, Close, Mirror, Weld (joins or closes
+  splines), Fuse, Attach (object level), Reset Tangents / Make First / Reverse, Trim / Extend /
+  Fillet / Chamfer / Outline / Break / Connect; in the Edit Spline quad and the Modify tab
+  (Rendering, Interpolation, Selection, Geometry rollouts). Pressing 1/2/3 on a parametric shape
+  converts it first. **Open:** Cross Insert, Bind/Unbind, Show Selected Segments (Blender draws
+  selected points, not segments in red), Lock Handles Alike/All, and a hover highlight for segments.
+- [~] **Creation as in Max** (done 2026-10-25): Line with Initial Type (Corner/Smooth) and Drag
+  Type (Corner/Smooth/Bezier), Backspace removes the last vertex, Shift for 90 degrees, clicking
+  the first vertex asks "Close spline?", Start New Shape off adds to the selected shape; Keyboard
+  Entry for every primitive and shape; AutoGrid (Create menus; surface under the mouse); Text
+  (Blender's text object), Freehand (Blender's Draw tool on a new shape), Section (plane through
+  the 3D cursor cuts the selected meshes). Egg (done, measured).
+  **Open:** Section as a live, movable plane object (today one cut at the cursor).
+- [x] **Rendering as in Max** (done 2026-10-25, `spline_render.py`): Enable In Renderer / In
+  Viewport, Radial (Thickness, Sides, Angle) and Rectangular (Length, Width, Angle), Auto Smooth with
+  threshold, Generate Mapping Coords, for shapes and editable splines, as a "Rendering" Geometry
+  Nodes modifier. *Files: a normal Geometry Nodes modifier; stock Blender renders it the same.*
+- [~] **Edit Spline modifier**: stage 0 done in Maximize (2026-10-25, `edit_spline.py`): edits
+  on a parametric shape follow its parameters while the knot count below holds. Core stages 1-3
+  (native modifier, Edit Mode session on the object itself) are planned in
+  [docs/splines_max_design.md](docs/splines_max_design.md). *Files: stage 0 is a GN modifier plus
+  helper objects; the native modifier will store its data like Edit Poly (file-safe in stock).*
+  - [ ] The Interpolation rollout (Steps, Optimize, Adaptive) on the Edit Spline modifier too, as
+    Max shows it there (Seb, 2026-10-25)
+- [x] Tests: `test_shapes_max.py` (every shape against Max 2026, rendering, optimize),
+  `test_splines.py` (levels, tools, creation), `test_max_shapes_import.py` (Max round trip)
+- [x] Max scene exchange carries splines (done 2026-10-25): the exporter writes knots with in/out
+  vectors, vertex and segment types and the shape, interpolation and rendering parameters; the
+  importer rebuilds Circle, Rectangle, Ellipse, Arc, NGon, Star, Helix and Donut parametrically and
+  other shapes as exact Bezier splines (Max's own handles kept; line segments straight). Round trip
+  checked with 3ds Max 2026.
+
+#### Editable Spline Modify panel by priority (Seb's screenshot of Max's Line panel, 2026-10-25)
+
+Lay out the Modify tab's spline rollouts in this order (most used first); rarely used controls go
+into closed sub-panels.
+1. Daily: sub-object levels (Vertex / Segment / Spline); vertex types (Corner, Smooth, Bezier,
+   Bezier Corner); Rendering: Enable In Renderer / In Viewport, Radial Thickness and Sides; Attach;
+   Refine; Fillet; Outline (with Center); Weld (threshold); Break; Interpolation Steps.
+2. Weekly: Create Line, Connect, Insert, Fuse, Chamfer, Trim / Extend (Infinite Bounds), Boolean,
+   Close, Delete, Detach (Copy), Divide (count), Make First, Reverse, Mirror (Copy, About Pivot), Optimize, Rectangular
+   rendering (Length, Width, Angle, Aspect), Generate Mapping Coords, Auto Smooth, Hide / Unhide All,
+   Soft Selection.
+3. Rare: Attach Mult., Cross Section, CrossInsert, Cycle, Bind / Unbind, Lock Handles (Alike / All),
+   Area Selection, Segment End, Select By, Named Selections Copy / Paste, Show Vertex Numbers,
+   End Point Auto-Welding, Connect Copy, Reorient, Tangent Copy / Paste, Adaptive, Use Viewport
+   Settings, Real-World Map Size, Twist Correction, Cap / Quad Cap options, Explode (to Splines /
+   Objects), Detach options Same Shp and Reorient, Show Selected Segs.
+- [x] **Required (Seb, 2026-10-25), even though they are rare** (Maximize 40b3ecc,
+  tests/test_spline_required.py):
+  - [x] End Point Auto-Welding (Automatic Welding, Threshold Dist): after each finished Move
+    (key, gizmo or tool) a moved end within the threshold snaps onto the other end and welds. It is
+    its own undo step after the move.
+  - [x] CrossInsert (threshold): adds a vertex to both splines where they cross, in local XY;
+    the threshold is how far apart they may pass in Z
+  - [x] Twist Correction for the rendered spline (Minimum Twist on, Z Up off)
+  - [x] Cap options: Cap, Quad Cap, Segments, Sphere (domes on open spline ends; radial only)
+- [ ] Not in the 3b list yet: Create Line, Insert, Cycle, Hide / Unhide All, Attach Mult., Cross
+  Section, Area Selection, Segment End, Select By, Named Selections Copy / Paste, Show Vertex
+  Numbers, Connect Copy, Reorient, Tangent Copy / Paste, Detach's Same Shp / Reorient / Copy options, Explode's To Splines / Objects choice
+  (check what the 3b Detach and Explode already do). Soft Selection is Blender's proportional editing.
 
 ## Phase 4 — Core gaps no add-on can fill
 
@@ -221,7 +381,7 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 - [x] Windows installer: `moritz/tools/make_msi.py` (WiX 5, Program Files\Moritz, Start Menu shortcut, own upgrade code, no file associations)
 - [x] Docs: "Moritz for Max users" cheat sheet (Max term → Moritz location): [docs/max_users.md](docs/max_users.md)
 - [x] CI for Maximize: background tests on Blender 5.3 (GitHub Actions)
-- [ ] 1.0 release
+- [ ] 0.2 release (Seb, 2026-10-25: the first release is Moritz 0.2, on Blender 5.3)
 
 ## Phase 6 — Command Panel (plan, 2026-10-25)
 
@@ -238,6 +398,57 @@ from Blender (or going back to it).
   at the bottom, on/off toggles, Edit Poly rows expand into the five sub-object levels, click to
   make a level active, reorder), the selected modifier's settings below; Blender's full modifier
   panels stay available underneath. *Files: UI only, unaffected.*
+
+### Max-style modifier stack in the Modify tab (plan, Seb, 2026-10-25)
+
+Layout from top to bottom, as in Max's Modify panel:
+1. **Name and color** of the object (Max's name field and wire color swatch).
+2. **Add Modifier button** (Seb: keep Blender's button, not Max's list): one flat menu with every
+   modifier at once, no submenus, as in Blender before 4.x; modifiers that don't work on the object
+   type are left out; typing the first letters shrinks the list.
+3. **The stack**, newest on top, the base object at the bottom ("Editable Poly", "Line", "Box" with
+   its parameters):
+   - each row: eye (on/off, Seb: the eye, not Max's light bulb), expand triangle, name; italic name
+     for instanced (shared) modifiers; on the right, the icon of the active sub-object level (as in
+     Seb's screenshots); disabled rows grayed; a warning symbol where a modifier has a problem
+     (Edit Poly topology changed below, Sculpt mid-stack)
+   - expanding a row shows its sub-object levels: Edit Poly Vertex / Edge / Border / Polygon /
+     Element, UVW Map Gizmo, Bend Gizmo / Center, FFD Control Points / Lattice; clicking a level
+     enters it
+   - click selects the modifier (its settings appear below); drag to reorder; Delete removes;
+     Ctrl+click selects several for copy
+   - right-click menu: Rename (also double-click), Delete, Copy, Paste, Paste Instanced, Make Unique,
+     Collapse To, Collapse All, Off in Renderer
+   - **Paste Instanced** (Seb: keep): the pasted modifier stays shared with the copied one, also
+     on copies (not only instances), so editing one changes all; shown with an italic name;
+     Make Unique breaks the link
+4. **Button row** under the stack: Show End Result (Maximize's `show_end_result`), Make Unique,
+   Remove Modifier.
+- Left out (Seb, 2026-10-25): Max's light bulb (the eye instead), Configure Modifier Sets and the
+  modifier-set button grid (the flat Add Modifier menu replaces them), Pin Stack (Blender's pin is
+  in the header), Cut (Copy and Delete), the draggable bar (Blender's lists have a resize grip).
+5. **Settings of the selected entry only**: the selected modifier's rollouts, or the base
+   object's parameters when the base is selected (Max shows one entry at a time).
+
+Steps:
+- [~] Stage 1, Python (`bl_ui/properties_data_modifier.py`, the fork session's draft, being reviewed
+  by the main session): list newest first, on/off toggle, base object row, Edit Poly levels below
+  the list. Blender's modifier panels stay below.
+- [ ] Stage 2, Python: expandable sub-object levels per row, level icon, italic instances, warning
+  symbol, right-click menu, the button row, Delete key, modifier clipboard (Copy / Paste; Blender
+  only has Copy to Selected)
+- [ ] Paste Instanced: modifiers shared between objects (one modifier's settings drive all its
+  instances, kept in sync by Maximize like the shared Edit Poly on instances; *files: plain
+  modifiers, stock Blender sees independent copies*)
+- [ ] Stage 3: only the selected modifier's settings. Python-only route: collapse the other
+  modifier panels (`show_expanded`) when one is selected; core route: an `active_only` option for
+  `template_modifiers`. Decide which.
+- [ ] Stage 4: the flat Add Modifier menu (all modifiers at once, incompatible ones left out, type
+  to filter)
+- [ ] Drag to reorder: Blender's UI lists can't drag rows; needs a small core change (or Move Up /
+  Down buttons and Ctrl+Up / Down until then). Warn before the core change.
+- *Files: UI only. The only stored values are the modifiers' own expand flags (`show_expanded`) and
+  their order, which stock Blender reads the same way.*
 - [ ] **New "Create" tab** (new `BCONTEXT_CREATE`, first in the tab column, shown with or without
   a selected object), Max's categories: Geometry, Shapes, Lights, Cameras, Helpers, Space Warps,
   Systems; "Object Type" buttons and Name and Color, as in Max. All parametric objects live here:
@@ -253,6 +464,32 @@ from Blender (or going back to it).
   first redo); with it, the parametric ones
 - [ ] Docs: `max_users.md` (Command Panel, Create, Modify), PATCHES.md, tests for the tab order and
   the renamed labels
+
+## Phase 7 — Outliner with Max's Scene Explorer features (plan, 2026-10-25)
+
+Rule: only what Max does better. Kept from Blender: the Outliner itself, collections as layers
+(active collection = Max's current layer), search, sync selection, drag and drop to parent, batch
+rename (Ctrl+F2, Max's Rename Objects), F2 rename (done).
+
+No-brainers (approved by Seb, 2026-10-25):
+- [ ] **Freeze column** with Max's snowflake icon and name (today the selectable column does the job;
+  done in Phase 4). *UI only.*
+- [ ] **Type filter row in the header**, as Max's Scene Explorer toolbar: one click per Geometry,
+  Shapes, Lights, Cameras, Helpers, Space Warps, Bones, instead of Blender's filter popover. Python
+  (`space_outliner.py`); needs Shapes split out of "Others" (curves, text) — small core change for a
+  new filter flag. *Files: a new bit in the Outliner's filter flags; stock ignores it.*
+- [ ] **Display as Box** and **See-Through** columns (per object: `display_type = 'BOUNDS'`, and
+  X-ray per object), as in Max; core (Outliner columns are C). *Files: the columns' on/off flags
+  are new bits in the Outliner space, stock ignores them; the object values are stock data.*
+- [ ] **Renderable** column under Max's name (Blender's render column, relabeled). *UI only.*
+- [ ] **Double-click an object selects it and its children** (Max), as in the viewport; rename stays
+  on F2 and Ctrl+click. Python keymap. *UI only.*
+- [ ] **Unhide All / Unfreeze All** in the Outliner's context menu and header. *UI only.*
+- [ ] **Layer properties by layer**: Max's "By Layer" for color, freeze and render; Blender's
+  collection color tags drive the object color in the viewport. Medium; check first.
+- Maybe, not no-brainers: Selection Sets as an Outliner view (Maximize's named sets), sorting by
+  column (Blender sorts by name only), Max's separate Layer Explorer (Blender's View Layer mode
+  already shows collections).
 
 ## Upstream maintenance (recurring)
 - [ ] Merge each Blender release branch into `moritz/main` (last: 31 fixes from `blender-v5.3-release`, 2026-10-25, no conflicts, tests pass)

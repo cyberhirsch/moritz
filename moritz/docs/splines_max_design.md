@@ -61,7 +61,7 @@ point's fillet vertices go towards the previous Radius 1 point unturned and the 
 by **2 ×** Distortion. A Radius 1 point's fillet vertices go towards the unturned Radius 2
 points. So the filleted sides of a distorted star are slightly curved. Moritz reproduces this
 (all 24 knots to 1e-5); without fillets, or without Distortion, it is plain geometry.
-| Egg | 2 × 11 (with Outline) | Bezier | |
+| Egg | 11, × 2 with Outline | Bezier | circular arcs, in units of half the width w: bottom radius w around (0, −0.3w) in 2 segments; sides radius 3w around (∓2w, −0.3w) up to 36.87° in 3; top radius w/2 around (0, 1.2w) in 3. The outline is the same arcs Thickness further out. Length is tied to the width (1.5 w). |
 
 The default first-knot rotation and the CCW direction are what make Max's Loft, Sweep, Path
 Deform and "Make First" results line up. Moritz has to match them.
@@ -85,7 +85,7 @@ vertex, so those two vertices are Free.
 compares them with the Max 2026 dump (`tests/data/max2026_shapes.json`): all match to 1e-5.
 Steps map to the curve resolution (Steps + 1), and Thickness maps to a round bevel.
 **Not done:** Optimize and Adaptive (no Blender setting; needs a curve tessellation change),
-and Egg (no Moritz shape yet).
+Egg is built since 2026-10-25 and matches to 1e-4.
 
 ## Modifier stack (how Max structures it, from the public SDK docs)
 
@@ -110,3 +110,42 @@ These facts come from the public SDK documentation, not from REA.
 A Curve object with Bezier splines and Blender handle types is plain Blender data. Stock
 Blender shows the converted shape and loses only parameter editing. That edit stays in the
 add-on, so a rebuild is not needed.
+
+## Max scene import of shapes
+
+The exporter writes each shape's knots in node space, with Max's knot and segment types and every
+shape parameter. Known classes come back parametric. Others come back as exact Bezier splines:
+- Max's Smooth and Bezier knots become Aligned, unless a handle has zero length; then they are Free.
+- Corner and Bezier Corner knots become Free.
+
+Max's own handle positions are kept, because Blender's Auto handles differ from Max's Smooth ones.
+On Max line segments the handles are ignored, so Moritz puts them on the line.
+`Maximize/tests/test_max_shapes_import.py` checks a Max 2026 export to 1e-5.
+
+## Edit Spline modifier
+
+**Stage 0 (add-on, done 2026-10-25, `maximize/edit_spline.py`):** a Geometry Nodes modifier,
+"MX Edit Spline", with two hidden helper curve objects, as the Edit Poly prototype:
+- **Base** is the input at the last edit; **Edited** is the edited splines.
+- Each edited knot keeps its base knot index in its **tilt**: legacy curves have no custom point
+  attributes. Subdivided knots get an in-between tilt and count as new.
+- While the input knot count equals Base's, every edited knot and its handles move by
+  input[orig] − base[orig]. Shape parameters below therefore carry the edits along.
+- Otherwise the edit is frozen and the panel warns. Editing again re-bases: each edited knot then
+  follows the nearest new input knot.
+- 1, 2 and 3 edit at the modifier, on the Edited stand-in, with every Editable Spline tool; 6 or
+  the level key returns to the object.
+
+*Files:* a Geometry Nodes modifier plus helper objects; stock Blender evaluates them unchanged.
+Test: `Maximize/tests/test_edit_spline.py`.
+
+**Core stages (planned, same path as Edit Poly):**
+
+| Stage | Content |
+|---|---|
+| 1 | Native `EDIT_SPLINE` modifier (type 201, plain `ModifierData`, data in `system_properties` like Edit Poly, so it is file-safe in stock). `modify_geometry_set` on the curves: per-knot offsets when the knot count and topology hash hold, else the stored result curves. RNA `store(input, edited)`. |
+| 2 | Edit session on the object itself: Edit Mode builds the edit-nurbs from the stored result (`ED_curve_editnurb_make` from the result instead of `cu->nurb`), and the load writes back into the modifier. The stand-in object and the tilt trick go away. |
+| 3 | The add-on drives the native modifier when present; it migrates the stage-0 setups. |
+
+The stand-in swap is the weak point of stage 0: the Outliner and selection briefly see another
+object. Stage 2 removes it, as Edit Poly's stage 3 did.
