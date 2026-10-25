@@ -11,12 +11,22 @@
 #include "BLI_sys_types.hh"
 
 #include "BLI_ghash.hh"
+#include <string>
+
+#include <fmt/format.h>
+
+#include "BLI_map.hh"
+#include <cstdio>
+
+#include "BLI_path_utils.hh"
+#include "BLI_time.hh"
 #include "BLI_listbase.hh"
 
 #include "DNA_ID.h"
 #include "DNA_collection_types.h"
 #include "DNA_mesh_types.h"
 #include "DNA_node_types.h"
+#include "DNA_object_force_types.h"
 #include "DNA_object_types.h"
 #include "DNA_scene_types.h"
 
@@ -25,6 +35,7 @@
 #include "BKE_context.hh"
 #include "BKE_lib_query.hh"
 #include "BKE_main.hh"
+#include "BKE_modifier.hh"
 #include "BKE_node.hh"
 #include "BKE_preview_image.hh"
 #include "BKE_scene.hh"
@@ -139,6 +150,142 @@ static int memfile_undosys_step_id_reused_cb(LibraryIDLinkCallbackData *cb_data)
   return IDWALK_RET_NOP;
 }
 
+
+/* Moritz: `MORITZ_UNDO_TIMING=1` prints the time of each phase of an undo step (profiling). */
+static double undo_timing_last = 0.0;
+static void undo_timing(const char *phase)
+{
+  static const bool enabled = BLI_getenv("MORITZ_UNDO_TIMING") != nullptr;
+  if (!enabled) {
+    return;
+  }
+  const double now = BLI_time_now_seconds();
+  if (phase != nullptr) {
+    printf("MORITZ_UNDO %-28s %8.1f ms\n", phase, (now - undo_timing_last) * 1000.0);
+  }
+  undo_timing_last = now;
+}
+
+/* -------------------------------------------------------------------- */
+/** \name Moritz: keep the depsgraph relations across undo
+ *
+ * Restoring the depsgraph after a memfile undo step rebuilds all its relations, which takes about
+ * half a second with 10k objects, also when the step only moved an object. The rebuild is
+ * skipped when the step provably changed no relation:
+ * - the set of IDs is the same, and every ID was reused or re-read at its old address;
+ * - every re-read ID is an object with the same relation fingerprint (parent, data, instancing,
+ *   modifier types and the IDs they use) and none of the things whose relations are not
+ *   fingerprinted (constraints, pose, particles, rigid body, animation data).
+ * \{ */
+
+static void relation_fingerprint_id_cb(void *user_data,
+                                       Object * /*ob*/,
+                                       ID **idpoin,
+                                       LibraryForeachIDCallbackFlag /*cb_flag*/)
+{
+  std::string &text = *static_cast<std::string *>(user_data);
+  text += fmt::format(" id:{}", fmt::ptr(*idpoin));
+}
+
+/** Empty means: relations not covered by the fingerprint, always rebuild. */
+static std::string object_relation_fingerprint(Object *ob)
+{
+  /* Force field settings are allocated as soon as anything reads them; only an actual field
+   * (fingerprinted below) has relations. */
+  const char *excluded = ob->pose                                     ? "pose" :
+                         ob->adt                                      ? "animation data" :
+                         !BLI_listbase_is_empty(&ob->constraints)     ? "constraints" :
+                         !BLI_listbase_is_empty(&ob->particlesystem)  ? "particles" :
+                         (ob->rigidbody_object || ob->rigidbody_constraint) ? "rigid body" :
+                         ob->soft                                     ? "soft body" :
+                                                                        nullptr;
+  if (excluded) {
+    if (BLI_getenv("MORITZ_UNDO_TIMING")) {
+      printf("MORITZ_UNDO   %s not fingerprinted: %s\n", ob->id.name, excluded);
+    }
+    return {};
+  }
+  std::string text = fmt::format("type:{} parent:{} partype:{} parsubstr:{} data:{} instance:{}",
+                                 int(ob->type),
+                                 fmt::ptr(ob->parent),
+                                 int(ob->partype),
+                                 ob->parsubstr,
+                                 fmt::ptr(ob->data),
+                                 fmt::ptr(ob->instance_collection));
+  if (ob->pd) {
+    text += fmt::format(" field:{}/{}", int(ob->pd->forcefield), int(ob->pd->shape));
+  }
+  for (const ModifierData &md : ob->modifiers) {
+    text += fmt::format(" mod:{}/{}", int(md.type), int(md.mode));
+  }
+  BKE_modifiers_foreach_ID_link(ob, relation_fingerprint_id_cb, &text);
+  return text;
+}
+
+struct RelationsSnapshot {
+  int64_t id_count = 0;
+  Map<const ID *, std::string> objects;
+};
+
+static RelationsSnapshot relations_snapshot(Main *bmain)
+{
+  RelationsSnapshot snapshot;
+  ID *id;
+  FOREACH_MAIN_ID_BEGIN (bmain, id) {
+    snapshot.id_count++;
+    if (id->id_type() == ID_OB) {
+      snapshot.objects.add(id, object_relation_fingerprint(id_cast<Object *>(id)));
+    }
+  }
+  FOREACH_MAIN_ID_END;
+  return snapshot;
+}
+
+static void relations_debug(const char *reason, const ID *id)
+{
+  static const bool enabled = BLI_getenv("MORITZ_UNDO_TIMING") != nullptr;
+  if (enabled) {
+    printf("MORITZ_UNDO relations rebuilt: %s %s (tag %x)\n", reason, id->name, unsigned(id->tag));
+  }
+}
+
+static bool relations_unchanged(Main *bmain, const RelationsSnapshot &before)
+{
+  int64_t id_count = 0;
+  bool unchanged = true;
+  ID *id;
+  FOREACH_MAIN_ID_BEGIN (bmain, id) {
+    id_count++;
+    if (!unchanged) {
+      continue;
+    }
+    if (id->tag & (ID_TAG_UNDO_OLD_ID_REUSED_UNCHANGED | ID_TAG_UNDO_OLD_ID_REUSED_NOUNDO)) {
+      continue;
+    }
+    if (!(id->tag & ID_TAG_UNDO_OLD_ID_REREAD_IN_PLACE) || id->id_type() != ID_OB) {
+      unchanged = false;
+      relations_debug("not reused", id);
+      continue;
+    }
+    const std::string *old = before.objects.lookup_ptr(id);
+    const std::string now = object_relation_fingerprint(id_cast<Object *>(id));
+    if (old == nullptr || old->empty() || *old != now) {
+      unchanged = false;
+      relations_debug("relations differ", id);
+      if (old && BLI_getenv("MORITZ_UNDO_TIMING")) {
+        printf("MORITZ_UNDO   before: %s\nMORITZ_UNDO   after:  %s\n", old->c_str(), now.c_str());
+      }
+    }
+  }
+  FOREACH_MAIN_ID_END;
+  if (unchanged && id_count != before.id_count && BLI_getenv("MORITZ_UNDO_TIMING")) {
+    printf("MORITZ_UNDO relations rebuilt: ID count %d -> %d\n", int(before.id_count), int(id_count));
+  }
+  return unchanged && id_count == before.id_count;
+}
+
+/** \} */
+
 static void memfile_undosys_step_decode(
     bContext *C, Main *bmain, UndoStep *us_p, const eUndoStepDir undo_direction, bool /*is_final*/)
 {
@@ -176,12 +323,17 @@ static void memfile_undosys_step_decode(
 
   /* Extract depsgraphs from current bmain (which may be freed during undo step reading),
    * and store them for re-use. */
+  undo_timing(nullptr);
   GHash *depsgraphs = nullptr;
+  RelationsSnapshot relations_before;
   if (use_old_bmain_data) {
     depsgraphs = BKE_scene_undo_depsgraphs_extract(bmain);
+    relations_before = relations_snapshot(bmain);
   }
+  undo_timing("depsgraphs extract");
 
   ED_editors_exit(bmain, false);
+  undo_timing("editors exit");
   /* Ensure there's no preview job running. Unfinished previews will be scheduled for regeneration
    * via #PRV_TAG_RESTART_RENDERING in BKE_previewimg_blend_read. */
   ED_preview_kill_jobs_for_undo(CTX_wm_manager(C), bmain);
@@ -189,6 +341,7 @@ static void memfile_undosys_step_decode(
 
   MemFileUndoStep *us = reinterpret_cast<MemFileUndoStep *>(us_p);
   BKE_memfile_undo_decode(us->data, undo_direction, use_old_bmain_data, C);
+  undo_timing("memfile decode (read)");
 
   for (UndoStep *us_iter = us_p->next; us_iter; us_iter = us_iter->next) {
     if (BKE_UNDOSYS_TYPE_IS_MEMFILE_SKIP(us_iter->type)) {
@@ -206,6 +359,7 @@ static void memfile_undosys_step_decode(
   /* bmain has been freed. */
   bmain = CTX_data_main(C);
   ED_editors_init_for_undo(bmain);
+  undo_timing("editors init");
 
   /* Cancelled preview jobs set this on the old bmain, carry it over to
    * restart previews that were interrupted. */
@@ -213,7 +367,12 @@ static void memfile_undosys_step_decode(
 
   if (use_old_bmain_data) {
     /* Restore previous depsgraphs into current bmain. */
-    BKE_scene_undo_depsgraphs_restore(bmain, depsgraphs);
+    const bool keep_relations = relations_unchanged(bmain, relations_before);
+    BKE_scene_undo_depsgraphs_restore(bmain, depsgraphs, !keep_relations);
+    if (keep_relations) {
+      undo_timing("relations kept");
+    }
+    undo_timing("depsgraphs restore");
 
     /* We need to inform depsgraph about re-used old IDs that would be using newly read
      * data-blocks, at least evaluated copies need to be updated... */
@@ -305,6 +464,7 @@ static void memfile_undosys_step_decode(
       }
     }
     FOREACH_MAIN_ID_END;
+    undo_timing("tag reused IDs");
   }
 
   WM_event_add_notifier(C, NC_SCENE | ND_LAYER_CONTENT, CTX_data_scene(C));

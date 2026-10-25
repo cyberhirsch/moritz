@@ -33,6 +33,7 @@ set(SRC
   intern/MOD_displace.cc
   intern/MOD_dynamicpaint.cc
   intern/MOD_edgesplit.cc
+  intern/MOD_edit_poly.cc
   intern/MOD_explode.cc
   intern/MOD_fluid.cc
   intern/MOD_grease_pencil_armature.cc
@@ -117,6 +118,7 @@ set(SRC
   intern/lineart/lineart_shadow.cc
   intern/lineart/lineart_util.cc
 
+  MOD_edit_poly.hh
   MOD_modifiertypes.hh
   MOD_nodes.hh
   intern/MOD_grease_pencil_util.hh

@@ -13,7 +13,7 @@ drawing). Average of 3–5 runs each.
 | 3D viewport redraw | 23 ms |
 | Select all / deselect all | 23 ms |
 | Undo push | 19 ms |
-| **Move one object, undo push, undo** | **757 ms** |
+| **Move one object, undo push, undo** | **757 ms** (85 ms after the fix below) |
 
 ## Findings
 
@@ -27,9 +27,31 @@ drawing). Average of 3–5 runs each.
    one slow editor.
 3. Outliner, selection and the viewport are fine at this size.
 
+## Undo fix (done)
+
+Timing undo with `MORITZ_UNDO_TIMING=1` (prints each phase) and `--debug-depsgraph-time`
+showed the undo step itself took about 100 ms; the rest was a full rebuild of the depsgraph
+relations (0.5 s) plus a full evaluation, requested unconditionally in
+`BKE_scene_undo_depsgraphs_restore`.
+
+`memfile_undo.cc` now keeps the relations when the step provably changed none: same set of IDs,
+every ID reused or re-read at its old address, and every re-read ID an object with the same
+relation fingerprint (parent, data, instancing, force field, modifier types and the IDs they use;
+objects with constraints, pose, particles, rigid body, soft body or animation data always
+rebuild). Moving objects and undoing, in a 10k-object scene:
+
+| | Before | After |
+|---|---|---|
+| Undo one move | 800 ms | 85 ms |
+| Redo one move | 800 ms | 80 ms |
+
+Steps that change relations (parent, modifiers, adding or deleting objects, any change to the
+scene datablock) still rebuild. Tested by `moritz/tests/test_undo_relations.py`.
+
 ## Next steps
 
-- Profile the undo step with a sampling profiler on a RelWithDebInfo build, and check whether
-  the depsgraph can be updated instead of rebuilt when only transforms changed between steps.
+- The scene datablock is often re-read right after an undo/redo pair, which still forces a
+  rebuild; scenes could get a fingerprint too (master collection and view layer bases are
+  re-allocated on re-read, so the depsgraph would need their new pointers).
 - Repeat with 10k unique meshes and with instanced collections (the archviz case), and with
   Maximize enabled (its hover highlight and view tracking run on every redraw).

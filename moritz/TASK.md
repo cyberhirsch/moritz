@@ -17,7 +17,7 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
 - [x] Install Visual Studio 2022 Build Tools, CMake and Git LFS
 - [x] `make update` (fetches precompiled libs into `lib/`)
 - [x] First build: `make.bat release`; gentle rebuilds run through `build_gentle.cmd` (low priority, 2 jobs)
-- [ ] Debug build plus a VS solution for core work (`make.bat full nobuild 2022`)
+- [x] VS solution: `build_windows_Full_x64_vc17_Release/Blender.sln` (Debug, Release, RelWithDebInfo); `build_gentle.cmd Debug` and `build_when_idle.ps1 -Config Debug` build the Debug config at low priority into `bin/Debug`
 - [ ] CI: Windows build on push (GitHub Actions or self-hosted)
 
 ### Rebrand
@@ -105,9 +105,9 @@ Rule: only what Max does better. Blender's modifier panel stays (no Max-style st
 
 ### 2b — Core (once the workflow is right)
 - [x] **Spike:** read the modifier evaluation path (`blenkernel/intern/mesh_data_update.cc`, `modifier.cc`, `modifiers/intern/MOD_*.cc`, `DNA_modifier_types.h`, `rna_modifier.cc`) and write the design note (`moritz/docs/edit_poly_core_design.md`)
-- [ ] `eModifierType_EditPoly` in DNA and RNA; `MOD_edit_poly.cc`, taking over the prototype's data
+- [x] `eModifierType_EditPoly` (200) and `EditPolyModifier` RNA with `store(input, edited)`, `edit_mode`, `result`; `MOD_edit_poly.cc` with Deform (offsets) and Topology (stored mesh + `mx_orig`) modes, topology fingerprint and warnings; add-menu entry
 - [ ] Edit Mode directly on the evaluated mesh from the stack below; speed on heavy meshes
-- [ ] Opening in stock Blender: unknown modifier → bake on save, or a documented fallback
+- [x] Opening in stock Blender: the modifier is a plain `ModifierData` with its data in `system_properties`, so stock keeps it (disabled), keeps the modifiers above and saves the data back; Moritz revives it (`BKE_modifier_blend_read_data`). Tested through stock 5.2 (`moritz/tests/test_edit_poly_native.py`)
 - [x] Header: Max's five sub-object levels (Vertex, Edge, Border, Polygon, Element) in place of Blender's three select-mode buttons, through the `VIEW3D_HT_header.select_mode_draw` hook that Maximize fills
 - [ ] Border and Element as real select modes in the core
 - [ ] Sub-object levels 1–6 without the add-on
@@ -135,7 +135,8 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 - [x] **Instance vs Reference** *(Maximize)*: instances and references share the mesh and the original's modifier stack (a Shared Stack Geometry Nodes modifier); Make Unique. Open: modifiers added to an instance don't reach the original
 - [x] **Modifier gizmos** *(Maximize, `modifier_gizmos.py`)*: Simple Deform (Bend, Twist, Taper, Stretch) dial and arrow; FFD stays Blender's Lattice
 - [x] **Performance**: profile a 10k-object scene (Outliner, undo, selection): `moritz/docs/performance.md`
-- [ ] Fix the hotspots: undo step 0.75 s at 10k objects (depsgraph/view layer rebuild), whole-window redraw 66 ms
+- [x] Undo hotspot: keep the depsgraph relations when an undo step changed none (800 ms -> 85 ms at 10k objects; `memfile_undo.cc`, `test_undo_relations.py`)
+- [ ] Whole-window redraw 66 ms at 10k objects; scene fingerprint so undo/redo pairs also keep relations
 
 ## Phase 5 — Pipeline and release
 

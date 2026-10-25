@@ -41,6 +41,8 @@
 
 #include "NOD_eval_log.hh"
 
+#include "MOD_edit_poly.hh"
+
 namespace blender {
 
 const EnumPropertyItem rna_enum_object_modifier_type_items[] = {
@@ -218,6 +220,11 @@ const EnumPropertyItem rna_enum_object_modifier_type_items[] = {
      ICON_VOLUME_DATA,
      "Volume to Mesh",
      ""}, /* TODO: Use correct icon. */
+    {eModifierType_EditPoly,
+     "EDIT_POLY",
+     ICON_EDITMODE_HLT,
+     "Edit Poly",
+     "Edit vertices, edges and faces in the stack, following the modifiers below"},
     {eModifierType_Weld,
      "WELD",
      ICON_AUTOMERGE_OFF,
@@ -2041,6 +2048,29 @@ static int rna_NodesModifierWarning_type_get(PointerRNA *ptr)
 {
   const auto *warning = static_cast<const nodes::NodeWarning *>(ptr->data);
   return int(warning->type);
+}
+
+static int rna_EditPolyModifier_edit_mode_get(PointerRNA *ptr)
+{
+  return int(MOD_edit_poly_mode(*ptr->data_as<ModifierData>()));
+}
+
+static PointerRNA rna_EditPolyModifier_result_get(PointerRNA *ptr)
+{
+  Mesh *mesh = MOD_edit_poly_result(*ptr->data_as<ModifierData>());
+  return RNA_id_pointer_create(mesh ? &mesh->id : nullptr);
+}
+
+static bool rna_EditPolyModifier_store(
+    ID *owner_id, ModifierData *md, Main *bmain, ReportList *reports, Mesh *input, Mesh *edited)
+{
+  if (!MOD_edit_poly_store(*bmain, *md, *input, *edited, reports)) {
+    return false;
+  }
+  DEG_id_tag_update(owner_id, ID_RECALC_GEOMETRY);
+  DEG_relations_tag_update(bmain);
+  WM_main_add_notifier(NC_OBJECT | ND_MODIFIER, owner_id);
+  return true;
 }
 
 static bool rna_NodesModifier_is_input_visible(PointerRNA nmd_ptr,
@@ -7365,6 +7395,58 @@ static void rna_def_modifier_laplaciandeform(BlenderRNA *brna)
   RNA_def_property_update(prop, 0, "rna_Modifier_update");
 }
 
+static void rna_def_modifier_edit_poly(BlenderRNA *brna)
+{
+  StructRNA *srna;
+  PropertyRNA *prop;
+  FunctionRNA *func;
+  PropertyRNA *parm;
+
+  static const EnumPropertyItem mode_items[] = {
+      {int(EditPolyMode::None), "NONE", 0, "None", "Nothing stored yet"},
+      {int(EditPolyMode::Deform), "DEFORM", 0, "Deform", "Vertex offsets on the input"},
+      {int(EditPolyMode::Topology),
+       "TOPOLOGY",
+       0,
+       "Topology",
+       "A stored mesh that follows the input"},
+      {0, nullptr, 0, nullptr, nullptr},
+  };
+
+  srna = RNA_def_struct(brna, "EditPolyModifier", "Modifier");
+  RNA_def_struct_ui_text(
+      srna, "Edit Poly Modifier", "Mesh edits in the stack that follow the modifiers below");
+  RNA_def_struct_sdna(srna, "ModifierData");
+  RNA_def_struct_ui_icon(srna, ICON_EDITMODE_HLT);
+
+  prop = RNA_def_property(srna, "edit_mode", PROP_ENUM, PROP_NONE);
+  RNA_def_property_enum_items(prop, mode_items);
+  RNA_def_property_enum_funcs(prop, "rna_EditPolyModifier_edit_mode_get", nullptr, nullptr);
+  RNA_def_property_clear_flag(prop, PROP_EDITABLE);
+  RNA_def_property_ui_text(prop, "Edit Mode", "How the edit is stored");
+
+  prop = RNA_def_property(srna, "result", PROP_POINTER, PROP_NONE);
+  RNA_def_property_struct_type(prop, "Mesh");
+  RNA_def_property_pointer_funcs(
+      prop, "rna_EditPolyModifier_result_get", nullptr, nullptr, nullptr);
+  RNA_def_property_clear_flag(prop, PROP_EDITABLE);
+  RNA_def_property_ui_text(prop, "Result", "The stored edited mesh (Topology mode)");
+
+  func = RNA_def_function(srna, "store", "rna_EditPolyModifier_store");
+  RNA_def_function_ui_description(
+      func,
+      "Store an edit: `edited` is the edited version of `input`, the modifier's input mesh. "
+      "An int point attribute `mx_orig` on `edited` maps its vertices to input vertices "
+      "(-1 for new ones)");
+  RNA_def_function_flag(func, FUNC_USE_MAIN | FUNC_USE_SELF_ID | FUNC_USE_REPORTS);
+  parm = RNA_def_pointer(func, "input", "Mesh", "", "The modifier's input mesh");
+  RNA_def_parameter_flags(parm, PROP_NEVER_NULL, PARM_REQUIRED);
+  parm = RNA_def_pointer(func, "edited", "Mesh", "", "The edited mesh");
+  RNA_def_parameter_flags(parm, PROP_NEVER_NULL, PARM_REQUIRED);
+  parm = RNA_def_boolean(func, "success", false, "", "");
+  RNA_def_function_return(func, parm);
+}
+
 static void rna_def_modifier_weld(BlenderRNA *brna)
 {
   StructRNA *srna;
@@ -11693,6 +11775,7 @@ void RNA_def_modifier(BlenderRNA *brna)
   rna_def_modifier_meshcache(brna);
   rna_def_modifier_laplaciandeform(brna);
   rna_def_modifier_weld(brna);
+  rna_def_modifier_edit_poly(brna);
   rna_def_modifier_wireframe(brna);
   rna_def_modifier_datatransfer(brna);
   rna_def_modifier_normaledit(brna);

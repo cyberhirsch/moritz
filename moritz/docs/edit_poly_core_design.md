@@ -1,6 +1,6 @@
 # Edit Poly modifier in core: design note
 
-Status: proposal, nothing implemented. Based on reading the Moritz tree (Blender 5.3) and the
+Status: stages 0-2 implemented (see the end of this note); stages 3-5 open. Based on reading the Moritz tree (Blender 5.3) and the
 add-on prototype `G:\Code\Maximize\maximize\edit_poly.py`.
 
 ## 0. The prototype in one paragraph
@@ -251,3 +251,21 @@ top of the stack.
 Batching: stages 0-2 fit one rebuild cycle and are useful alone (the prototype's operators can
 already drive a native modifier by writing its RNA data from a stand-in object). Stage 3 is a
 separate cycle and should be done when stage 1-2 files exist to test against.
+
+## Implemented (stages 0-2)
+
+Changed from the plan above: no `EditPolyModifierData` struct. The modifier is a plain
+`ModifierData` (type 200) and keeps its data as ID properties in `system_properties`
+(`mx_type`, `mode`, `base_counts`, `base_hash`, `offsets` or `base_positions` + `result`). Stock
+Blender knows that struct, so section 6's compatibility stub is simply the storage format: no
+separate write path, no data loss, and `system_properties` ID pointers are already counted as
+users. Moritz revives a stub saved by stock in `BKE_modifier_blend_read_data`.
+
+- `source/blender/modifiers/intern/MOD_edit_poly.cc`, `MOD_edit_poly.hh`
+- RNA `EditPolyModifier`: `edit_mode`, `result`, `store(input, edited)` (the add-on prototype or
+  the future edit session writes the edit through it)
+- Test: `moritz/tests/test_edit_poly_native.py` (deform and topology edits follow the stack
+  below, save/reload, round trip through stock Blender)
+
+Still to do: stage 3 (the edit session in Edit Mode, replacing the add-on's stand-in object) and
+stage 4 (the add-on drives the native modifier).

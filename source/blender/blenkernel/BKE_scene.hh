@@ -351,7 +351,10 @@ Depsgraph *BKE_scene_get_depsgraph(const Scene *scene, const ViewLayer *view_lay
 Depsgraph *BKE_scene_ensure_depsgraph(Main *bmain, Scene *scene, ViewLayer *view_layer);
 
 GHash *BKE_scene_undo_depsgraphs_extract(Main *bmain);
-void BKE_scene_undo_depsgraphs_restore(Main *bmain, GHash *depsgraph_extract);
+/** \param update_relations: Moritz: false when the undo step provably kept every relation. */
+void BKE_scene_undo_depsgraphs_restore(Main *bmain,
+                                       GHash *depsgraph_extract,
+                                       bool update_relations = true);
 
 void BKE_scene_transform_orientation_remove(Scene *scene, TransformOrientation *orientation);
 TransformOrientation *BKE_scene_transform_orientation_find(const Scene *scene, int index);

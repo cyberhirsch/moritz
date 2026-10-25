@@ -16,6 +16,10 @@
 #include "DNA_scene_types.h"
 
 #include "BLI_listbase.hh"
+#include <cstdio>
+
+#include "BLI_path_utils.hh"
+#include "BLI_time.hh"
 #include "BLI_task_c.hh"
 #include "BLI_utildefines.hh"
 #include "BLI_vector.hh"
@@ -246,6 +250,22 @@ static void ed_undo_step_post(bContext *C,
  * May undo or redo several steps at once only if the target step is a 'skipped' one.
  * The target step will be the one immediately before or after the active one.
  */
+
+/* Moritz: `MORITZ_UNDO_TIMING=1` prints the time of each phase of an undo step (profiling). */
+static double undo_step_timing_last = 0.0;
+static void undo_step_timing(const char *phase)
+{
+  static const bool enabled = BLI_getenv("MORITZ_UNDO_TIMING") != nullptr;
+  if (!enabled) {
+    return;
+  }
+  const double now = BLI_time_now_seconds();
+  if (phase != nullptr) {
+    printf("MORITZ_UNDO %-28s %8.1f ms\n", phase, (now - undo_step_timing_last) * 1000.0);
+  }
+  undo_step_timing_last = now;
+}
+
 static wmOperatorStatus ed_undo_step_direction(bContext *C,
                                                enum eUndoStepDir step,
                                                ReportList *reports)
@@ -256,7 +276,9 @@ static wmOperatorStatus ed_undo_step_direction(bContext *C,
 
   wmWindowManager *wm = CTX_wm_manager(C);
 
+  undo_step_timing(nullptr);
   ed_undo_step_pre(C, wm, step, reports);
+  undo_step_timing("step pre (jobs, handlers)");
 
   if (step == STEP_UNDO) {
     BKE_undosys_step_undo(wm->runtime->undo_stack, C);
@@ -264,8 +286,10 @@ static wmOperatorStatus ed_undo_step_direction(bContext *C,
   else {
     BKE_undosys_step_redo(wm->runtime->undo_stack, C);
   }
+  undo_step_timing("step (all)");
 
   ed_undo_step_post(C, wm, step, reports);
+  undo_step_timing("step post (handlers, tools)");
 
   return OPERATOR_FINISHED;
 }

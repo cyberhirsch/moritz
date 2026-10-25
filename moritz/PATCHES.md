@@ -69,3 +69,19 @@ Areas dock into each other as tabs, Adobe-style; dragging empty header space mov
 - `moritz/` — roadmap, tasks, research and this file
 
 The Max workflow is not part of Moritz: it is the separate add-on [Maximize](https://github.com/cyberhirsch/maximize).
+
+## Edit Poly modifier (core)
+
+- `source/blender/makesdna/DNA_modifier_types.h` — `eModifierType_EditPoly = 200` (Moritz only)
+- `source/blender/modifiers/intern/MOD_edit_poly.cc`, `MOD_edit_poly.hh`, `MOD_util.cc`, `MOD_modifiertypes.hh`, `CMakeLists.txt`
+- `source/blender/makesrna/intern/rna_modifier.cc` — `EditPolyModifier`, enum item `EDIT_POLY`
+- `source/blender/blenkernel/intern/modifier.cc` — revive an Edit Poly saved by stock Blender
+- `scripts/startup/bl_ui/properties_data_modifier.py` — add-menu entry
+
+## Undo speed
+
+- `source/blender/editors/undo/memfile_undo.cc` — keep the depsgraph relations when an undo step
+  changed none; `MORITZ_UNDO_TIMING=1` prints the phases of each step
+- `source/blender/editors/undo/ed_undo.cc` — phase timing
+- `source/blender/blenkernel/intern/scene.cc`, `BKE_scene.hh` — `update_relations` parameter of
+  `BKE_scene_undo_depsgraphs_restore`

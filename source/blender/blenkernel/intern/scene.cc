@@ -3693,7 +3693,9 @@ GHash *BKE_scene_undo_depsgraphs_extract(Main *bmain)
   return depsgraph_extract;
 }
 
-void BKE_scene_undo_depsgraphs_restore(Main *bmain, GHash *depsgraph_extract)
+void BKE_scene_undo_depsgraphs_restore(Main *bmain,
+                                       GHash *depsgraph_extract,
+                                       const bool update_relations)
 {
   for (Scene &scene : bmain->scenes) {
     for (ViewLayer &view_layer : scene.view_layers) {
@@ -3716,7 +3718,9 @@ void BKE_scene_undo_depsgraphs_restore(Main *bmain, GHash *depsgraph_extract)
 
       DEG_graph_replace_owners(depsgraph, bmain, &scene, &view_layer);
 
-      DEG_graph_tag_relations_update(depsgraph);
+      if (update_relations) {
+        DEG_graph_tag_relations_update(depsgraph);
+      }
 
       *depsgraph_scene_ptr = depsgraph;
       *depsgraph_extract_ptr = nullptr;

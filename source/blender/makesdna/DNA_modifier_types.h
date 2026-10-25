@@ -125,6 +125,9 @@ enum ModifierType : int {
   eModifierType_GreasePencilBuild = 84,
   eModifierType_GreasePencilSimplify = 85,
   eModifierType_GreasePencilTexture = 86,
+  /* Moritz only. A high, fixed value so a future upstream type cannot take it. Stored as a plain
+   * #ModifierData with its data in `system_properties` (see `MOD_edit_poly.cc`). */
+  eModifierType_EditPoly = 200,
   NUM_MODIFIER_TYPES,
 };
 
