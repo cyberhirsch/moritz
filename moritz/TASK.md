@@ -141,7 +141,8 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 - [ ] Bundle the `.max` importer (Import Autodesk MAX extension), checking its license; no own importer
 - [ ] V-Ray/Corona → Cycles material converter (bundle an existing one if possible)
 - [x] FBX presets: "To 3ds Max" / "From 3ds Max" (scene units, smoothing groups, no leaf bones)
-- [ ] Windows installer and portable zip
+- [x] Portable zip: `moritz/tools/make_portable_zip.py` (add-on copied in, no debug symbols or build tools); smoke-tested
+- [ ] Windows installer
 - [x] Docs: "Moritz for Max users" cheat sheet (Max term → Moritz location): [docs/max_users.md](docs/max_users.md)
 - [x] CI for Maximize: background tests on Blender 5.3 (GitHub Actions)
 - [ ] 1.0 release
