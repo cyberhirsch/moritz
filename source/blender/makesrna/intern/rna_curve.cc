@@ -1909,6 +1909,14 @@ static void rna_def_curve(BlenderRNA *brna)
   RNA_def_property_ui_text(prop, "Fill Caps", "Fill caps for beveled curves");
   RNA_def_property_update(prop, 0, "rna_Curve_update_data");
 
+  prop = RNA_def_property(srna, "use_optimize", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_sdna(prop, nullptr, "flag", CU_OPTIMIZE);
+  RNA_def_property_ui_text(
+      prop,
+      "Optimize",
+      "Straight Bezier segments get no interpolation points, as in 3ds Max (Moritz)");
+  RNA_def_property_update(prop, 0, "rna_Curve_update_data");
+
   prop = RNA_def_property(srna, "use_map_taper", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(prop, nullptr, "flag", CU_MAP_TAPER);
   RNA_def_property_ui_text(

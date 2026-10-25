@@ -7,6 +7,7 @@
  */
 
 #include "BLI_listbase.hh"
+#include "BLI_math_vector.hh"
 #include "BLI_task.hh"
 #include "BLI_vector.hh"
 
@@ -172,6 +173,35 @@ Curves *curve_legacy_to_curves(const Curve &curve_legacy, const ListBaseT<Nurb> 
             handle_types_r[points[i]] = handle_type_from_legacy(point.h2);
             radii[points[i]] = point.radius;
             tilts[points[i]] = point.tilt;
+          }
+
+          if (curve_legacy.flag & CU_OPTIMIZE) {
+            /* Moritz: a segment whose handles lie on its chord is a straight line; vector
+             * handles make it evaluate to its two end points only, as Max's Optimize does. */
+            const int segments_num = (src_curve.flagu & CU_NURB_CYCLIC) ? src_points.size() :
+                                                                          src_points.size() - 1;
+            for (const int i : IndexRange(segments_num)) {
+              const int next = (i + 1) % src_points.size();
+              const float3 start = positions[points[i]];
+              const float3 chord = positions[points[next]] - start;
+              const float chord_sq = math::length_squared(chord);
+              if (chord_sq == 0.0f) {
+                continue;
+              }
+              const auto on_chord = [&](const float3 &handle) {
+                const float3 offset = handle - start;
+                const float along = math::dot(offset, chord);
+                return along >= 0.0f && along <= chord_sq &&
+                       math::length_squared(math::cross(offset, chord)) <=
+                           1e-10f * chord_sq * chord_sq;
+              };
+              if (on_chord(handle_positions_r[points[i]]) &&
+                  on_chord(handle_positions_l[points[next]]))
+              {
+                handle_types_r[points[i]] = BEZIER_HANDLE_VECTOR;
+                handle_types_l[points[next]] = BEZIER_HANDLE_VECTOR;
+              }
+            }
           }
         },
         exec_mode::grain_size(256));
