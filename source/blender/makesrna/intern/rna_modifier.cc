@@ -2092,7 +2092,9 @@ static bool rna_EditPolyModifier_session_begin(
     BKE_report(reports, RPT_ERROR, "Another Edit Poly modifier of this object is being edited");
     return false;
   }
-  if (!MOD_edit_poly_session_begin(*bmain, *md, *input, *edited, reports)) {
+  if (!(edited ? MOD_edit_poly_session_begin(*bmain, *md, *input, *edited, reports) :
+                  MOD_edit_poly_session_begin_from_input(*bmain, *md, *input, reports)))
+  {
     return false;
   }
   DEG_id_tag_update(owner_id, ID_RECALC_GEOMETRY);
@@ -7488,8 +7490,11 @@ static void rna_def_modifier_edit_poly(BlenderRNA *brna)
   RNA_def_function_flag(func, FUNC_USE_MAIN | FUNC_USE_SELF_ID | FUNC_USE_REPORTS);
   parm = RNA_def_pointer(func, "input", "Mesh", "", "The modifier's input mesh");
   RNA_def_parameter_flags(parm, PROP_NEVER_NULL, PARM_REQUIRED);
-  parm = RNA_def_pointer(func, "edited", "Mesh", "", "The current edited mesh");
-  RNA_def_parameter_flags(parm, PROP_NEVER_NULL, PARM_REQUIRED);
+  RNA_def_pointer(func,
+                  "edited",
+                  "Mesh",
+                  "",
+                  "The current edited mesh (default: computed from the input and the stored edit)");
   parm = RNA_def_boolean(func, "success", false, "", "");
   RNA_def_function_return(func, parm);
 

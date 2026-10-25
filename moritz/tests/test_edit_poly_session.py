@@ -47,7 +47,7 @@ def begin(obj, ep):
     src = stack_input(obj, ep)
     edited = bpy.data.meshes.new_from_object(obj.evaluated_get(bpy.context.evaluated_depsgraph_get()))
     # Up to and including the Edit Poly (no modifiers above in this test).
-    ok = ep.session_begin(src, edited)
+    ok = ep.session_begin(src, edited=edited)
     bpy.data.meshes.remove(edited)
     return ok, src
 

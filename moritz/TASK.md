@@ -109,11 +109,11 @@ Rule: only what Max does better. Blender's modifier panel stays (no Max-style st
 - [x] `eModifierType_EditPoly` (200) and `EditPolyModifier` RNA with `store(input, edited)`, `edit_mode`, `result`; `MOD_edit_poly.cc` with Deform (offsets) and Topology (stored mesh + `mx_orig`) modes, topology fingerprint and warnings; add-menu entry
 - [x] Maximize drives the native modifier in Moritz (stand-in editing, then `store()`; GN prototype stays for stock Blender)
 - [x] Edit Mode directly on the modifier's result, no stand-in object (core session: `session_begin`, enter/evaluate/load/exit branches; `moritz/tests/test_edit_poly_session.py`)
-- [ ] Speed on heavy meshes (the add-on still evaluates the stack twice to begin)
+- [x] Speed on heavy meshes: one stack evaluation to begin (`session_begin(input)` applies the stored edit in core); entering and leaving a level on 393k vertices takes as long as Tab (about 230 / 75 ms; `Maximize/tests/bench_edit_poly.py`)
 - [x] Opening in stock Blender: the modifier is a plain `ModifierData` with its data in `system_properties`, so stock keeps it (disabled), keeps the modifiers above and saves the data back; Moritz revives it (`BKE_modifier_blend_read_data`). Tested through stock 5.2 (`moritz/tests/test_edit_poly_native.py`)
 - [x] Header: Max's five sub-object levels (Vertex, Edge, Border, Polygon, Element) in place of Blender's three select-mode buttons, through the `VIEW3D_HT_header.select_mode_draw` hook that Maximize fills
 - [ ] Border and Element as real select modes in the core
-- [ ] Sub-object levels 1–6 without the add-on
+- [x] Sub-object levels 1–6 without the add-on: core `object.subobject_level` (`bl_operators/moritz_subobject.py`), bound by the Max keymap while Maximize is off; Border and Element act as Edge and Polygon there (`moritz/tests/test_subobject_core.py`)
 - [x] Tests for evaluation and file round trips (`moritz/tests/test_edit_poly_native.py`, incl. stock Blender); undo in Edit Mode follows with the edit session
 
 ## Phase 3 — Splines
@@ -155,5 +155,5 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 - [ ] 1.0 release
 
 ## Upstream maintenance (recurring)
-- [ ] Merge each Blender release branch into `moritz/main`
+- [ ] Merge each Blender release branch into `moritz/main` (last: 31 fixes from `blender-v5.3-release`, 2026-10-25, no conflicts, tests pass)
 - [ ] Re-run the test suite and a smoke test of Maximize after each merge

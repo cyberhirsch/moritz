@@ -325,8 +325,14 @@ void MOD_edit_poly_session_end(Main &bmain, ModifierData &md)
 
 /** \} */
 
-static Mesh *modify_mesh(ModifierData *md, const ModifierEvalContext *ctx, Mesh *mesh)
+/** The modifier's output for `mesh`; warnings go to `ob` when given. May return `mesh` itself. */
+static Mesh *apply_edit(ModifierData *md, Object *ob, Mesh *mesh)
 {
+  auto warn = [&](const char *message) {
+    if (ob) {
+      BKE_modifier_set_warning(ob, md, "%s", message);
+    }
+  };
   const EditPolyMode mode = MOD_edit_poly_mode(*md);
   if (mode == EditPolyMode::None) {
     return mesh;
@@ -336,13 +342,12 @@ static Mesh *modify_mesh(ModifierData *md, const ModifierEvalContext *ctx, Mesh 
   if (mode == EditPolyMode::Deform) {
     const Span<float3> offsets = float3_prop(*md, "offsets");
     if (offsets.size() != mesh->verts_num) {
-      BKE_modifier_set_warning(ctx->object, md, "Topology below changed: the edit is off");
+      warn("Topology below changed: the edit is off");
       return mesh;
     }
     if (!matches) {
       /* Max is index based too: same vertex count, keep applying by index. */
-      BKE_modifier_set_warning(
-          ctx->object, md, "Topology below changed: edits applied by vertex index");
+      warn("Topology below changed: edits applied by vertex index");
     }
     Mesh *result = BKE_mesh_copy_for_eval(*mesh);
     MutableSpan<float3> positions = result->vert_positions_for_write();
@@ -361,13 +366,14 @@ static Mesh *modify_mesh(ModifierData *md, const ModifierEvalContext *ctx, Mesh 
     stored = DEG_get_original(stored);
   }
   if (stored == nullptr) {
-    BKE_modifier_set_error(ctx->object, md, "Stored mesh is missing");
+    if (ob) {
+      BKE_modifier_set_error(ob, md, "Stored mesh is missing");
+    }
     return mesh;
   }
   Mesh *result = BKE_mesh_copy_for_eval(*stored);
   if (!matches) {
-    BKE_modifier_set_warning(
-        ctx->object, md, "Topology below changed: edits kept as they were");
+    warn("Topology below changed: edits kept as they were");
     return result;
   }
   /* Edited vertices ride on the changes from below: add (input - base) of their source. */
@@ -386,6 +392,26 @@ static Mesh *modify_mesh(ModifierData *md, const ModifierEvalContext *ctx, Mesh 
   return result;
 }
 
+
+static Mesh *modify_mesh(ModifierData *md, const ModifierEvalContext *ctx, Mesh *mesh)
+{
+  return apply_edit(md, ctx->object, mesh);
+}
+
+bool MOD_edit_poly_session_begin_from_input(Main &bmain,
+                                            ModifierData &md,
+                                            const Mesh &input,
+                                            ReportList *reports)
+{
+  Mesh *input_copy = BKE_mesh_copy_for_eval(input);
+  Mesh *edited = apply_edit(&md, nullptr, input_copy);
+  const bool ok = MOD_edit_poly_session_begin(bmain, md, input, *edited, reports);
+  if (edited != input_copy) {
+    BKE_id_free(nullptr, edited);
+  }
+  BKE_id_free(nullptr, input_copy);
+  return ok;
+}
 
 static void panel_draw(const bContext * /*C*/, Panel *panel)
 {

@@ -169,15 +169,17 @@ def apply(km, moritz=False, maya_navigation=False):
     # Double-click an object: select it and its children.
     km.bind(om, "object.select_grouped", _event('LEFTMOUSE', 'DOUBLE_CLICK'),
             {"type": 'CHILDREN_RECURSIVE', "extend": True})
+    # Without the add-on, the core's `object.subobject_level` (Border as Edge, Element as Polygon).
+    level_op = "maximize.subobject" if km.available("maximize.subobject", {}) else "object.subobject_level"
     for key, level in (('ONE', 'VERTEX'), ('TWO', 'EDGE'), ('THREE', 'BORDER'),
                        ('FOUR', 'POLYGON'), ('FIVE', 'ELEMENT')):
-        km.bind(om, "maximize.subobject", _event(key), {"level": level})
-        km.bind("Mesh", "maximize.subobject", _event(key), {"level": level})
-    km.bind("Mesh", "maximize.subobject", _event('SIX'), {"level": 'OBJECT'})
+        km.bind(om, level_op, _event(key), {"level": level})
+        km.bind("Mesh", level_op, _event(key), {"level": level})
+    km.bind("Mesh", level_op, _event('SIX'), {"level": 'OBJECT'})
     # Editable Spline: 1 vertex, 2 segment, 3 spline (one Edit Mode in Blender), 6 back to the object.
     if "Curve" in km.items:
         for key, level in (('ONE', 'VERTEX'), ('TWO', 'EDGE'), ('THREE', 'BORDER'), ('SIX', 'OBJECT')):
-            km.bind("Curve", "maximize.subobject", _event(key), {"level": level})
+            km.bind("Curve", level_op, _event(key), {"level": level})
     # Border and Element have no Blender select mode: clicks there pick a whole border or element
     # (the operator passes the click through at the other levels).
     for mods, props in (({}, {}), ({"ctrl": True}, {"extend": True}), ({"alt": True}, {"deselect": True})):

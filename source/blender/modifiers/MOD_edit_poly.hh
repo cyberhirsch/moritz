@@ -47,6 +47,11 @@ Mesh *MOD_edit_poly_result(const ModifierData &md);
  */
 bool MOD_edit_poly_session_begin(
     Main &bmain, ModifierData &md, const Mesh &input, const Mesh &edited, ReportList *reports);
+/** Same, with the current output computed from `input` (one stack evaluation instead of two). */
+bool MOD_edit_poly_session_begin_from_input(Main &bmain,
+                                            ModifierData &md,
+                                            const Mesh &input,
+                                            ReportList *reports);
 /** The Edit Poly modifier of `ob` in an Edit Mode session, or null. */
 ModifierData *MOD_edit_poly_session_find(const Object &ob);
 /** Write the edit-mesh (converted to `edited`) into the session's result. */
