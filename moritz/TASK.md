@@ -194,7 +194,7 @@ Operation panel covers the live values but sits in the corner and has no Apply a
   Connect, Remove, Weld, Target Weld, Cap, Repeat Last, Attach, Detach, Collapse, Cut, QuickSlice,
   Swift Loop, Hide / Unhide, Make Planar, Relax, Tessellate, Soft Selection toggle, smoothing groups
   (Auto Smooth, Select By SG, Clear All), hover preview.
-- [ ] **Fix Cap** (Seb, 2026-10-25): `maximize.cap` runs Blender's Fill (`mesh.fill`), which fills
+- [x] **Fix Cap** (Seb, 2026-10-25; done, `maximize.cap` modes QUAD / NGON / INSET): `maximize.cap` runs Blender's Fill (`mesh.fill`), which fills
   the border with triangles. New behavior (Seb's choice; Max itself makes a single polygon):
   - **Click: quad cap** by default, a quad grid (Grid Fill, `mesh.fill_grid`); with an odd number
     of border edges the grid gets one triangle to make it fit
@@ -208,12 +208,14 @@ Operation panel covers the live values but sits in the corner and has no Apply a
   Material IDs (Set ID, Select ID with Clear Selection), Preserve UVs, Hard / Smooth, Turn, Remove
   Isolated Vertices, Create, Display Hard Edges; also built: Select By Angle, Make Planar X / Y / Z,
   Create Shape
-- [ ] Still without a Max button: Material IDs select by name, Slice Plane, Insert Vertex, edge
-  Crease / Weight, vertex Crease
-- [ ] Missing, to build (Seb, 2026-10-25; Outline done): Max-style edge / border / vertex
-  Extrude (Height and Width), Extrude Along Spline, Slice Plane's Split and Reset Plane, Named Selections Copy / Paste,
-  Material ID Clear Selection, Show Cage (with its two colors), Hinge From Edge (low priority);
-  Apply and Continue for Blender's Adjust Last Operation panel
+- [x] Still without a Max button: Material IDs select by name, Slice Plane, Insert Vertex, edge
+  Crease / Weight, vertex Crease (done, `poly_tools.py`)
+- [x] Built (Seb, 2026-10-25; `poly_tools.py`, tests `test_poly_tools*.py`): Max-style edge /
+  border / vertex Extrude (Height and Width), Extrude Along Spline, Slice Plane's Split and Reset
+  Plane, Named Selections Copy / Paste, Material ID Clear Selection, Show Cage (on / off), Hinge
+  From Edge
+- [ ] Still open from that list: Show Cage's two colors, a live Slice Plane gizmo, Apply and
+  Continue for Blender's Adjust Last Operation panel
 - Omitted (Seb agreed, 2026-10-25), because Blender does it as well or it is Max-only:
   - Edit Poly Mode (Model / Animate, Commit, Settings, Cancel): rare; Blender has shape keys
   - Paint Deformation: Blender's Sculpt Mode is better (at most a button that switches to it)
@@ -401,12 +403,12 @@ Max's Command Panel replaces the look of Blender's Properties editor: the same e
 Max's two most used tabs first. Standing rule: say for every step whether it breaks files coming
 from Blender (or going back to it).
 
-- [ ] **Rename the Properties editor to "Command Panel"** (editor type menu, header, tooltips,
+- [x] **Rename the Properties editor to "Command Panel"** (editor type menu, header, tooltips,
   manual links). Only the label changes: `SpaceProperties` and the Python type `'PROPERTIES'` stay,
   so scripts and add-ons that look for it keep working. *Files: UI only, unaffected.*
-- [ ] **Rename the Modifiers tab to "Modify"** (label and tooltip of `BCONTEXT_MODIFIER`). *Files:
+- [x] **Rename the Modifiers tab to "Modify"** (label and tooltip of `BCONTEXT_MODIFIER`). *Files:
   UI only, unaffected.*
-- [ ] **Modify tab as in Max**: the Max-style stack list on top (newest modifier first, base object
+- [x] *(stage 1)* **Modify tab as in Max**: the Max-style stack list on top (newest modifier first, base object
   at the bottom, on/off toggles, Edit Poly rows expand into the five sub-object levels, click to
   make a level active, reorder), the selected modifier's settings below; Blender's full modifier
   panels stay available underneath. *Files: UI only, unaffected.*
@@ -461,7 +463,7 @@ Steps:
   Down buttons and Ctrl+Up / Down until then). Warn before the core change.
 - *Files: UI only. The only stored values are the modifiers' own expand flags (`show_expanded`) and
   their order, which stock Blender reads the same way.*
-- [ ] **New "Create" tab** (new `BCONTEXT_CREATE`, first in the tab column, shown with or without
+- [x] **New "Create" tab** (new `BCONTEXT_CREATE`, first in the tab column, shown with or without
   a selected object), Max's categories: Geometry, Shapes, Lights, Cameras, Helpers, Space Warps,
   Systems; "Object Type" buttons and Name and Color, as in Max. All parametric objects live here:
   the editable primitives (Box, Sphere, Cylinder, Cone, Tube, Torus, Plane), the parametric shapes
@@ -470,12 +472,12 @@ Steps:
   not know the new one and falls back to the Object tab (`buttons_context.cc`), so nothing breaks
   in either direction. Objects made here are ordinary Blender objects (the parametric ones are
   Geometry Nodes modifiers, which stock Blender evaluates).*
-- [ ] Move Maximize's sidebar Create and Modify panels (Max tab) into the Command Panel tabs; keep
+- [x] Move Maximize's sidebar Create and Modify panels (Max tab) into the Command Panel tabs; keep
   the sidebar Max tab for the other tools
-- [ ] Without Maximize, the Create tab offers Blender's own primitives (not parametric after the
+- [x] Without Maximize, the Create tab offers Blender's own primitives (not parametric after the
   first redo); with it, the parametric ones
-- [ ] Docs: `max_users.md` (Command Panel, Create, Modify), PATCHES.md, tests for the tab order and
-  the renamed labels
+- [ ] Docs: `max_users.md` (Command Panel, Create, Modify), PATCHES.md (tests done:
+  `moritz/tests/test_command_panel.py`)
 
 ## Phase 7 — Outliner with Max's Scene Explorer features (plan, 2026-10-25)
 
