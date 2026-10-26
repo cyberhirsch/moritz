@@ -74,11 +74,13 @@ jobs:
       - name: Build
         shell: powershell
         run: |
-          # On the workstation at most 4 projects x 4 files at once: unlimited (/m with each
-          # project's /MP) started about 400 compilers on 32 threads and ran out of memory
-          # (D8040). Hosted runners have 4 cores, so all of them.
+          # On the workstation as gentle as build_gentle.cmd: 2 projects x 2 files at once (the
+          # runner itself runs at idle priority). Unlimited (/m with each project's /MP) started
+          # about 400 compilers on 32 threads and ran out of memory (D8040). The CL variable is
+          # appended to every compiler command line, so its /MP2 wins over Blender's /MP.
+          # Hosted runners have 4 cores, so all of them.
           $jobs = @("/m")
-          if ("${{ inputs.runner }}" -eq "self-hosted") { $jobs = @("/m:4", "/p:CL_MPCount=4") }
+          if ("${{ inputs.runner }}" -eq "self-hosted") { $jobs = @("/m:2"); $env:CL = "/MP2" }
           cmake --build build --config Release --target install -- @jobs /nologo /v:m
 
       - name: Link the add-on
