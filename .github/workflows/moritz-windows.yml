@@ -73,7 +73,13 @@ jobs:
 
       - name: Build
         shell: powershell
-        run: cmake --build build --config Release --target install -- /m /nologo /v:m
+        run: |
+          # On the workstation at most 4 projects x 4 files at once: unlimited (/m with each
+          # project's /MP) started about 400 compilers on 32 threads and ran out of memory
+          # (D8040). Hosted runners have 4 cores, so all of them.
+          $jobs = @("/m")
+          if ("${{ inputs.runner }}" -eq "self-hosted") { $jobs = @("/m:4", "/p:CL_MPCount=4") }
+          cmake --build build --config Release --target install -- @jobs /nologo /v:m
 
       - name: Link the add-on
         shell: powershell
