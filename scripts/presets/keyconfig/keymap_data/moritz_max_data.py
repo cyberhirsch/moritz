@@ -187,6 +187,8 @@ def apply(km, moritz=False, maya_navigation=False):
         for mods, props in (({}, {}), ({"ctrl": True}, {"extend": True}), ({"alt": True}, {"deselect": True})):
             km.append("Curve", "maximize.spline_pick", _event('LEFTMOUSE', 'CLICK', **mods), props)
         km.bind("Curve", "maximize.spline_level_delete", _event('DEL'))
+        # Lock Handles: a drag on a selected vertex's handle (passes through when off).
+        km.append("Curve", "maximize.spline_lock_handles_drag", _event('LEFTMOUSE', 'CLICK_DRAG'))
     # Border and Element have no Blender select mode: clicks there pick a whole border or element
     # (the operator passes the click through at the other levels).
     for mods, props in (({}, {}), ({"ctrl": True}, {"extend": True}), ({"alt": True}, {"deselect": True})):

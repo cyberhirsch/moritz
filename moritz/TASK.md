@@ -380,8 +380,8 @@ into closed sub-panels.
   originals), Section as a live plane object (yellow cut while it moves, Create Shape)
 - [x] *(2026-10-26, Maximize)* Bind / Unbind: an end vertex stays on a segment's middle (kept by
   the add-on in the curve's `mx_bind` property; stock Blender keeps the vertex where it was)
-- [ ] Still open: Refine's Bind First / Bind Last, Lock Handles (Blender moves every selected handle together already; Max's per-drag
-  locking is not built), segment hover highlight
+- [x] *(2026-10-26, Maximize)* Refine's Bind First / Bind Last, Lock Handles (Alike / All: dragging a
+  selected vertex's handle), hover highlight for knots, segments and splines
 
 ## Phase 4 — Core gaps no add-on can fill
 
