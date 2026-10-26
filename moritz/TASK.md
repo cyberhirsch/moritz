@@ -111,7 +111,7 @@ Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberh
   - [x] **Lock Camera to View**, on by default (new files with the Max layout): pan, orbit and zoom in a camera view move the camera instead of leaving camera view (Blender's sidebar > View > View Lock > Camera to View)
   - [x] **Lock Camera**: the camera can't be moved by accident (location, rotation and scale locks; Blender's camera-to-view sync already respects them)
 - Suggestions, not decided yet:
-  - [x] *(2026-10-26: Field of View drag and Roll in the Point-of-View menu; with Lock Camera to View, orbit / pan / zoom are Max's Orbit / Truck / Dolly. Open: the button strip at the bottom right, Dolly Target)* Camera navigation tools in camera view: Dolly (camera / target / both), Truck, Orbit, Pan Camera, Roll, Field of View, Perspective; button strip at the bottom right
+  - [x] *(2026-10-26: Field of View drag and Roll in the Point-of-View menu; with Lock Camera to View, orbit / pan / zoom are Max's Orbit / Truck / Dolly. button strip at the bottom right (Dolly, Field of View, Pan, Orbit, Roll) and Dolly Camera / Target / Both in the menu, Maximize 7d85898)* Camera navigation tools in camera view: Dolly (camera / target / both), Truck, Orbit, Pan Camera, Roll, Field of View, Perspective; button strip at the bottom right
   - [x] *(2026-10-26)* Target camera: drag from camera position to target; target is an empty with a Track To constraint
   - [x] *(2026-10-26, Camera Correction)* Vertical tilt correction (2-point perspective) through lens shift
   - [x] *(2026-10-26, new files)* Max's 45° default viewport field of view (lens 43.5 mm); larger far clip for cm archviz scenes
@@ -519,5 +519,5 @@ No-brainers (approved by Seb, 2026-10-25):
   already shows collections).
 
 ## Upstream maintenance (recurring)
-- [ ] Merge each Blender release branch into `moritz/main` (last: 31 fixes from `blender-v5.3-release`, 2026-10-25, no conflicts, tests pass)
+- [ ] Merge each Blender release branch into `moritz/main` (last: 24 fixes from `blender-v5.3-release`, 2026-10-26, no conflicts, tests pass)
 - [ ] Re-run the test suite and a smoke test of Maximize after each merge
