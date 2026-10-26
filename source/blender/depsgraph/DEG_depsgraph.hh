@@ -86,6 +86,13 @@ void DEG_graph_replace_owners(Depsgraph *depsgraph,
                               Scene *scene,
                               ViewLayer *view_layer);
 
+/**
+ * Moritz: point the node of `id_old` at `id_new`, an original ID that replaced it at a new
+ * address with the same relations (a scene's master collection after the scene was re-read in
+ * place by undo). The relations stay; the caller tags `id_new` for a copy-on-evaluation update.
+ */
+void DEG_graph_id_replace_orig(Depsgraph *depsgraph, const ID *id_old, ID *id_new);
+
 /** Free graph's contents and graph itself. */
 void DEG_graph_free(Depsgraph *graph);
 

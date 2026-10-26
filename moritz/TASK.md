@@ -394,7 +394,7 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 - [x] **Performance**: profile a 10k-object scene (Outliner, undo, selection): `moritz/docs/performance.md`
 - [x] Undo hotspot: keep the depsgraph relations when an undo step changed none (800 ms -> 85 ms at 10k objects; `memfile_undo.cc`, `test_undo_relations.py`)
 - [x] Whole-window redraw at 10k objects measured per region (see `docs/performance.md`): the Outliner tree rebuild is half of it and only runs on structural changes; no change needed
-- [ ] Scene fingerprint so undo/redo pairs also keep relations (blocked: the depsgraph keys the master collection by its address, which changes when the scene is re-read)
+- [x] *(2026-10-26, `memfile_undo.cc`, `DEG_graph_id_replace_orig`)* Scene fingerprint so undo/redo pairs also keep relations: scenes and collections fingerprinted, the master collection's depsgraph node re-keyed when the scene is re-read (frame change undo at 10k objects 800 -> 290 ms; `docs/performance.md`)
 
 ## Phase 5 — Pipeline and release
 

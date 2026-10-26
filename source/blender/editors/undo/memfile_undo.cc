@@ -24,11 +24,13 @@
 
 #include "DNA_ID.h"
 #include "DNA_collection_types.h"
+#include "DNA_layer_types.h"
 #include "DNA_mesh_types.h"
 #include "DNA_node_types.h"
 #include "DNA_object_force_types.h"
 #include "DNA_object_types.h"
 #include "DNA_scene_types.h"
+#include "DNA_sequence_types.h"
 
 #include "BKE_blender_undo.hh"
 #include "BKE_compositor.hh"
@@ -175,7 +177,12 @@ static void undo_timing(const char *phase)
  * - the set of IDs is the same, and every ID was reused or re-read at its old address;
  * - every re-read ID is an object with the same relation fingerprint (parent, data, instancing,
  *   modifier types and the IDs they use) and none of the things whose relations are not
- *   fingerprinted (constraints, pose, particles, rigid body, animation data).
+ *   fingerprinted (constraints, pose, particles, rigid body, animation data), or a scene with
+ *   the same scene fingerprint (camera, world, master collection contents, view layers and
+ *   their collections and bases; scenes with a set, rigid body world, sequencer strips or
+ *   animation data always rebuild), or a collection with the same flags, objects and children.
+ * A re-read scene gets a new master collection (embedded, so re-allocated): its depsgraph node is
+ * re-keyed to the new pointer with #DEG_graph_id_replace_orig.
  * \{ */
 
 static void relation_fingerprint_id_cb(void *user_data,
@@ -222,9 +229,80 @@ static std::string object_relation_fingerprint(Object *ob)
   return text;
 }
 
+static void collection_fingerprint(const Collection *collection, std::string &text)
+{
+  text += fmt::format(" coll:{}/{}", fmt::ptr(collection), int(collection->flag));
+
+  for (const CollectionObject &cob : collection->gobject) {
+    text += fmt::format(" ob:{}", fmt::ptr(cob.ob));
+  }
+  for (const CollectionChild &child : collection->children) {
+    text += fmt::format(" child:{}", fmt::ptr(child.collection));
+  }
+}
+
+static void layer_collection_fingerprint(const LayerCollection &layer_collection, std::string &text)
+{
+  text += fmt::format(" lc:{}/{}",
+                      fmt::ptr(layer_collection.collection),
+                      int(layer_collection.flag));
+  for (const LayerCollection &child : layer_collection.layer_collections) {
+    layer_collection_fingerprint(child, text);
+  }
+  text += " /lc";
+}
+
+/** Empty means: relations not covered by the fingerprint, always rebuild. The master collection
+ * is listed by its contents only, its address changes when the scene is re-read. */
+static std::string scene_relation_fingerprint(const Scene *scene)
+{
+  const char *excluded = scene->set              ? "set" :
+                         scene->rigidbody_world  ? "rigid body world" :
+                         (scene->ed && !BLI_listbase_is_empty(&scene->ed->seqbase)) ?
+                                                   "sequencer strips" :
+                         scene->adt              ? "animation data" :
+                         !scene->master_collection ? "no master collection" :
+                                                    nullptr;
+  if (excluded) {
+    if (BLI_getenv("MORITZ_UNDO_TIMING")) {
+      printf("MORITZ_UNDO   %s not fingerprinted: %s\n", scene->id.name, excluded);
+    }
+    return {};
+  }
+  std::string text = fmt::format(
+      "camera:{} world:{} master:{}",
+      fmt::ptr(scene->camera),
+      fmt::ptr(scene->world),
+      int(scene->master_collection->flag));
+  for (const CollectionObject &cob : scene->master_collection->gobject) {
+    text += fmt::format(" ob:{}", fmt::ptr(cob.ob));
+  }
+  for (const CollectionChild &child : scene->master_collection->children) {
+    text += fmt::format(" child:{}", fmt::ptr(child.collection));
+  }
+  for (const ViewLayer &view_layer : scene->view_layers) {
+    text += fmt::format(" view_layer:{}/{}", view_layer.name, int(view_layer.flag));
+    for (const LayerCollection &layer_collection : view_layer.layer_collections) {
+      /* The top layer collection is the master collection's: by its children, not its address. */
+      text += fmt::format(" top:{}", int(layer_collection.flag));
+      for (const LayerCollection &child : layer_collection.layer_collections) {
+        layer_collection_fingerprint(child, text);
+      }
+    }
+    for (const Base &base : view_layer.object_bases) {
+      text += fmt::format(" base:{}", fmt::ptr(base.object));
+    }
+  }
+  return text;
+}
+
 struct RelationsSnapshot {
   int64_t id_count = 0;
   Map<const ID *, std::string> objects;
+  Map<const ID *, std::string> scenes;
+  Map<const ID *, std::string> collections;
+  /** Each scene's master collection, to re-key the depsgraphs when the scene is re-read. */
+  Map<const ID *, const ID *> master_collections;
 };
 
 static RelationsSnapshot relations_snapshot(Main *bmain)
@@ -235,6 +313,18 @@ static RelationsSnapshot relations_snapshot(Main *bmain)
     snapshot.id_count++;
     if (id->id_type() == ID_OB) {
       snapshot.objects.add(id, object_relation_fingerprint(id_cast<Object *>(id)));
+    }
+    else if (id->id_type() == ID_GR) {
+      std::string text;
+      collection_fingerprint(id_cast<Collection *>(id), text);
+      snapshot.collections.add(id, text);
+    }
+    else if (id->id_type() == ID_SCE) {
+      const Scene *scene = id_cast<Scene *>(id);
+      snapshot.scenes.add(id, scene_relation_fingerprint(scene));
+      if (scene->master_collection) {
+        snapshot.master_collections.add(id, &scene->master_collection->id);
+      }
     }
   }
   FOREACH_MAIN_ID_END;
@@ -262,13 +352,29 @@ static bool relations_unchanged(Main *bmain, const RelationsSnapshot &before)
     if (id->tag & (ID_TAG_UNDO_OLD_ID_REUSED_UNCHANGED | ID_TAG_UNDO_OLD_ID_REUSED_NOUNDO)) {
       continue;
     }
-    if (!(id->tag & ID_TAG_UNDO_OLD_ID_REREAD_IN_PLACE) || id->id_type() != ID_OB) {
+    if (!(id->tag & ID_TAG_UNDO_OLD_ID_REREAD_IN_PLACE) ||
+        !ELEM(id->id_type(), ID_OB, ID_SCE, ID_GR))
+    {
       unchanged = false;
       relations_debug("not reused", id);
       continue;
     }
-    const std::string *old = before.objects.lookup_ptr(id);
-    const std::string now = object_relation_fingerprint(id_cast<Object *>(id));
+    const std::string *old = nullptr;
+    std::string now;
+    switch (id->id_type()) {
+      case ID_SCE:
+        old = before.scenes.lookup_ptr(id);
+        now = scene_relation_fingerprint(id_cast<Scene *>(id));
+        break;
+      case ID_GR:
+        old = before.collections.lookup_ptr(id);
+        collection_fingerprint(id_cast<Collection *>(id), now);
+        break;
+      default:
+        old = before.objects.lookup_ptr(id);
+        now = object_relation_fingerprint(id_cast<Object *>(id));
+        break;
+    }
     if (old == nullptr || old->empty() || *old != now) {
       unchanged = false;
       relations_debug("relations differ", id);
@@ -282,6 +388,28 @@ static bool relations_unchanged(Main *bmain, const RelationsSnapshot &before)
     printf("MORITZ_UNDO relations rebuilt: ID count %d -> %d\n", int(before.id_count), int(id_count));
   }
   return unchanged && id_count == before.id_count;
+}
+
+/** Re-key the depsgraph nodes of master collections re-allocated by re-reading their scene. */
+static void relations_rekey_master_collections(Main *bmain, const RelationsSnapshot &before)
+{
+  for (Scene &scene : bmain->scenes) {
+    const ID *old_master = before.master_collections.lookup_default(&scene.id, nullptr);
+    if (old_master == nullptr || scene.master_collection == nullptr ||
+        old_master == &scene.master_collection->id)
+    {
+      continue;
+    }
+    for (ViewLayer &view_layer : scene.view_layers) {
+      if (Depsgraph *depsgraph = BKE_scene_get_depsgraph(&scene, &view_layer)) {
+        DEG_graph_id_replace_orig(depsgraph, old_master, &scene.master_collection->id);
+      }
+    }
+    DEG_id_tag_update_ex(bmain, &scene.master_collection->id, ID_RECALC_SYNC_TO_EVAL);
+    if (BLI_getenv("MORITZ_UNDO_TIMING")) {
+      printf("MORITZ_UNDO   %s master collection re-keyed\n", scene.id.name);
+    }
+  }
 }
 
 /** \} */
@@ -370,6 +498,7 @@ static void memfile_undosys_step_decode(
     const bool keep_relations = relations_unchanged(bmain, relations_before);
     BKE_scene_undo_depsgraphs_restore(bmain, depsgraphs, !keep_relations);
     if (keep_relations) {
+      relations_rekey_master_collections(bmain, relations_before);
       undo_timing("relations kept");
     }
     undo_timing("depsgraphs restore");

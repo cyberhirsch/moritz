@@ -2,7 +2,8 @@
 # (needs a window; with MORITZ_UNDO_TIMING=1 the undo phases are printed, including
 # "relations kept" when the depsgraph relations were not rebuilt).
 # Undo must give the right evaluated scene whether or not the relations are rebuilt: a move
-# (relations kept), a parent change and a modifier change (relations rebuilt).
+# (relations kept), a parent change and a modifier change (relations rebuilt), scene changes
+# (relations kept, master collection re-keyed) and collection visibility (rebuilt).
 import bpy
 
 
@@ -81,6 +82,67 @@ def run():
         cube = bpy.data.objects["Cube"]
         check("undo chain", abs(ev(cube).matrix_world.translation.y) < 1e-6,
               round(ev(cube).matrix_world.translation.y, 3))
+
+        # 5. Scene changes re-read the scene (its master collection moves): relations kept and
+        # the master collection re-keyed when nothing relational changed.
+        scene = bpy.context.scene
+        n_objects = len(list(bpy.context.evaluated_depsgraph_get().objects))
+        scene.frame_current = 7
+        bpy.ops.ed.undo_push(message="frame")
+        cube.location.x = 4.0
+        bpy.ops.ed.undo_push(message="move after frame")
+        bpy.ops.ed.undo()
+        bpy.ops.ed.undo()
+        bpy.ops.ed.redo()
+        bpy.ops.ed.redo()
+        cube = bpy.data.objects["Cube"]
+        dg = bpy.context.evaluated_depsgraph_get()
+        check("scene redo: frame", bpy.context.scene.frame_current == 7)
+        check("scene redo: move", abs(ev(cube).matrix_world.translation.x - 4.0) < 1e-6)
+        check("scene redo: objects", len(list(dg.objects)) == n_objects, len(list(dg.objects)), n_objects)
+        check("scene redo: master collection", set(o.name for o in dg.scene_eval.collection.all_objects) ==
+              set(o.name for o in bpy.context.scene.collection.all_objects))
+        # Moving after the re-key still evaluates.
+        cube.location.x = 6.0
+        bpy.ops.ed.undo_push(message="move after re-key")
+        check("move after re-key", abs(ev(cube).matrix_world.translation.x - 6.0) < 1e-6)
+
+        # 6. Hiding a collection in the view layer: relations differ, rebuilt.
+        layer_coll = bpy.context.view_layer.layer_collection.children[0]
+        layer_coll.hide_viewport = True
+        bpy.ops.ed.undo_push(message="hide collection")
+        cube = bpy.data.objects["Cube"]
+        check("hidden", not cube.visible_get())
+        bpy.ops.ed.undo()
+        cube = bpy.data.objects["Cube"]
+        check("undo hide", cube.visible_get())
+
+        # 7. Excluding a collection removes its objects from the depsgraph.
+        layer_coll = bpy.context.view_layer.layer_collection.children[0]
+        layer_coll.exclude = True
+        bpy.ops.ed.undo_push(message="exclude")
+        n_ex = len(list(bpy.context.evaluated_depsgraph_get().objects))
+        bpy.ops.ed.undo()
+        n_back = len(list(bpy.context.evaluated_depsgraph_get().objects))
+        check("undo exclude", n_back == n_objects and n_ex < n_objects, n_ex, n_back)
+
+        # 8. Linking into the master collection, then a frame change and undo across both.
+        empty = bpy.data.objects["Pivot"]
+        bpy.context.scene.collection.objects.link(empty)
+        bpy.ops.ed.undo_push(message="link to master")
+        bpy.context.scene.frame_current = 9
+        bpy.ops.ed.undo_push(message="frame 9")
+        bpy.ops.ed.undo()
+        dg = bpy.context.evaluated_depsgraph_get()
+        check("master link kept", "Pivot" in {o.name for o in dg.scene_eval.collection.objects})
+        bpy.ops.ed.undo()
+        dg = bpy.context.evaluated_depsgraph_get()
+        check("undo master link", "Pivot" not in {o.name for o in dg.scene_eval.collection.objects})
+        bpy.ops.ed.redo()
+        bpy.ops.ed.redo()
+        dg = bpy.context.evaluated_depsgraph_get()
+        check("redo master link", "Pivot" in {o.name for o in dg.scene_eval.collection.objects} and
+              bpy.context.scene.frame_current == 9)
     bpy.ops.wm.quit_blender()
 
 

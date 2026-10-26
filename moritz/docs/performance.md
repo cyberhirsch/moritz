@@ -45,8 +45,33 @@ rebuild). Moving objects and undoing, in a 10k-object scene:
 | Undo one move | 800 ms | 85 ms |
 | Redo one move | 800 ms | 80 ms |
 
-Steps that change relations (parent, modifiers, adding or deleting objects, any change to the
-scene datablock) still rebuild. Tested by `moritz/tests/test_undo_relations.py`.
+Steps that change relations (parent, modifiers, adding or deleting objects) still rebuild.
+Tested by `moritz/tests/test_undo_relations.py`.
+
+### Scene and collection fingerprints (2026-10-26)
+
+A step that touches the scene datablock (the current frame, any scene setting) re-reads the
+scene, and with many objects also the collection holding them; both used to force a full
+rebuild. Scenes and collections now have fingerprints too:
+
+- scene: camera, world, the master collection's flags, objects and children, every view layer's
+  flag, layer collection tree (collections and their exclude / hide flags) and bases; scenes with
+  a set scene, rigid body world, sequencer strips or animation data always rebuild;
+- collection: flags, objects and children.
+
+Re-reading a scene can re-allocate its master collection (embedded data), which the depsgraph
+keys by address: `DEG_graph_id_replace_orig` re-keys that node (and the physics caches) to the
+new pointer, and the master collection is tagged for a copy-on-evaluation update. In all tested
+steps the master collection kept its address, so the re-key has not been exercised yet.
+
+Undo / redo of a frame change, 10k objects:
+
+| | Before | After |
+|---|---|---|
+| Undo or redo a frame change | 800 ms | 290 ms |
+
+Hiding or excluding a collection, or linking an object to the scene collection, changes the
+fingerprint and still rebuilds.
 
 ## Whole-window redraw (measured, no change)
 
@@ -68,11 +93,5 @@ rebuild. Not worth a core change.
 
 ## Next steps
 
-- The scene datablock is often re-read right after an undo/redo pair, which still forces a
-  rebuild. Scenes could get a fingerprint too, but the depsgraph keys the master collection's
-  node by its address and holds view layer bases, both re-allocated on re-read; keeping the
-  relations would need the depsgraph to re-key them (`DEG_graph_replace_owners` only swaps the
-  scene and view layer). Left alone: a stale pointer there crashes, and 0.5 s on some undo
-  steps is the stock behavior.
 - Repeat with 10k unique meshes and with instanced collections (the archviz case), and with
   Maximize enabled (its hover highlight and view tracking run on every redraw).

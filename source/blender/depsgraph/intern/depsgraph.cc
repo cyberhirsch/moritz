@@ -304,6 +304,38 @@ void DEG_graph_replace_owners(Depsgraph *depsgraph,
   }
 }
 
+void DEG_graph_id_replace_orig(Depsgraph *depsgraph, const ID *id_old, ID *id_new)
+{
+  deg::Depsgraph *deg_graph = reinterpret_cast<deg::Depsgraph *>(depsgraph);
+  if (id_old == id_new) {
+    return;
+  }
+  deg::IDNode *id_node = deg_graph->id_hash.pop_default(id_old, nullptr);
+  if (id_node == nullptr) {
+    return;
+  }
+  BLI_assert(!deg_graph->id_hash.contains(id_new));
+  id_node->id_orig = id_new;
+  id_node->id_orig_session_uid = id_new->session_uid;
+  if (id_node->id_cow != nullptr && id_node->id_cow != id_old) {
+    id_node->id_cow->orig_id = id_new;
+  }
+  deg_graph->id_hash.add_new(id_new, id_node);
+  /* Physics relations are cached per collection. */
+  if (deg_graph->physics_relations_effector != nullptr) {
+    if (auto *relations = deg_graph->physics_relations_effector->pop_default(id_old, nullptr)) {
+      deg_graph->physics_relations_effector->add(id_new, relations);
+    }
+  }
+  for (auto *hash : deg_graph->physics_relations_collision) {
+    if (hash != nullptr) {
+      if (auto *relations = hash->pop_default(id_old, nullptr)) {
+        hash->add(id_new, relations);
+      }
+    }
+  }
+}
+
 void DEG_graph_free(Depsgraph *graph)
 {
   if (graph == nullptr) {
