@@ -4,6 +4,10 @@
 # takes hours: on GitHub's hosted runners (4 cores, 6 h limit, about 14 GB free disk) it may not
 # fit; pick "self-hosted" to run it on a machine registered as a runner with the labels
 # `self-hosted` and `windows` (Visual Studio 2022, CMake, Git LFS and Python installed).
+# Seb's workstation is one (D:/actions-runner-moritz, started by hand with start_runner.cmd; a
+# queued run waits for it). There the add-on and the precompiled libraries come from the local
+# checkouts (MORITZ_LOCAL_MAXIMIZE, MORITZ_LOCAL_LIBS) and the build folder is kept, so later runs
+# build incrementally.
 name: Moritz Windows
 
 on:
@@ -22,6 +26,8 @@ jobs:
     env:
       # The fork's own LFS objects are not on GitHub; Blender's come from projects.blender.org.
       GIT_LFS_SKIP_SMUDGE: "1"
+      MORITZ_LOCAL_MAXIMIZE: G:/Code/Maximize
+      MORITZ_LOCAL_LIBS: G:/Code/Moritz/blender/lib/windows_x64
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,6 +35,7 @@ jobs:
           path: blender
 
       - name: Maximize add-on
+        if: inputs.runner != 'self-hosted'
         uses: actions/checkout@v4
         with:
           repository: cyberhirsch/maximize
@@ -36,32 +43,49 @@ jobs:
           # While the repository is private, a token with read access (secret MAXIMIZE_TOKEN).
           token: ${{ secrets.MAXIMIZE_TOKEN || github.token }}
 
+      - name: Maximize add-on (local clone)
+        if: inputs.runner == 'self-hosted'
+        shell: powershell
+        run: |
+          if (Test-Path Maximize) { Remove-Item -Recurse -Force Maximize }
+          git clone --depth 1 "file:///$env:MORITZ_LOCAL_MAXIMIZE" Maximize
+
       - name: LFS files and precompiled libraries
-        shell: pwsh
+        shell: powershell
         working-directory: blender
         run: |
           git lfs pull
           if ($LASTEXITCODE -ne 0) { Write-Warning "some LFS files are missing" }
+          # Self-hosted: Configure points LIBDIR at the workstation's libraries (read only, nothing
+          # is linked into the checkout, so cleaning it can never touch them).
+          if ("${{ inputs.runner }}" -eq "self-hosted" -and (Test-Path $env:MORITZ_LOCAL_LIBS)) { exit 0 }
           git -c submodule."lib/windows_x64".update=checkout submodule update --init --depth 1 lib/windows_x64
           git -C lib/windows_x64 lfs pull
 
       - name: Configure
-        shell: pwsh
-        run: cmake -S blender -B build -G "Visual Studio 17 2022" -A x64 -C blender/build_files/cmake/config/blender_release.cmake
+        shell: powershell
+        run: |
+          $libdir = @()
+          if ("${{ inputs.runner }}" -eq "self-hosted" -and (Test-Path $env:MORITZ_LOCAL_LIBS)) {
+            $libdir = @("-DLIBDIR=$env:MORITZ_LOCAL_LIBS")
+          }
+          cmake -S blender -B build -G "Visual Studio 17 2022" -A x64 @libdir -C blender/build_files/cmake/config/blender_release.cmake
 
       - name: Build
-        shell: pwsh
+        shell: powershell
         run: cmake --build build --config Release --target install -- /m /nologo /v:m
 
       - name: Link the add-on
-        shell: pwsh
+        shell: powershell
         run: |
           $ver = (Get-ChildItem build/bin/Release -Directory | Where-Object Name -match '^\d+\.\d+$').Name
           Copy-Item -Recurse Maximize/maximize "build/bin/Release/$ver/scripts/addons_core/maximize"
 
       - name: Tests
-        shell: pwsh
+        shell: powershell
         run: |
+          # Windows PowerShell turns a program's stderr into errors; the logs decide instead.
+          $ErrorActionPreference = "Continue"
           $exe = "build/bin/Release/moritz.exe"
           $failed = @()
           foreach ($t in "test_edit_poly_native", "test_edit_poly_session") {
@@ -75,7 +99,7 @@ jobs:
           if ($failed) { Write-Error ("failed: " + ($failed -join ", ")); exit 1 }
 
       - name: Portable zip
-        shell: pwsh
+        shell: powershell
         run: python blender/moritz/tools/make_portable_zip.py build/bin/Release Maximize .
 
       - uses: actions/upload-artifact@v4

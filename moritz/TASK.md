@@ -32,7 +32,7 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
 - [x] First build: `make.bat release`; gentle rebuilds run through `build_gentle.cmd` (low priority, 2 jobs)
 - [x] VS solution: `build_windows_Full_x64_vc17_Release/Blender.sln` (Debug, Release, RelWithDebInfo); `build_gentle.cmd Debug` and `build_when_idle.ps1 -Config Debug` build the Debug config at low priority into `bin/Debug`
 - [x] CI: Windows build workflow, started by hand (`.github/workflows/moritz-windows.yml`): build, Moritz and Maximize tests, portable zip, on a hosted or self-hosted runner
-- [ ] CI on every push (needs a self-hosted runner: a hosted one is likely too small for a full build)
+- [x] *(Seb, 2026-10-26: manual dispatch only, never on push)* Self-hosted runner on the workstation: `D:/actions-runner-moritz` (runner 2.338.2, labels `self-hosted, windows, moritz`; not a service: `start_runner.cmd` starts it at low priority, a queued run waits for it). The workflow's self-hosted path clones Maximize from `G:/Code/Maximize`, builds against the local libraries through `LIBDIR` and keeps its build folder on D: for incremental runs. First run not done yet (needs Seb's go)
 
 ### Rebrand
 - [x] Window title and Moritz version 0.1 Alpha (`BKE_moritz_version.h`, alongside the Blender version)
@@ -153,8 +153,8 @@ the tool's values (live preview), a result line ("Before: 97, After: 97"), and t
 Apply and Continue (apply, then run the tool again on the result), Cancel. Blender's Adjust Last
 Operation panel covers the live values but sits in the corner and has no Apply and Continue
 (today: Shift+R) and no Cancel (today: Ctrl+Z).
-- [ ] Decide: Max-style caddy (an add-on popup at the mouse with OK / Apply and Continue / Cancel)
-  or Blender's Adjust Last Operation panel
+- [x] *(Seb, 2026-10-26: both, selectable in Preferences > Tool Settings; Maximize `caddy.py`, default Blender's panel)* Decide: Max-style caddy (an add-on popup at the mouse with OK / Apply and Continue / Cancel)
+  or Blender's Adjust Last Operation panel. Caddy mode: a settings button next to each Edit Poly tool runs it with its last values and opens the caddy (live values, Before / After vertex count); hand test pending
 1. Daily:
    - Selection: the five levels, Grow / Shrink, Ring / Loop, Backface culling (Ignore Backfacing)
    - Polygons: Extrude, Inset, Bevel, Bridge, Outline, Flip
@@ -520,4 +520,4 @@ No-brainers (approved by Seb, 2026-10-25):
 
 ## Upstream maintenance (recurring)
 - [ ] Merge each Blender release branch into `moritz/main` (last: 24 fixes from `blender-v5.3-release`, 2026-10-26, no conflicts, tests pass)
-- [ ] Re-run the test suite and a smoke test of Maximize after each merge
+- [ ] Re-run the test suite and a smoke test of Maximize after each merge (last: 2026-10-26 after the 24-fix merge: 10 Moritz + 24 Maximize test scripts pass)
