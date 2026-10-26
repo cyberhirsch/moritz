@@ -260,7 +260,7 @@ modeled on 3ds Max's Retopology modifier: it can sit mid-stack, with limitations
 Rule: only what Max does better. Kept from Blender: handle types, curve extrude and bevel (Renderable Spline), Screw (Lathe), text objects.
 - [x] Legacy Curve objects for editable splines (Blender's curve Edit Mode); the tools are in Maximize (`shapes.py`, `spline_tools.py`, `tests/test_splines.py`)
 - [x] Parametric shapes: Rectangle (corner radius), Circle, Ellipse, Arc, NGon, Star, Helix, Donut — drag-created and editable like the primitives, with Thickness; 1 converts to an editable spline
-- [x] Line tool: click for corner, drag for Bezier, with grid snapping (Add > Shapes > Line). AutoGrid (on surfaces) open
+- [x] Line tool: click for corner, drag for Bezier, with grid snapping (Add > Shapes > Line). AutoGrid (on surfaces) done (Creation below)
 - [x] Fillet and Chamfer on spline vertices
 - [x] Outline
 - [x] Refine (Blender's Pen tool, in the Max Spline Tools menu)
@@ -284,7 +284,7 @@ asked for Max's behavior here, so this overrides "only what Max does better" for
   on the curve data, `maximize/shapes.py`). Steps = curve resolution, Thickness = round bevel.
   *Files: plain Blender Bezier curves; stock Blender shows the shape and only loses the parameter
   editing. Shapes saved before stay Geometry Nodes poly curves and keep working (editable,
-  convertible); new ones are Bezier. Egg is not built yet.*
+  convertible); new ones are Bezier. Egg is built too.*
 - [~] **Interpolation as in Max**: Steps per shape (default 6 = Blender resolution 7) done.
   Optimize: core flag `CU_OPTIMIZE` / `Curve.use_optimize` (`curve_legacy_convert.cc` turns
   segments whose handles lie on the chord into vector segments, so they evaluate to their end points),
@@ -301,7 +301,7 @@ asked for Max's behavior here, so this overrides "only what Max does better" for
   splines), Fuse, Attach (object level), Reset Tangents / Make First / Reverse, Trim / Extend /
   Fillet / Chamfer / Outline / Break / Connect; in the Edit Spline quad and the Modify tab
   (Rendering, Interpolation, Selection, Geometry rollouts). Pressing 1/2/3 on a parametric shape
-  converts it first. **Open:** Cross Insert, Bind/Unbind, Show Selected Segments (Blender draws
+  converts it first. **Open:** Bind/Unbind, Show Selected Segments (Blender draws
   selected points, not segments in red), Lock Handles Alike/All, and a hover highlight for segments.
 - [~] **Creation as in Max** (done 2026-10-25): Line with Initial Type (Corner/Smooth) and Drag
   Type (Corner/Smooth/Bezier), Backspace removes the last vertex, Shift for 90 degrees, clicking
@@ -368,8 +368,12 @@ into closed sub-panels.
   - [x] Cap options: Cap, Quad Cap, Segments, Sphere (domes on open spline ends; radial only)
 - [ ] Not in the 3b list yet: Create Line, Insert, Cycle, Hide / Unhide All, Attach Mult., Cross
   Section, Area Selection, Segment End, Select By, Named Selections Copy / Paste, Show Vertex
-  Numbers, Connect Copy, Reorient, Tangent Copy / Paste, Detach's Same Shp / Reorient / Copy options, Explode's To Splines / Objects choice
-  (check what the 3b Detach and Explode already do). Soft Selection is Blender's proportional editing.
+  Numbers (with Selected Only), Connect Copy, Reorient, Tangent Copy / Paste, Detach's Same Shp /
+  Reorient / Copy options, Explode's To Splines / Objects choice (check what the 3b Detach and
+  Explode already do), Refine's options (Connect, Linear, Closed, Bind First, Bind Last), Mirror's
+  Horizontal / Vertical / Both, Rendering's Aspect (with its lock) and Use Viewport Settings with
+  the Viewport / Renderer switch (separate viewport thickness). Soft Selection is Blender's
+  proportional editing.
 
 ## Phase 4 — Core gaps no add-on can fill
 
