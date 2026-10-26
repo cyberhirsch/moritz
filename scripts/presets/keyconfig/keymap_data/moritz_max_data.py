@@ -114,7 +114,7 @@ def apply(km, moritz=False, maya_navigation=False):
     km.view("view3d.localview", _event('Q', alt=True))
 
     # Display.
-    km.view("view3d.toggle_xray", _event('X', alt=True))
+    km.view("maximize.see_through_objects", _event('X', alt=True))
     km.view("wm.context_toggle_enum", _event('F3'),
             {"data_path": "space_data.shading.type", "value_1": 'WIREFRAME', "value_2": 'SOLID'})
     km.view("wm.context_toggle", _event('F4'), {"data_path": "space_data.overlay.show_wireframes"})

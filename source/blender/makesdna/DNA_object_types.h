@@ -191,6 +191,8 @@ enum eObject_DrawExtraFlag : short {
   OB_DRAW_NO_SHADOW_CAST = 1 << 9,
   /* Enable lights for grease pencil. */
   OB_USE_GPENCIL_LIGHTS = 1 << 10,
+  /** Moritz: Max's See-Through, drawn semi-transparent in Solid shading. Stock Blender ignores it. */
+  OB_DRAW_SEE_THROUGH = 1 << 11,
 };
 ENUM_OPERATORS(eObject_DrawExtraFlag)
 

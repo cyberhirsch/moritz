@@ -138,6 +138,17 @@ class Instance : public DrawEngine {
 
   Material get_material(ObjectRef ob_ref, eV3DShadingColorType color_type, int slot = 0)
   {
+    Material material = get_material_base(ob_ref, color_type, slot);
+    /* Moritz: Max's See-Through, a fixed alpha on top of the color. */
+    if ((ob_ref.object->dtx & OB_DRAW_SEE_THROUGH) && !this->draw_ctx->is_scene_render()) {
+      material.packed_data = (material.packed_data & ~0x00ff0000u) |
+                             (uint32_t(unit_float_to_uchar_clamp(0.3f)) << 16u);
+    }
+    return material;
+  }
+
+  Material get_material_base(ObjectRef ob_ref, eV3DShadingColorType color_type, int slot)
+  {
     /* Moritz: frozen objects (see #ObjectState::is_frozen). */
     if ((ob_ref.object->visibility_flag & OB_HIDE_SELECT) && !this->draw_ctx->is_scene_render()) {
       return Material(float3(0.25f));

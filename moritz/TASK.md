@@ -137,7 +137,7 @@ Rule: only what Max does better. Blender's modifier panel stays (no Max-style st
 - [x] Speed on heavy meshes: one stack evaluation to begin (`session_begin(input)` applies the stored edit in core); entering and leaving a level on 393k vertices takes as long as Tab (about 230 / 75 ms; `Maximize/tests/bench_edit_poly.py`)
 - [x] Opening in stock Blender: the modifier is a plain `ModifierData` with its data in `system_properties`, so stock keeps it (disabled), keeps the modifiers above and saves the data back; Moritz revives it (`BKE_modifier_blend_read_data`). Tested through stock 5.2 (`moritz/tests/test_edit_poly_native.py`)
 - [x] Header: Max's five sub-object levels (Vertex, Edge, Border, Polygon, Element) in place of Blender's three select-mode buttons, through the `VIEW3D_HT_header.select_mode_draw` hook that Maximize fills
-- [ ] Border and Element as real select modes in the core
+- [x] ~~Border and Element as real select modes in the core~~ (Seb's decision 2026-10-25: they stay in Maximize)
 - [x] Sub-object levels 1–6 without the add-on: core `object.subobject_level` (`bl_operators/moritz_subobject.py`), bound by the Max keymap while Maximize is off; Border and Element act as Edge and Polygon there (`moritz/tests/test_subobject_core.py`)
 - [x] Tests for evaluation and file round trips (`moritz/tests/test_edit_poly_native.py`, incl. stock Blender); undo in Edit Mode follows with the edit session
 
@@ -378,8 +378,9 @@ into closed sub-panels.
   group revision 3). Soft Selection is Blender's proportional editing.
 - [x] *(2026-10-26, Maximize)* Segment End, Connect Copy (Shift+drag copies get joined to the
   originals), Section as a live plane object (yellow cut while it moves, Create Shape)
-- [ ] Still open: Refine's Bind First / Bind Last and Bind / Unbind (core: Blender has no bound
-  vertices), Lock Handles (Blender moves every selected handle together already; Max's per-drag
+- [x] *(2026-10-26, Maximize)* Bind / Unbind: an end vertex stays on a segment's middle (kept by
+  the add-on in the curve's `mx_bind` property; stock Blender keeps the vertex where it was)
+- [ ] Still open: Refine's Bind First / Bind Last, Lock Handles (Blender moves every selected handle together already; Max's per-drag
   locking is not built), segment hover highlight
 
 ## Phase 4 — Core gaps no add-on can fill
@@ -461,8 +462,8 @@ Steps:
   the list. Blender's modifier panels stay below.
 - [x] Stage 2, Python (2026-10-26): sub-object levels under the stack (Edit Poly, Edit Spline; Blender's lists can't nest rows), level icon, italic instances, warning
   symbol, right-click menu, the button row, modifier clipboard (Copy / Paste; Blender
-  only has Copy to Selected). Instanced rows show a link icon (no italics in Blender's lists). Open:
-  the Delete key over the list (Blender's Delete over a modifier panel works)
+  only has Copy to Selected). Instanced rows show a link icon (no italics in Blender's lists). The Delete
+  (and X) key in the Modify tab deletes the modifier under the mouse, else the one selected in the stack
 - [x] Paste Instanced (2026-10-26, `bl_operators/moritz_modifier_stack.py`; Edit Poly and Edit Spline paste as copies): modifiers shared between objects (one modifier's settings drive all its
   instances, kept in sync by Maximize like the shared Edit Poly on instances; *files: plain
   modifiers, stock Blender sees independent copies*)
@@ -504,7 +505,7 @@ No-brainers (approved by Seb, 2026-10-25):
   Shapes, Lights, Cameras, Helpers, Space Warps, Bones, instead of Blender's filter popover. Python
   (`space_outliner.py`); needs Shapes split out of "Others" (curves, text) — small core change for a
   new filter flag. *Files: a new bit in the Outliner's filter flags; stock ignores it.*
-- [x] *(Display as Box done 2026-10-26, in the filter popover; See-Through open: Blender has no per-object X-ray, needs a draw-engine change)* **Display as Box** and **See-Through** columns (per object: `display_type = 'BOUNDS'`, and
+- [x] *(both done 2026-10-26, in the filter popover; See-Through is a new object draw flag `OB_DRAW_SEE_THROUGH`, drawn at 30 % alpha by the Solid (workbench) engine, Alt+X and Object > Viewport Display; stock Blender ignores the flag and draws the object opaque)* **Display as Box** and **See-Through** columns (per object: `display_type = 'BOUNDS'`, and
   X-ray per object), as in Max; core (Outliner columns are C). *Files: the columns' on/off flags
   are new bits in the Outliner space, stock ignores them; the object values are stock data.*
 - [x] *(2026-10-26)* **Renderable** column under Max's name (Blender's render column, relabeled). *UI only.*

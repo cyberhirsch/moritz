@@ -4697,6 +4697,12 @@ static void rna_def_space_outliner(BlenderRNA *brna)
   RNA_def_property_ui_icon(prop, ICON_SHADING_BBOX, 0);
   RNA_def_property_update(prop, NC_SPACE | ND_SPACE_OUTLINER, nullptr);
 
+  prop = RNA_def_property(srna, "show_restrict_column_see_through", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_sdna(prop, nullptr, "mx_columns", SO_MX_COLUMN_SEE_THROUGH);
+  RNA_def_property_ui_text(prop, "See-Through", "Show objects semi-transparent (Max)");
+  RNA_def_property_ui_icon(prop, ICON_XRAY, 0);
+  RNA_def_property_update(prop, NC_SPACE | ND_SPACE_OUTLINER, nullptr);
+
   prop = RNA_def_property(srna, "show_restrict_column_holdout", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(prop, nullptr, "show_restrict_flags", SO_RESTRICT_HOLDOUT);
   RNA_def_property_ui_text(prop, "Holdout", "Holdout");

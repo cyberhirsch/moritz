@@ -197,6 +197,30 @@ class OBJECT_OT_moritz_modifier_toggle(Operator):
         return {'FINISHED'}
 
 
+class OBJECT_OT_moritz_modifier_delete(Operator):
+    """Delete the modifier under the mouse, or the one selected in the stack (Max's Delete key)"""
+    bl_idname = "object.moritz_modifier_delete"
+    bl_label = "Delete Modifier"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        space = context.space_data
+        return (space is not None and space.type == 'PROPERTIES' and space.context == 'MODIFIER' and
+                _active(context)[1] is not None)
+
+    def invoke(self, context, _event):
+        # Over a modifier panel, Blender's own delete takes that panel's modifier.
+        if 'FINISHED' in bpy.ops.object.modifier_remove('INVOKE_DEFAULT'):
+            return {'FINISHED'}
+        return self.execute(context)
+
+    def execute(self, context):
+        ob, mod = _active(context)
+        with context.temp_override(object=ob):
+            return bpy.ops.object.modifier_remove(modifier=mod.name)
+
+
 # Paste Instanced sync: the last known values of each link.
 _snapshots = {}
 
@@ -234,7 +258,10 @@ classes = (
     OBJECT_OT_moritz_modifier_paste,
     OBJECT_OT_moritz_modifier_make_unique,
     OBJECT_OT_moritz_modifier_toggle,
+    OBJECT_OT_moritz_modifier_delete,
 )
+
+_keymap_items = []
 
 
 def register():
@@ -243,10 +270,18 @@ def register():
         register_class(cls)
     bpy.app.handlers.depsgraph_update_post.append(_sync_links)
     bpy.app.handlers.load_post.append(_reset_snapshots)
+    keyconfig = bpy.context.window_manager.keyconfigs.addon
+    if keyconfig is not None:
+        km = keyconfig.keymaps.new("Property Editor", space_type='PROPERTIES')
+        for key in ('DEL', 'X'):
+            _keymap_items.append((km, km.keymap_items.new("object.moritz_modifier_delete", key, 'PRESS')))
 
 
 def unregister():
     from bpy.utils import unregister_class
+    for km, item in _keymap_items:
+        km.keymap_items.remove(item)
+    _keymap_items.clear()
     bpy.app.handlers.load_post.remove(_reset_snapshots)
     bpy.app.handlers.depsgraph_update_post.remove(_sync_links)
     for cls in reversed(classes):

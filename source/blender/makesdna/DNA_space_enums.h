@@ -268,6 +268,8 @@ enum eSpaceOutliner_MoritzFilter : char {
 enum eSpaceOutliner_MoritzColumn : char {
   /** Max's Display as Box column (object display type Bounds). */
   SO_MX_COLUMN_BOX = (1 << 0),
+  /** Max's See-Through column (#OB_DRAW_SEE_THROUGH). */
+  SO_MX_COLUMN_SEE_THROUGH = (1 << 1),
 };
 
 /** #SpaceOutliner.outlinevis */

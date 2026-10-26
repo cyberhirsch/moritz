@@ -3705,6 +3705,14 @@ static void rna_def_object(BlenderRNA *brna)
   RNA_def_property_ui_text(prop, "In Front", "Make the object display in front of others");
   RNA_def_property_update(prop, NC_OBJECT | ND_DRAW, "rna_grease_pencil_update");
 
+  /* Moritz: Max's See-Through (Alt+X on the object). */
+  prop = RNA_def_property(srna, "show_see_through", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_sdna(prop, nullptr, "dtx", OB_DRAW_SEE_THROUGH);
+  RNA_def_property_ui_text(
+      prop, "See-Through", "Display the object semi-transparent in Solid shading (Max)");
+  RNA_def_property_ui_icon(prop, ICON_XRAY, 0);
+  RNA_def_property_update(prop, NC_OBJECT | ND_DRAW, nullptr);
+
   /* pose */
   prop = RNA_def_property(srna, "pose", PROP_POINTER, PROP_NONE);
   RNA_def_property_pointer_sdna(prop, nullptr, "pose");

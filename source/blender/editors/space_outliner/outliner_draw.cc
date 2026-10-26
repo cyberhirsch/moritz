@@ -1240,6 +1240,7 @@ static void outliner_draw_restrictbuts(ui::Block *block,
     int indirect_only;
     int holdout;
     int box;
+    int see_through;
   } restrict_offsets = {0};
   int restrict_column_offset = 0;
 
@@ -1279,6 +1280,11 @@ static void outliner_draw_restrictbuts(ui::Block *block,
       (space_outliner->mx_columns & SO_MX_COLUMN_BOX))
   {
     restrict_offsets.box = (++restrict_column_offset) * UI_UNIT_X + V2D_SCROLL_WIDTH;
+  }
+  if (ELEM(space_outliner->outlinevis, SO_VIEW_LAYER, SO_SCENES) &&
+      (space_outliner->mx_columns & SO_MX_COLUMN_SEE_THROUGH))
+  {
+    restrict_offsets.see_through = (++restrict_column_offset) * UI_UNIT_X + V2D_SCROLL_WIDTH;
   }
 
   BLI_assert((restrict_column_offset * UI_UNIT_X + V2D_SCROLL_WIDTH) ==
@@ -1394,6 +1400,26 @@ static void outliner_draw_restrictbuts(ui::Block *block,
                                  " \u2022 Shift to set children"));
           button_func_set(bt, restrictbutton_display_box_fn, ob, nullptr);
           if (ob->dt != OB_BOUNDBOX) {
+            button_flag_enable(bt, ui::BUT_INACTIVE);
+          }
+        }
+
+        if (space_outliner->mx_columns & SO_MX_COLUMN_SEE_THROUGH) {
+          bt = uiDefIconButR(block,
+                             ui::ButtonType::Toggle,
+                             ICON_XRAY,
+                             int(region->v2d.cur.xmax - restrict_offsets.see_through),
+                             te.ys,
+                             UI_UNIT_X,
+                             UI_UNIT_Y,
+                             &ptr,
+                             "show_see_through",
+                             -1,
+                             0,
+                             0,
+                             TIP_("See-Through"));
+          button_flag_enable(bt, ui::BUT_DRAG_LOCK);
+          if (!(ob->dtx & OB_DRAW_SEE_THROUGH)) {
             button_flag_enable(bt, ui::BUT_INACTIVE);
           }
         }

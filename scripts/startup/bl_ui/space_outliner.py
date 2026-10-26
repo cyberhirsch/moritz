@@ -432,6 +432,7 @@ class OUTLINER_PT_filter(Panel):
             row.prop(space, "show_restrict_column_indirect_only", text="")
             # Moritz: Max's Display as Box column.
             row.prop(space, "show_restrict_column_display_box", text="")
+            row.prop(space, "show_restrict_column_see_through", text="")
             layout.separator()
         elif display_mode == 'SCENES':
             layout.label(text="Restriction Toggles")
@@ -441,6 +442,7 @@ class OUTLINER_PT_filter(Panel):
             row.prop(space, "show_restrict_column_viewport", text="")
             row.prop(space, "show_restrict_column_render", text="")
             row.prop(space, "show_restrict_column_display_box", text="")
+            row.prop(space, "show_restrict_column_see_through", text="")
             layout.separator()
 
         if display_mode != 'DATA_API':

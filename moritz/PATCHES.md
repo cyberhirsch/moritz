@@ -113,7 +113,7 @@ with Max's modifier stack on top.
   its panel open; the flat Add Modifier menu (`OBJECT_MT_modifier_add_flat`)
 - `scripts/startup/bl_operators/moritz_modifier_stack.py` — Copy / Paste, Paste Instanced (links in
   the object's `mx_modifier_links` custom property, kept in sync by a depsgraph handler), Make
-  Unique, Off in Viewport / Renderer
+  Unique, Off in Viewport / Renderer, Delete / X in the Modify tab
 - Tests: `moritz/tests/test_command_panel.py`, `test_modifier_stack.py`
 
 ## Outliner (Max's Scene Explorer)
@@ -129,6 +129,9 @@ with Max's modifier stack on top.
   snowflake (bright when frozen); the Display as Box column (`display_type` Bounds / Textured,
   Shift for children)
 - `scripts/startup/bl_ui/space_outliner.py` — the new toggles in the filter popover
+- See-Through: `DNA_object_types.h` (`OB_DRAW_SEE_THROUGH` in `Object.dtx`), `rna_object.cc`
+  (`Object.show_see_through`), `draw/engines/workbench/workbench_engine.cc` (30 % alpha in Solid
+  shading), the Outliner column (`SO_MX_COLUMN_SEE_THROUGH`), `properties_object.py`
 
 ## Undo speed
 

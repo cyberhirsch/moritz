@@ -258,6 +258,8 @@ class OBJECT_PT_display(ObjectButtonsPanel, Panel):
             col.prop(obj, "show_texture_space", text="Texture Space")
             col.prop(obj.display, "show_shadows", text="Shadow")
         col.prop(obj, "show_in_front", text="In Front")
+        # Moritz: Max's See-Through.
+        col.prop(obj, "show_see_through", text="See-Through")
         # if obj_type == 'MESH' or is_empty_image:
         #    col.prop(obj, "show_transparent", text="Transparency")
         sub = layout.column()
