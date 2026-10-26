@@ -108,6 +108,9 @@ def apply(km, moritz=False, maya_navigation=False):
     km.view("view3d.view_camera", _event('C'))
     km.view("maximize.camera_from_view", _event('C', ctrl=True))
     km.view("maximize.viewport_maximize", _event('W', alt=True))
+    # Max's V: the Point-of-View menu of the viewport under the mouse. Only in the 3D View keymap,
+    # so Edit Mode keeps Blender's V (Rip, handle types).
+    km.bind("3D View", "wm.call_menu", _event('V'), {"name": "MAXIMIZE_MT_point_of_view"})
     km.view("view3d.localview", _event('Q', alt=True))
 
     # Display.
@@ -180,6 +183,10 @@ def apply(km, moritz=False, maya_navigation=False):
     if "Curve" in km.items:
         for key, level in (('ONE', 'VERTEX'), ('TWO', 'EDGE'), ('THREE', 'BORDER'), ('SIX', 'OBJECT')):
             km.bind("Curve", level_op, _event(key), {"level": level})
+        # Segment and Spline levels: a click picks a whole segment or spline; Delete works per level.
+        for mods, props in (({}, {}), ({"ctrl": True}, {"extend": True}), ({"alt": True}, {"deselect": True})):
+            km.append("Curve", "maximize.spline_pick", _event('LEFTMOUSE', 'CLICK', **mods), props)
+        km.bind("Curve", "maximize.spline_level_delete", _event('DEL'))
     # Border and Element have no Blender select mode: clicks there pick a whole border or element
     # (the operator passes the click through at the other levels).
     for mods, props in (({}, {}), ({"ctrl": True}, {"extend": True}), ({"alt": True}, {"deselect": True})):
@@ -355,6 +362,8 @@ def _editors(km):
     """Max keys in the other editors where nothing clashes: F2 renames (Scene Explorer, Slate),
     Ctrl+A/D/I select all/none/invert, K sets a key, Ctrl+Alt+Z frames all (Track View)."""
     km.bind("Outliner", "outliner.item_rename", _event('F2'))
+    # Scene Explorer: double-click selects an object and its children; rename stays on F2.
+    km.bind("Outliner", "maximize.outliner_select_children", _event('LEFTMOUSE', 'DOUBLE_CLICK'))
     for keymap, prefix in (("Graph Editor", "graph"), ("Dopesheet", "action"), ("Node Editor", "node")):
         if keymap not in km.items:
             continue

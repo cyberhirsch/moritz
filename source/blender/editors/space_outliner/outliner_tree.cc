@@ -873,13 +873,21 @@ static eSpaceOutliner_Filter outliner_exclude_filter_get(const SpaceOutliner *sp
   return exclude_filter;
 }
 
+/** Moritz: Max's Shapes filter, kept outside the full #eSpaceOutliner_Filter. */
+static bool outliner_filter_no_shapes(const SpaceOutliner *space_outliner)
+{
+  return SUPPORT_FILTER_OUTLINER(space_outliner) &&
+         (space_outliner->mx_filter & SO_MX_FILTER_NO_OB_SHAPES);
+}
+
 static bool outliner_element_visible_get(const Main &bmain,
                                          const Scene *scene,
                                          ViewLayer *view_layer,
                                          TreeElement *te,
-                                         const eSpaceOutliner_Filter exclude_filter)
+                                         const eSpaceOutliner_Filter exclude_filter,
+                                         const bool no_shapes)
 {
-  if ((exclude_filter & SO_FILTER_ANY) == 0) {
+  if ((exclude_filter & SO_FILTER_ANY) == 0 && !no_shapes) {
     return true;
   }
 
@@ -893,7 +901,13 @@ static bool outliner_element_visible_get(const Main &bmain,
     Base *base = static_cast<Base *>(te->directdata);
     BLI_assert((base == nullptr) || (base->object == ob));
 
-    if (exclude_filter & SO_FILTER_OB_TYPE) {
+    /* Moritz: shapes (curves and text) are their own type, as in Max. */
+    const bool is_shape = ELEM(ob->type, OB_CURVES_LEGACY, OB_FONT);
+    if (no_shapes && is_shape) {
+      return false;
+    }
+
+    if ((exclude_filter & SO_FILTER_OB_TYPE) && !is_shape) {
       switch (ob->type) {
         case OB_MESH:
           if (exclude_filter & SO_FILTER_NO_OB_MESH) {
@@ -1101,7 +1115,13 @@ static int outliner_filter_subtree(SpaceOutliner *space_outliner,
 
   for (te = lb->first(); te; te = te_next) {
     te_next = te->next;
-    if (outliner_element_visible_get(bmain, scene, view_layer, te, exclude_filter) == false) {
+    if (outliner_element_visible_get(bmain,
+                                     scene,
+                                     view_layer,
+                                     te,
+                                     exclude_filter,
+                                     outliner_filter_no_shapes(space_outliner)) == false)
+    {
       /* Don't free the tree, but extract the children from the parent and add to this tree. */
       /* This also needs filtering the subtree prior (see #69246). */
       outliner_filter_subtree(
@@ -1165,7 +1185,7 @@ static void outliner_filter_tree(const Main &bmain,
 
   const eSpaceOutliner_Filter exclude_filter = outliner_exclude_filter_get(space_outliner);
 
-  if (exclude_filter == 0) {
+  if (exclude_filter == 0 && !outliner_filter_no_shapes(space_outliner)) {
     return;
   }
 

@@ -213,7 +213,11 @@ struct SpaceOutliner {
   eSpaceOutliner_ShowRestrictFlag show_restrict_flags = {};
   short filter_id_type = 0;
   eSpaceOutliner_SortMethod sort_method = SO_SORT_CUSTOM;
-  char _pad1[6] = {};
+  /** Moritz: #eSpaceOutliner_MoritzFilter (Max's Shapes filter). */
+  char mx_filter = 0;
+  /** Moritz: #eSpaceOutliner_MoritzColumn (Max's Scene Explorer columns). */
+  char mx_columns = 0;
+  char _pad1[4] = {};
 
   ed::outliner::SpaceOutliner_Runtime *runtime = nullptr;
 };

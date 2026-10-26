@@ -184,6 +184,28 @@ static void restrictbutton_r_lay_fn(bContext *C, void *poin, void * /*poin2*/)
   WM_event_add_notifier(C, NC_SCENE | ND_RENDER_OPTIONS, poin);
 }
 
+/** Moritz: Max's Display as Box toggles the object's display type between Bounds and Textured.
+ * Shift sets the children too. */
+static void restrictbutton_display_box_fn(bContext *C, void *poin, void * /*poin2*/)
+{
+  Object *ob = static_cast<Object *>(poin);
+  const int value = (ob->dt == OB_BOUNDBOX) ? OB_TEXTURE : OB_BOUNDBOX;
+  const bool children = CTX_wm_window(C)->runtime->eventstate->modifier & KM_SHIFT;
+  Main *bmain = CTX_data_main(C);
+  for (Object &other : bmain->objects) {
+    if (&other != ob && !(children && BKE_object_is_child_recursive(ob, &other))) {
+      continue;
+    }
+    PointerRNA ptr = RNA_id_pointer_create(&other.id);
+    PropertyRNA *prop = RNA_struct_find_property(&ptr, "display_type");
+    if (RNA_property_editable(&ptr, prop)) {
+      RNA_property_enum_set(&ptr, prop, value);
+      RNA_property_update(C, &ptr, prop);
+    }
+  }
+  ED_undo_push(C, "Display as Box");
+}
+
 static void restrictbutton_bone_visibility_fn(bContext *C, void *poin, void *poin2)
 {
   Object *ob = static_cast<Object *>(poin);
@@ -1217,6 +1239,7 @@ static void outliner_draw_restrictbuts(ui::Block *block,
     int render;
     int indirect_only;
     int holdout;
+    int box;
   } restrict_offsets = {0};
   int restrict_column_offset = 0;
 
@@ -1251,6 +1274,11 @@ static void outliner_draw_restrictbuts(ui::Block *block,
       space_outliner->show_restrict_flags & SO_RESTRICT_ENABLE)
   {
     restrict_offsets.enable = (++restrict_column_offset) * UI_UNIT_X + V2D_SCROLL_WIDTH;
+  }
+  if (ELEM(space_outliner->outlinevis, SO_VIEW_LAYER, SO_SCENES) &&
+      (space_outliner->mx_columns & SO_MX_COLUMN_BOX))
+  {
+    restrict_offsets.box = (++restrict_column_offset) * UI_UNIT_X + V2D_SCROLL_WIDTH;
   }
 
   BLI_assert((restrict_column_offset * UI_UNIT_X + V2D_SCROLL_WIDTH) ==
@@ -1328,8 +1356,8 @@ static void outliner_draw_restrictbuts(ui::Block *block,
 
         if (space_outliner->show_restrict_flags & SO_RESTRICT_SELECT) {
           bt = uiDefIconButR_prop(block,
-                                  ui::ButtonType::IconToggle,
-                                  ICON_NONE,
+                                  ui::ButtonType::Toggle,
+                                  ICON_FREEZE,
                                   int(region->v2d.cur.xmax - restrict_offsets.select),
                                   te.ys,
                                   UI_UNIT_X,
@@ -1339,12 +1367,33 @@ static void outliner_draw_restrictbuts(ui::Block *block,
                                   -1,
                                   0,
                                   0,
-                                  TIP_("Disable selection in viewport\n"
+                                  TIP_("Freeze: disable selection in viewport\n"
                                        " \u2022 Shift to set children"));
           button_func_set(
               bt, outliner__object_set_flag_recursive_fn, ob, const_cast<char *>("hide_select"));
           button_flag_enable(bt, ui::BUT_DRAG_LOCK);
-          if (!props_active.object_hide_select) {
+          if (!props_active.object_hide_select ||
+              !RNA_property_boolean_get(&ptr, props.object_hide_select))
+          {
+            button_flag_enable(bt, ui::BUT_INACTIVE);
+          }
+        }
+
+        if (space_outliner->mx_columns & SO_MX_COLUMN_BOX) {
+          bt = uiDefIconBut(block,
+                            ui::ButtonType::Toggle,
+                            ICON_SHADING_BBOX,
+                            int(region->v2d.cur.xmax - restrict_offsets.box),
+                            te.ys,
+                            UI_UNIT_X,
+                            UI_UNIT_Y,
+                            nullptr,
+                            0,
+                            0,
+                            TIP_("Display as Box\n"
+                                 " \u2022 Shift to set children"));
+          button_func_set(bt, restrictbutton_display_box_fn, ob, nullptr);
+          if (ob->dt != OB_BOUNDBOX) {
             button_flag_enable(bt, ui::BUT_INACTIVE);
           }
         }
@@ -1384,7 +1433,7 @@ static void outliner_draw_restrictbuts(ui::Block *block,
                                   -1,
                                   0,
                                   0,
-                                  TIP_("Globally disable in renders\n"
+                                  TIP_("Renderable: globally disable in renders\n"
                                        " \u2022 Shift to set children"));
           button_func_set(
               bt, outliner__object_set_flag_recursive_fn, ob, const_cast<char *>("hide_render"));
@@ -1865,8 +1914,8 @@ static void outliner_draw_restrictbuts(ui::Block *block,
 
           if (space_outliner->show_restrict_flags & SO_RESTRICT_SELECT) {
             bt = uiDefIconButR_prop(block,
-                                    ui::ButtonType::IconToggle,
-                                    ICON_NONE,
+                                    ui::ButtonType::Toggle,
+                                    ICON_FREEZE,
                                     int(region->v2d.cur.xmax - restrict_offsets.select),
                                     te.ys,
                                     UI_UNIT_X,
@@ -1876,7 +1925,7 @@ static void outliner_draw_restrictbuts(ui::Block *block,
                                     -1,
                                     0,
                                     0,
-                                    TIP_("Disable selection in viewport\n"
+                                    TIP_("Freeze: disable selection in viewport\n"
                                          " \u2022 Ctrl to isolate collection\n"
                                          " \u2022 Shift to set inside collections and objects"));
             if (layer_collection != nullptr) {
@@ -1892,7 +1941,9 @@ static void outliner_draw_restrictbuts(ui::Block *block,
                               const_cast<char *>("hide_select"));
             }
             button_flag_enable(bt, ui::BUT_DRAG_LOCK);
-            if (!props_active.collection_hide_select) {
+            if (!props_active.collection_hide_select ||
+                !RNA_property_boolean_get(&collection_ptr, props.collection_hide_select))
+            {
               button_flag_enable(bt, ui::BUT_INACTIVE);
             }
           }

@@ -62,19 +62,53 @@ class DATA_PT_modifiers(ModifierButtonsPanel, Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.operator("wm.call_menu", text="Add Modifier", icon='ADD').name = "OBJECT_MT_modifier_add"
+        # Moritz: one flat Add Modifier menu (as Blender before 4.x), the full one stays under "More".
+        layout.operator("wm.call_menu", text="Add Modifier", icon='ADD').name = "OBJECT_MT_modifier_add_flat"
         # Moritz: Max's modifier stack, newest on top and the base object at the bottom.
-        _draw_modifier_stack(layout, context.object)
+        _draw_modifier_stack(layout, context)
         layout.template_modifiers()
+
+
+class OBJECT_MT_modifier_add_flat(Menu):
+    """Every modifier for this object type in one menu; typing filters it"""
+    bl_label = "Add Modifier"
+    bl_options = {'SEARCH_ON_KEY_PRESS'}
+
+    def draw(self, context):
+        layout = self.layout
+        layout.operator_context = 'INVOKE_REGION_WIN'
+        # The operator's own list is already filtered by the object type, with category headings.
+        layout.operator_enum("object.modifier_add", "type")
+        layout.separator()
+        layout.menu("OBJECT_MT_modifier_add", text="More (Geometry Nodes Assets)")
+
+
+_LEVEL_ICONS = {'VERT': 'VERTEXSEL', 'EDGE': 'EDGESEL', 'FACE': 'FACESEL'}
+
+
+def _modifier_warning(mod):
+    warnings = getattr(mod, "node_warnings", None)
+    return bool(warnings) and any(w.type in {'ERROR', 'WARNING'} for w in warnings)
 
 
 class MODIFIER_UL_stack(bpy.types.UIList):
     """Max's modifier stack: newest modifier first"""
 
-    def draw_item(self, _context, layout, _data, item, _icon, _active_data, _active_propname, _index):
+    def draw_item(self, context, layout, data, item, _icon, _active_data, _active_propname, _index):
         row = layout.row(align=True)
+        row.active = item.show_viewport
         row.prop(item, "show_viewport", text="", emboss=False)
         row.prop(item, "name", text="", emboss=False, icon=ModifierAddMenu.MODIFIER_TYPES_TO_ICONS[item.type])
+        links = data.get("mx_modifier_links")
+        if links and item.name in links:
+            # Max shows instanced modifiers in italics; Blender's lists have no italics.
+            row.label(text="", icon='LINKED')
+        if _modifier_warning(item):
+            row.label(text="", icon='ERROR')
+        if item.is_active and context.mode == 'EDIT_MESH':
+            mode = context.tool_settings.mesh_select_mode
+            level = 'VERT' if mode[0] else 'EDGE' if mode[1] else 'FACE'
+            row.label(text="", icon=_LEVEL_ICONS[level])
 
     def filter_items(self, _context, data, propname):
         count = len(getattr(data, propname))
@@ -89,24 +123,87 @@ def _modifier_stack_index_get(ob):
 def _modifier_stack_index_set(ob, index):
     if 0 <= index < len(ob.modifiers):
         ob.modifiers.active = ob.modifiers[index]
+        # Max shows one entry's settings at a time: the selected modifier's panel stays open.
+        for i, mod in enumerate(ob.modifiers):
+            mod.show_expanded = i == index
 
 
-def _draw_modifier_stack(layout, ob):
+# Sub-object levels of a modifier, as Max expands them under its row.
+_MODIFIER_LEVELS = {
+    'EDIT_POLY': (('VERTEX', "Vertex"), ('EDGE', "Edge"), ('BORDER', "Border"),
+                  ('POLYGON', "Polygon"), ('ELEMENT', "Element")),
+    'EDIT_SPLINE': (('VERTEX', "Vertex"), ('EDGE', "Segment"), ('POLYGON', "Spline")),
+}
+
+
+def _draw_modifier_stack(layout, context):
+    ob = context.object
     if not ob.modifiers:
         return
     col = layout.column(align=True)
-    col.template_list("MODIFIER_UL_stack", "", ob, "modifiers", ob, "moritz_modifier_stack_index", rows=3)
+    row = col.row()
+    row.template_list("MODIFIER_UL_stack", "", ob, "modifiers", ob, "moritz_modifier_stack_index", rows=3)
+    side = row.column(align=True)
+    side.operator("object.moritz_modifier_toggle", text="", icon='HIDE_OFF').target = 'VIEWPORT'
+    side.operator("object.moritz_modifier_toggle", text="", icon='RESTRICT_RENDER_OFF').target = 'RENDER'
+    side.separator()
+    side.menu("MODIFIER_MT_stack_context", text="", icon='DOWNARROW_HLT')
+    active = ob.modifiers.active
+    if active is not None:
+        # The list is newest first, so up in the list is down in Blender's order.
+        side.separator()
+        side.operator("object.modifier_move_down", text="", icon='TRIA_UP').modifier = active.name
+        side.operator("object.modifier_move_up", text="", icon='TRIA_DOWN').modifier = active.name
     box = col.box()
     box.scale_y = 0.8
     data = ob.data
     box.label(text=data.name if data else ob.name, icon='OUTLINER_DATA_' + ob.type if data else 'OBJECT_DATA')
     active = ob.modifiers.active
-    if active is not None and active.type == 'EDIT_POLY':
-        # The levels of an Edit Poly modifier, as Max expands them under its row.
+    levels = _MODIFIER_LEVELS.get(active.type) if active is not None else None
+    if levels:
         row = layout.row(align=True)
-        for level, text in (('VERTEX', "Vertex"), ('EDGE', "Edge"), ('BORDER', "Border"),
-                            ('POLYGON', "Polygon"), ('ELEMENT', "Element")):
+        for level, text in levels:
             row.operator("object.subobject_level", text=text).level = level
+    # Max's button row under the stack.
+    row = layout.row(align=True)
+    if hasattr(bpy.types, "MAXIMIZE_OT_show_end_result"):
+        row.operator("maximize.show_end_result", text="", icon='MODIFIER_ON')
+    row.operator("object.moritz_modifier_make_unique", text="Make Unique")
+    if active is not None:
+        row.operator("object.modifier_remove", text="", icon='TRASH').modifier = active.name
+
+
+class MODIFIER_MT_stack_context(Menu):
+    """Max's stack right-click menu"""
+    bl_label = "Modifier Stack"
+
+    def draw(self, context):
+        _draw_stack_menu(self.layout, context)
+
+
+def _draw_stack_menu(layout, context):
+    ob = context.object
+    active = ob.modifiers.active if ob else None
+    if active is not None:
+        layout.operator("object.modifier_remove", text="Delete", icon='TRASH').modifier = active.name
+    layout.operator("object.moritz_modifier_copy", text="Copy", icon='COPYDOWN')
+    layout.operator("object.moritz_modifier_paste", text="Paste", icon='PASTEDOWN').instanced = False
+    layout.operator("object.moritz_modifier_paste", text="Paste Instanced", icon='LINKED').instanced = True
+    layout.operator("object.moritz_modifier_make_unique", text="Make Unique")
+    layout.separator()
+    if hasattr(bpy.types, "MAXIMIZE_OT_collapse_to"):
+        layout.operator("maximize.collapse_to")
+        layout.operator("maximize.collapse_all")
+    elif active is not None:
+        layout.operator("object.modifier_apply", text="Collapse To").modifier = active.name
+    layout.operator("object.moritz_modifier_toggle", text="Off in Viewport").target = 'VIEWPORT'
+    layout.operator("object.moritz_modifier_toggle", text="Off in Renderer").target = 'RENDER'
+
+
+def _draw_list_item_menu(self, context):
+    ui_list = getattr(context, "ui_list", None)
+    if ui_list is not None and ui_list.bl_idname == "MODIFIER_UL_stack":
+        _draw_stack_menu(self.layout, context)
 
 
 def register():
@@ -117,9 +214,11 @@ def register():
         get=_modifier_stack_index_get,
         set=_modifier_stack_index_set,
     )
+    bpy.types.UI_MT_list_item_context_menu.append(_draw_list_item_menu)
 
 
 def unregister():
+    bpy.types.UI_MT_list_item_context_menu.remove(_draw_list_item_menu)
     del bpy.types.Object.moritz_modifier_stack_index
 
 
@@ -362,12 +461,14 @@ class AddModifierMenu(Operator):
         return space and space.type == 'PROPERTIES' and space.context == 'MODIFIER'
 
     def invoke(self, _context, _event):
-        return bpy.ops.wm.call_menu(name="OBJECT_MT_modifier_add")
+        return bpy.ops.wm.call_menu(name="OBJECT_MT_modifier_add_flat")
 
 
 classes = (
     DATA_PT_modifiers,
     MODIFIER_UL_stack,
+    MODIFIER_MT_stack_context,
+    OBJECT_MT_modifier_add_flat,
     OBJECT_MT_modifier_add,
     OBJECT_MT_modifier_add_edit,
     OBJECT_MT_modifier_add_generate,

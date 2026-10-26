@@ -430,6 +430,8 @@ class OUTLINER_PT_filter(Panel):
             row.prop(space, "show_restrict_column_render", text="")
             row.prop(space, "show_restrict_column_holdout", text="")
             row.prop(space, "show_restrict_column_indirect_only", text="")
+            # Moritz: Max's Display as Box column.
+            row.prop(space, "show_restrict_column_display_box", text="")
             layout.separator()
         elif display_mode == 'SCENES':
             layout.label(text="Restriction Toggles")
@@ -438,6 +440,7 @@ class OUTLINER_PT_filter(Panel):
             row.prop(space, "show_restrict_column_hide", text="")
             row.prop(space, "show_restrict_column_viewport", text="")
             row.prop(space, "show_restrict_column_render", text="")
+            row.prop(space, "show_restrict_column_display_box", text="")
             layout.separator()
 
         if display_mode != 'DATA_API':
@@ -562,6 +565,11 @@ class OUTLINER_PT_options_filter(Panel):
         row = sub.row()
         row.label(icon='EMPTY_DATA')
         row.prop(space, "use_filter_object_empty", text="Empties")
+        # Moritz: Max's Shapes (curve and text objects) are their own type.
+        if bpy.data.curves:
+            row = sub.row()
+            row.label(icon='CURVE_DATA')
+            row.prop(space, "use_filter_object_shapes", text="Shapes")
 
         if (
                 bpy.data.curves or

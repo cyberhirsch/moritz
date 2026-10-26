@@ -62,6 +62,23 @@ enables on first start.
 | FFD | Blender's Lattice modifier |
 | UVW Map | Quad menu > UVW Map *(Maximize)*; Unwrap UVW is Blender's UV Editor |
 
+## Command Panel and Scene Explorer
+
+| Max | Moritz |
+|---|---|
+| Command Panel | The Properties editor, called Command Panel |
+| Create panel | The Create tab, first in the tab column: Geometry, Shapes, Lights, Cameras, Helpers, Space Warps, Systems |
+| Modify panel | The Modify tab: the stack on top (newest first, the base object at the bottom), the selected modifier's settings below |
+| Modifier List | Add Modifier: one menu with every modifier for the object; type to filter |
+| Stack right-click: Copy, Paste, Paste Instanced, Make Unique, Collapse To / All, Off in Renderer | Right-click a stack row, or the arrow next to the stack. Instanced modifiers show a link icon |
+| Show End Result, Make Unique, Remove Modifier | The buttons under the stack |
+| Scene Explorer | The Outliner |
+| Freeze column, Renderable column | The snowflake and camera columns; Display as Box is in the filter popover |
+| Scene Explorer toolbar: Geometry, Shapes, Lights, Cameras, Helpers, Bones | The type buttons in the Outliner header *(Maximize)* |
+| Double-click selects the object and its children | The same *(Maximize)*; rename is F2 |
+| Unhide All, Unfreeze All | Outliner right-click menu *(Maximize)* |
+| Layer colors (By Layer) | Outliner right-click > Color By Layer: objects take their collection's color tag *(Maximize)* |
+
 ## Shapes and splines
 
 | Max | Moritz |

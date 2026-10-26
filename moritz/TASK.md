@@ -106,15 +106,15 @@ Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberh
 - [x] Moritz column in the comparison page; assert keys in the background test (`test_keymap_options.py`); 146 of 216 Max keys, 0 conflicts. Also Shift+Z/Y view undo, Alt+` Show End Result, F5–F8 axis constraints
 
 ### Cameras (Seb, 2026-10-25) — all add-on work (Maximize), files unaffected
-- [ ] **Point-of-view menu** (Max's "[Camera001]" / "[Top]" label menu), also on V over a viewport. Entries: the scene's cameras (look through), Perspective, Orthographic, Top/Bottom/Front/Back/Left/Right, and:
-  - [ ] **Select Camera**: selects the camera you are looking through (in Blender today: click the camera frame's edge, or the Outliner)
-  - [ ] **Lock Camera to View**, on by default: pan, orbit and zoom in a camera view move the camera instead of leaving camera view (Blender's sidebar > View > View Lock > Camera to View)
-  - [ ] **Lock Camera**: the camera can't be moved by accident (location, rotation and scale locks; Blender's camera-to-view sync already respects them)
+- [x] *(2026-10-26, Maximize `cameras.py`; V in Object Mode, Edit Mode keeps Blender's V; also View > Cameras)* **Point-of-view menu** (Max's "[Camera001]" / "[Top]" label menu), also on V over a viewport. Entries: the scene's cameras (look through), Perspective, Orthographic, Top/Bottom/Front/Back/Left/Right, and:
+  - [x] **Select Camera**: selects the camera you are looking through (in Blender today: click the camera frame's edge, or the Outliner)
+  - [x] **Lock Camera to View**, on by default (new files with the Max layout): pan, orbit and zoom in a camera view move the camera instead of leaving camera view (Blender's sidebar > View > View Lock > Camera to View)
+  - [x] **Lock Camera**: the camera can't be moved by accident (location, rotation and scale locks; Blender's camera-to-view sync already respects them)
 - Suggestions, not decided yet:
-  - [ ] Camera navigation tools in camera view: Dolly (camera / target / both), Truck, Orbit, Pan Camera, Roll, Field of View, Perspective; button strip at the bottom right
-  - [ ] Target camera: drag from camera position to target; target is an empty with a Track To constraint
-  - [ ] Vertical tilt correction (2-point perspective) through lens shift
-  - [ ] Max's 45° default viewport field of view (lens 43.5 mm); larger far clip for cm archviz scenes
+  - [x] *(2026-10-26: Field of View drag and Roll in the Point-of-View menu; with Lock Camera to View, orbit / pan / zoom are Max's Orbit / Truck / Dolly. Open: the button strip at the bottom right, Dolly Target)* Camera navigation tools in camera view: Dolly (camera / target / both), Truck, Orbit, Pan Camera, Roll, Field of View, Perspective; button strip at the bottom right
+  - [x] *(2026-10-26)* Target camera: drag from camera position to target; target is an empty with a Track To constraint
+  - [x] *(2026-10-26, Camera Correction)* Vertical tilt correction (2-point perspective) through lens shift
+  - [x] *(2026-10-26, new files)* Max's 45° default viewport field of view (lens 43.5 mm); larger far clip for cm archviz scenes
   - Kept from Blender: Walk/Fly navigation, camera properties, the 3D view's own orbit/pan/zoom
 
 ## Phase 2 — Edit Poly in the stack
@@ -214,8 +214,9 @@ Operation panel covers the live values but sits in the corner and has no Apply a
   border / vertex Extrude (Height and Width), Extrude Along Spline, Slice Plane's Split and Reset
   Plane, Named Selections Copy / Paste, Material ID Clear Selection, Show Cage (on / off), Hinge
   From Edge
-- [ ] Still open from that list: Show Cage's two colors, a live Slice Plane gizmo, Apply and
-  Continue for Blender's Adjust Last Operation panel
+- [x] *(2026-10-26, Maximize c48608c)* Show Cage's two colors (preferences, and next to Show
+  Cage), a live Slice Plane (move and rotate gizmos; Slice, Split, Reset Plane), Apply and Continue
+  (the + next to each Edit rollout's title runs the last tool again)
 - Omitted (Seb agreed, 2026-10-25), because Blender does it as well or it is Max-only:
   - Edit Poly Mode (Model / Animate, Commit, Settings, Cancel): rare; Blender has shape keys
   - Paint Deformation: Blender's Sculpt Mode is better (at most a button that switches to it)
@@ -290,7 +291,8 @@ asked for Max's behavior here, so this overrides "only what Max does better" for
   segments whose handles lie on the chord into vector segments, so they evaluate to their end points),
   on for new shapes; written, waiting for the rebuild. *Files: a new bit in `Curve.flag`; stock
   Blender ignores it and draws straight segments with Steps points, so the shape looks the same.*
-  Adaptive: open (Blender has one resolution per curve, not per segment).
+  Adaptive: done 2026-10-26 (Maximize `spline_more.py`): about 6 degrees per step, one count per
+  spline (Blender has one resolution per spline, not per segment), for shapes and editable splines.
 - [x] **Max vertex types** (done 2026-10-25, `spline_tools.py`; Edit Spline quad menu and the
   Max Spline Tools menu; the Modify tab entry comes with Phase 6) in the quad menu and the Modify tab: Corner, Smooth, Bezier, Bezier
   Corner (Blender's Vector, Auto, Aligned, Free handles), Reset Tangents, Make First, Reverse.
@@ -301,15 +303,16 @@ asked for Max's behavior here, so this overrides "only what Max does better" for
   splines), Fuse, Attach (object level), Reset Tangents / Make First / Reverse, Trim / Extend /
   Fillet / Chamfer / Outline / Break / Connect; in the Edit Spline quad and the Modify tab
   (Rendering, Interpolation, Selection, Geometry rollouts). Pressing 1/2/3 on a parametric shape
-  converts it first. **Open:** Bind/Unbind, Show Selected Segments (Blender draws
-  selected points, not segments in red), Lock Handles Alike/All, and a hover highlight for segments.
+  converts it first. Show Selected Segs done 2026-10-26 (red overlay). **Open:** Bind/Unbind
+  (Blender has no bound vertices: needs core), Lock Handles Alike/All, and a hover highlight for
+  segments.
 - [~] **Creation as in Max** (done 2026-10-25): Line with Initial Type (Corner/Smooth) and Drag
   Type (Corner/Smooth/Bezier), Backspace removes the last vertex, Shift for 90 degrees, clicking
   the first vertex asks "Close spline?", Start New Shape off adds to the selected shape; Keyboard
   Entry for every primitive and shape; AutoGrid (Create menus; surface under the mouse); Text
   (Blender's text object), Freehand (Blender's Draw tool on a new shape), Section (plane through
-  the 3D cursor cuts the selected meshes). Egg (done, measured).
-  **Open:** Section as a live, movable plane object (today one cut at the cursor).
+  the 3D cursor cuts the selected meshes). Egg (done, measured). Section as a live plane object
+  (done 2026-10-26).
 - [x] **Rendering as in Max** (done 2026-10-25, `spline_render.py`): Enable In Renderer / In
   Viewport, Radial (Thickness, Sides, Angle) and Rectangular (Length, Width, Angle), Auto Smooth with
   threshold, Generate Mapping Coords, for shapes and editable splines, as a "Rendering" Geometry
@@ -366,14 +369,18 @@ into closed sub-panels.
     the threshold is how far apart they may pass in Z
   - [x] Twist Correction for the rendered spline (Minimum Twist on, Z Up off)
   - [x] Cap options: Cap, Quad Cap, Segments, Sphere (domes on open spline ends; radial only)
-- [ ] Not in the 3b list yet: Create Line, Insert, Cycle, Hide / Unhide All, Attach Mult., Cross
-  Section, Area Selection, Segment End, Select By, Named Selections Copy / Paste, Show Vertex
-  Numbers (with Selected Only), Connect Copy, Reorient, Tangent Copy / Paste, Detach's Same Shp /
-  Reorient / Copy options, Explode's To Splines / Objects choice (check what the 3b Detach and
-  Explode already do), Refine's options (Connect, Linear, Closed, Bind First, Bind Last), Mirror's
-  Horizontal / Vertical / Both, Rendering's Aspect (with its lock) and Use Viewport Settings with
-  the Viewport / Renderer switch (separate viewport thickness). Soft Selection is Blender's
-  proportional editing.
+- [x] Done 2026-10-26 (Maximize 473bfc8, `spline_more.py`, `tests/test_spline_more.py`): Create
+  Line, Insert, Refine (Connect, Linear, Closed), Cycle, Hide / Unhide All, Attach Mult. (Reorient),
+  Cross Section, Area Selection, Select By (Segment / Spline), Named Selections Copy / Paste, Show
+  Vertex Numbers (Selected Only), Tangent Copy / Paste, Detach (Same Shp, Reorient, Copy), Explode
+  (To Splines / Objects), Mirror (Horizontal / Vertical / Both, Copy, About Pivot), Rendering's
+  Aspect with its lock and Use Viewport Settings with the Viewport / Renderer switch (Rendering
+  group revision 3). Soft Selection is Blender's proportional editing.
+- [x] *(2026-10-26, Maximize)* Segment End, Connect Copy (Shift+drag copies get joined to the
+  originals), Section as a live plane object (yellow cut while it moves, Create Shape)
+- [ ] Still open: Refine's Bind First / Bind Last and Bind / Unbind (core: Blender has no bound
+  vertices), Lock Handles (Blender moves every selected handle together already; Max's per-drag
+  locking is not built), segment hover highlight
 
 ## Phase 4 — Core gaps no add-on can fill
 
@@ -452,18 +459,19 @@ Steps:
 - [x] Stage 1, Python (`bl_ui/properties_data_modifier.py`, committed d71c9ca72de; reviewed
   by the main session): list newest first, on/off toggle, base object row, Edit Poly levels below
   the list. Blender's modifier panels stay below.
-- [ ] Stage 2, Python: expandable sub-object levels per row, level icon, italic instances, warning
-  symbol, right-click menu, the button row, Delete key, modifier clipboard (Copy / Paste; Blender
-  only has Copy to Selected)
-- [ ] Paste Instanced: modifiers shared between objects (one modifier's settings drive all its
+- [x] Stage 2, Python (2026-10-26): sub-object levels under the stack (Edit Poly, Edit Spline; Blender's lists can't nest rows), level icon, italic instances, warning
+  symbol, right-click menu, the button row, modifier clipboard (Copy / Paste; Blender
+  only has Copy to Selected). Instanced rows show a link icon (no italics in Blender's lists). Open:
+  the Delete key over the list (Blender's Delete over a modifier panel works)
+- [x] Paste Instanced (2026-10-26, `bl_operators/moritz_modifier_stack.py`; Edit Poly and Edit Spline paste as copies): modifiers shared between objects (one modifier's settings drive all its
   instances, kept in sync by Maximize like the shared Edit Poly on instances; *files: plain
   modifiers, stock Blender sees independent copies*)
-- [ ] Stage 3: only the selected modifier's settings. Python-only route: collapse the other
+- [x] Stage 3 (2026-10-26, the Python route): only the selected modifier's settings. Python-only route: collapse the other
   modifier panels (`show_expanded`) when one is selected; core route: an `active_only` option for
   `template_modifiers`. Decide which.
-- [ ] Stage 4: the flat Add Modifier menu (all modifiers at once, incompatible ones left out, type
+- [x] Stage 4 (2026-10-26, `OBJECT_MT_modifier_add_flat`, also on Ctrl+A): the flat Add Modifier menu (all modifiers at once, incompatible ones left out, type
   to filter)
-- [ ] Drag to reorder: Blender's UI lists can't drag rows; needs a small core change (or Move Up /
+- [x] *(Move Up / Down buttons next to the stack, 2026-10-26; dragging still open)* Drag to reorder: Blender's UI lists can't drag rows; needs a small core change (or Move Up /
   Down buttons and Ctrl+Up / Down until then). Warn before the core change.
 - *Files: UI only. The only stored values are the modifiers' own expand flags (`show_expanded`) and
   their order, which stock Blender reads the same way.*
@@ -480,7 +488,7 @@ Steps:
   the sidebar Max tab for the other tools
 - [x] Without Maximize, the Create tab offers Blender's own primitives (not parametric after the
   first redo); with it, the parametric ones
-- [ ] Docs: `max_users.md` (Command Panel, Create, Modify), PATCHES.md (tests done:
+- [x] Docs: `max_users.md` (Command Panel, Create, Modify), PATCHES.md (tests done:
   `moritz/tests/test_command_panel.py`)
 
 ## Phase 7 — Outliner with Max's Scene Explorer features (plan, 2026-10-25)
@@ -490,20 +498,20 @@ Rule: only what Max does better. Kept from Blender: the Outliner itself, collect
 rename (Ctrl+F2, Max's Rename Objects), F2 rename (done).
 
 No-brainers (approved by Seb, 2026-10-25):
-- [ ] **Freeze column** with Max's snowflake icon and name (today the selectable column does the job;
+- [x] *(2026-10-26)* **Freeze column** with Max's snowflake icon and name (today the selectable column does the job;
   done in Phase 4). *UI only.*
-- [ ] **Type filter row in the header**, as Max's Scene Explorer toolbar: one click per Geometry,
+- [x] *(2026-10-26; Maximize `outliner.py`, core `mx_filter`; no Space Warps button: Blender has no such type)* **Type filter row in the header**, as Max's Scene Explorer toolbar: one click per Geometry,
   Shapes, Lights, Cameras, Helpers, Space Warps, Bones, instead of Blender's filter popover. Python
   (`space_outliner.py`); needs Shapes split out of "Others" (curves, text) — small core change for a
   new filter flag. *Files: a new bit in the Outliner's filter flags; stock ignores it.*
-- [ ] **Display as Box** and **See-Through** columns (per object: `display_type = 'BOUNDS'`, and
+- [x] *(Display as Box done 2026-10-26, in the filter popover; See-Through open: Blender has no per-object X-ray, needs a draw-engine change)* **Display as Box** and **See-Through** columns (per object: `display_type = 'BOUNDS'`, and
   X-ray per object), as in Max; core (Outliner columns are C). *Files: the columns' on/off flags
   are new bits in the Outliner space, stock ignores them; the object values are stock data.*
-- [ ] **Renderable** column under Max's name (Blender's render column, relabeled). *UI only.*
-- [ ] **Double-click an object selects it and its children** (Max), as in the viewport; rename stays
+- [x] *(2026-10-26)* **Renderable** column under Max's name (Blender's render column, relabeled). *UI only.*
+- [x] *(2026-10-26, Maximize)* **Double-click an object selects it and its children** (Max), as in the viewport; rename stays
   on F2 and Ctrl+click. Python keymap. *UI only.*
-- [ ] **Unhide All / Unfreeze All** in the Outliner's context menu and header. *UI only.*
-- [ ] **Layer properties by layer**: Max's "By Layer" for color, freeze and render; Blender's
+- [x] *(2026-10-26, Maximize; context menu)* **Unhide All / Unfreeze All** in the Outliner's context menu and header. *UI only.*
+- [x] *(color done 2026-10-26: Maximize's Color By Layer, applied once, no live link; freeze and render by layer are Blender's collection toggles already)* **Layer properties by layer**: Max's "By Layer" for color, freeze and render; Blender's
   collection color tags drive the object color in the viewport. Medium; check first.
 - Maybe, not no-brainers: Selection Sets as an Outliner view (Maximize's named sets), sorting by
   column (Blender sorts by name only), Max's separate Layer Explorer (Blender's View Layer mode

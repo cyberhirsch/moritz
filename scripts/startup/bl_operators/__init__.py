@@ -26,6 +26,7 @@ _modules = [
     "image",
     "image_as_planes",
     "mesh",
+    "moritz_modifier_stack",
     "moritz_subobject",
     "node",
     "object",

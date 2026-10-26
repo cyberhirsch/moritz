@@ -258,6 +258,18 @@ enum eSpaceOutliner_ShowRestrictFlag : char {
 };
 ENUM_OPERATORS(eSpaceOutliner_ShowRestrictFlag)
 
+/** #SpaceOutliner.mx_filter (Moritz). */
+enum eSpaceOutliner_MoritzFilter : char {
+  /** Hide shapes (curve and text objects), Max's Shapes filter. */
+  SO_MX_FILTER_NO_OB_SHAPES = (1 << 0),
+};
+
+/** #SpaceOutliner.mx_columns (Moritz). */
+enum eSpaceOutliner_MoritzColumn : char {
+  /** Max's Display as Box column (object display type Bounds). */
+  SO_MX_COLUMN_BOX = (1 << 0),
+};
+
 /** #SpaceOutliner.outlinevis */
 enum eSpaceOutliner_Mode : short {
   SO_SCENES = 0,

@@ -96,6 +96,40 @@ The Max workflow is not part of Moritz: it is the separate add-on [Maximize](htt
   `blenkernel/intern/curve_legacy_convert.cc` + `BKE_curve_legacy_convert.hh`
   (`curves_to_curve_legacy_nurbs`), `editors/curve/CMakeLists.txt`
 
+## Command Panel
+
+The Properties editor is Max's Command Panel: a Create tab first, the Modifiers tab called Modify,
+with Max's modifier stack on top.
+
+- `makesrna/intern/rna_space.cc` — editor and tab labels ("Command Panel", "Modify", "Create")
+- `makesdna/DNA_space_enums.h` — `BCONTEXT_CREATE`; stock Blender falls back to the Object tab
+- `editors/space_buttons/buttons_context.cc`, `space_buttons.cc` — the Create tab, listed with or
+  without an object, before the first redraw
+- `scripts/startup/bl_ui/properties_create.py` — Max's categories; Blender's primitives without
+  Maximize, Maximize's parametric ones with it
+- `scripts/startup/bl_ui/properties_data_modifier.py` — the stack (newest first, base object row,
+  sub-object levels of Edit Poly and Edit Spline, level icon, instanced and warning marks, button
+  row, right-click menu through `UI_MT_list_item_context_menu`); selecting a modifier keeps only
+  its panel open; the flat Add Modifier menu (`OBJECT_MT_modifier_add_flat`)
+- `scripts/startup/bl_operators/moritz_modifier_stack.py` — Copy / Paste, Paste Instanced (links in
+  the object's `mx_modifier_links` custom property, kept in sync by a depsgraph handler), Make
+  Unique, Off in Viewport / Renderer
+- Tests: `moritz/tests/test_command_panel.py`, `test_modifier_stack.py`
+
+## Outliner (Max's Scene Explorer)
+
+- `makesdna/DNA_space_types.h`, `DNA_space_enums.h` — `SpaceOutliner.mx_filter` (Shapes filter)
+  and `mx_columns` (Display as Box column), taken from padding; stock Blender ignores them
+- `makesrna/intern/rna_space.cc` — `use_filter_object_shapes`,
+  `show_restrict_column_display_box`; the select and render columns are named Freeze and
+  Renderable
+- `editors/space_outliner/outliner_tree.cc` — shapes (curve and text objects) are their own type;
+  "Others" no longer covers them
+- `editors/space_outliner/outliner_draw.cc`, `outliner_utils.cc` — the Freeze column shows Max's
+  snowflake (bright when frozen); the Display as Box column (`display_type` Bounds / Textured,
+  Shift for children)
+- `scripts/startup/bl_ui/space_outliner.py` — the new toggles in the filter popover
+
 ## Undo speed
 
 - `source/blender/editors/undo/memfile_undo.cc` — keep the depsgraph relations when an undo step

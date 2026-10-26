@@ -4669,8 +4669,8 @@ static void rna_def_space_outliner(BlenderRNA *brna)
 
   prop = RNA_def_property(srna, "show_restrict_column_select", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(prop, nullptr, "show_restrict_flags", SO_RESTRICT_SELECT);
-  RNA_def_property_ui_text(prop, "Selectable", "Selectable");
-  RNA_def_property_ui_icon(prop, ICON_RESTRICT_SELECT_OFF, 0);
+  RNA_def_property_ui_text(prop, "Freeze", "Freeze: objects can't be selected in the viewport");
+  RNA_def_property_ui_icon(prop, ICON_FREEZE, 0);
   RNA_def_property_update(prop, NC_SPACE | ND_SPACE_OUTLINER, nullptr);
 
   prop = RNA_def_property(srna, "show_restrict_column_hide", PROP_BOOLEAN, PROP_NONE);
@@ -4687,8 +4687,14 @@ static void rna_def_space_outliner(BlenderRNA *brna)
 
   prop = RNA_def_property(srna, "show_restrict_column_render", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_sdna(prop, nullptr, "show_restrict_flags", SO_RESTRICT_RENDER);
-  RNA_def_property_ui_text(prop, "Disable in Renders", "Globally disable in renders");
+  RNA_def_property_ui_text(prop, "Renderable", "Renderable: objects show up in renders");
   RNA_def_property_ui_icon(prop, ICON_RESTRICT_RENDER_OFF, 0);
+  RNA_def_property_update(prop, NC_SPACE | ND_SPACE_OUTLINER, nullptr);
+
+  prop = RNA_def_property(srna, "show_restrict_column_display_box", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_sdna(prop, nullptr, "mx_columns", SO_MX_COLUMN_BOX);
+  RNA_def_property_ui_text(prop, "Display as Box", "Show objects as their bounding box (Max)");
+  RNA_def_property_ui_icon(prop, ICON_SHADING_BBOX, 0);
   RNA_def_property_update(prop, NC_SPACE | ND_SPACE_OUTLINER, nullptr);
 
   prop = RNA_def_property(srna, "show_restrict_column_holdout", PROP_BOOLEAN, PROP_NONE);
@@ -4776,7 +4782,12 @@ static void rna_def_space_outliner(BlenderRNA *brna)
   prop = RNA_def_property(srna, "use_filter_object_others", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_negative_sdna(prop, nullptr, "filter", SO_FILTER_NO_OB_OTHERS);
   RNA_def_property_ui_text(
-      prop, "Show Other Objects", "Show curves, lattices, light probes, fonts, ...");
+      prop, "Show Other Objects", "Show lattices, light probes, surfaces, ...");
+  RNA_def_property_update(prop, NC_SPACE | ND_SPACE_OUTLINER, nullptr);
+
+  prop = RNA_def_property(srna, "use_filter_object_shapes", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_negative_sdna(prop, nullptr, "mx_filter", SO_MX_FILTER_NO_OB_SHAPES);
+  RNA_def_property_ui_text(prop, "Show Shapes", "Show shapes: curve and text objects (Max)");
   RNA_def_property_update(prop, NC_SPACE | ND_SPACE_OUTLINER, nullptr);
 
   /* Libraries filter. */
