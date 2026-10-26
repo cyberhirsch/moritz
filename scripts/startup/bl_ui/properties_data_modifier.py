@@ -103,7 +103,8 @@ class MODIFIER_UL_stack(bpy.types.UIList):
         if links and item.name in links:
             # Max shows instanced modifiers in italics; Blender's lists have no italics.
             row.label(text="", icon='LINKED')
-        if _modifier_warning(item):
+        # Maximize's mid-stack Sculpt: what's below must keep its topology.
+        if _modifier_warning(item) or item.name in data.get("mx_sculpt_modifiers", ()):
             row.label(text="", icon='ERROR')
         if item.is_active and context.mode == 'EDIT_MESH':
             mode = context.tool_settings.mesh_select_mode
@@ -160,6 +161,9 @@ def _draw_modifier_stack(layout, context):
     box.label(text=data.name if data else ob.name, icon='OUTLINER_DATA_' + ob.type if data else 'OBJECT_DATA')
     active = ob.modifiers.active
     levels = _MODIFIER_LEVELS.get(active.type) if active is not None else None
+    if active is not None and active.name in ob.get("mx_sculpt_modifiers", ()):
+        # Maximize's mid-stack Sculpt is an Edit Poly underneath, without its levels.
+        levels = None
     if levels:
         row = layout.row(align=True)
         for level, text in levels:

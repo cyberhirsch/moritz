@@ -236,16 +236,16 @@ Operation panel covers the live values but sits in the corner and has no Apply a
 
 One **Sculpt** modifier that unifies Blender's Multires modifier and the sculpt brush settings,
 modeled on 3ds Max's Retopology modifier: it can sit mid-stack, with limitations.
-- [ ] The modifier panel holds both the Multires controls (levels for viewport / sculpt / render,
+- [x] *(2026-10-26, Maximize `sculpt.py`, `tests/test_sculpt.py`; no core change needed)* The modifier panel holds both the Multires controls (levels for viewport / sculpt / render,
   Subdivide, Simple, Linear, Unsubdivide, Delete Higher, Apply Base, Rebuild Subdivisions) and the
   brush settings (brush, radius, strength, falloff, symmetry, Dyntopo), so sculpting is set up
   in one place. Selecting it and entering its level starts Sculpt Mode on it.
-- [ ] **Dyntopo on** applies the current subdivisions first (bakes the Multires levels into the mesh),
+- [x] **Dyntopo on** applies the current subdivisions first (bakes the Multires levels into the mesh),
   then sculpts with dynamic topology. Ask before applying (it can't keep the levels).
-- [ ] **Mid-stack:** allowed, with a warning symbol next to the modifier in the stack list
+- [x] *(a native Edit Poly in Deform mode named Sculpt, sculpted on a stand-in; warning icon in the stack)* **Mid-stack:** allowed, with a warning symbol next to the modifier in the stack list
   (tooltip says why: what's below must keep its topology; Dyntopo and remesh are off there).
   Sculpt edits are stored as per-vertex offsets (like Edit Poly's Deform mode) on the stack below.
-- [ ] Limitations to spell out, as in Max's Retopology: a topology change below invalidates the
+- [x] *(in the rollout and the add message)* Limitations to spell out, as in Max's Retopology: a topology change below invalidates the
   sculpt (warn and offer to rebase, as Edit Poly does); mid-stack evaluation is slower; Dyntopo
   only at the bottom of the stack.
 - Engine: core change (Multires and Sculpt Mode are core; the Edit Poly session shows the way:
@@ -286,7 +286,7 @@ asked for Max's behavior here, so this overrides "only what Max does better" for
   *Files: plain Blender Bezier curves; stock Blender shows the shape and only loses the parameter
   editing. Shapes saved before stay Geometry Nodes poly curves and keep working (editable,
   convertible); new ones are Bezier. Egg is built too.*
-- [~] **Interpolation as in Max**: Steps per shape (default 6 = Blender resolution 7) done.
+- [x] **Interpolation as in Max**: Steps per shape (default 6 = Blender resolution 7) done.
   Optimize: core flag `CU_OPTIMIZE` / `Curve.use_optimize` (`curve_legacy_convert.cc` turns
   segments whose handles lie on the chord into vector segments, so they evaluate to their end points),
   on for new shapes; written, waiting for the rebuild. *Files: a new bit in `Curve.flag`; stock
@@ -297,7 +297,7 @@ asked for Max's behavior here, so this overrides "only what Max does better" for
   Max Spline Tools menu; the Modify tab entry comes with Phase 6) in the quad menu and the Modify tab: Corner, Smooth, Bezier, Bezier
   Corner (Blender's Vector, Auto, Aligned, Free handles), Reset Tangents, Make First, Reverse.
   *Files: unaffected (Blender's own handle types).*
-- [~] **Editable Spline levels 1 Vertex, 2 Segment, 3 Spline** (done 2026-10-25, `spline_tools.py`):
+- [x] *(open rest listed below)* **Editable Spline levels 1 Vertex, 2 Segment, 3 Spline** (done 2026-10-25, `spline_tools.py`):
   a click at 2/3 picks a whole segment or spline (Ctrl adds, Alt removes), transforms of the picked
   vertices, Delete per level, Divide, Detach, Explode, Close, Mirror, Weld (joins or closes
   splines), Fuse, Attach (object level), Reset Tangents / Make First / Reverse, Trim / Extend /
@@ -306,7 +306,7 @@ asked for Max's behavior here, so this overrides "only what Max does better" for
   converts it first. Show Selected Segs done 2026-10-26 (red overlay). **Open:** Bind/Unbind
   (Blender has no bound vertices: needs core), Lock Handles Alike/All, and a hover highlight for
   segments.
-- [~] **Creation as in Max** (done 2026-10-25): Line with Initial Type (Corner/Smooth) and Drag
+- [x] **Creation as in Max** (done 2026-10-25): Line with Initial Type (Corner/Smooth) and Drag
   Type (Corner/Smooth/Bezier), Backspace removes the last vertex, Shift for 90 degrees, clicking
   the first vertex asks "Close spline?", Start New Shape off adds to the selected shape; Keyboard
   Entry for every primitive and shape; AutoGrid (Create menus; surface under the mouse); Text
@@ -317,7 +317,7 @@ asked for Max's behavior here, so this overrides "only what Max does better" for
   Viewport, Radial (Thickness, Sides, Angle) and Rectangular (Length, Width, Angle), Auto Smooth with
   threshold, Generate Mapping Coords, for shapes and editable splines, as a "Rendering" Geometry
   Nodes modifier. *Files: a normal Geometry Nodes modifier; stock Blender renders it the same.*
-- [~] **Edit Spline modifier**: stage 0 done in Maximize (2026-10-25, `edit_spline.py`): edits
+- [x] **Edit Spline modifier**: stage 0 done in Maximize (2026-10-25, `edit_spline.py`): edits
   on a parametric shape follow its parameters while the knot count below holds. Stage 1 done
   (2026-10-25): the native `EDIT_SPLINE` modifier (type 201, `MOD_edit_spline.cc`) stores the
   edited splines with each knot's input index; edits follow the splines below while their knots
