@@ -508,18 +508,24 @@ Steps:
   not know the new one and falls back to the Object tab (`buttons_context.cc`), so nothing breaks
   in either direction. Objects made here are ordinary Blender objects (the parametric ones are
   Geometry Nodes modifiers, which stock Blender evaluates).*
-- [ ] **Next, before the Modify stack fixes (Seb, 2026-10-27): every parametric object of Max's
+- [x] **Next, before the Modify stack fixes (Seb, 2026-10-27): every parametric object of Max's
   Create panel**, with Max's sub-category dropdown under the category icons, AutoGrid, Start New
   Shape (shapes), and Name and Color (Max names: Box001). Each one drag-created and editable in
-  Modify like the existing primitives. ✅ = built already.
-  - Standard Primitives: Box ✅, Cone ✅, Sphere ✅, GeoSphere, Cylinder ✅, Tube ✅, Torus ✅,
-    Pyramid, Teapot, Plane ✅, TextPlus
-  - Extended Primitives: Hedra, Torus Knot, ChamferBox, ChamferCyl, OilTank, Capsule, Spindle,
-    L-Ext, Gengon, C-Ext, RingWave, Hose, Prism
+  Modify like the existing primitives. ✅ = built already. *Done 2026-10-27, except tyFlow (below):
+  sub-category dropdown via the core hook `PROPERTIES_PT_create_category.subcategory_draw`, AutoGrid
+  and Start New Shape checkboxes, buttons in Max's order, Max names without spaces (TorusKnot001).
+  Test: Maximize `tests/test_create_primitives.py`.*
+  - Standard Primitives: Box ✅, Cone ✅, Sphere ✅, GeoSphere ✅, Cylinder ✅, Tube ✅, Torus ✅,
+    Pyramid ✅, Teapot ✅ (Utah patches, Body / Handle / Spout / Lid), Plane ✅, TextPlus ✅ (filled
+    Blender text; Text is the outline-only one)
+  - Extended Primitives ✅: Hedra, Torus Knot, ChamferBox, ChamferCyl, OilTank, Capsule, Spindle,
+    L-Ext, Gengon, C-Ext, RingWave, Hose, Prism. Open: Hedra's Star1/Star2 families and P/Q/R
+    axis scaling, RingWave's animation (Growth, Outer/Inner Edge Breakup), Hose binding to objects
   - Splines: Line ✅, Rectangle ✅, Circle ✅, Ellipse ✅, Arc ✅, Donut ✅, NGon ✅, Star ✅,
     Text ✅, Helix ✅, Egg ✅, Section ✅ (live plane still open), Freehand ✅
-  - Extended Splines: WRectangle, Channel, Angle, Tee, Wide Flange
-  - **tyFlow's objects** (Seb, 2026-10-27; tyFlow is a third-party Max plugin, names from
+  - Extended Splines ✅: WRectangle, Channel, Angle, Tee, Wide Flange (one drag sets the size;
+    Max's second click for Thickness is still open). Start New Shape off works for Line only so far
+  - [ ] **tyFlow's objects** (Seb, 2026-10-27; tyFlow is a third-party Max plugin, names from
     docs.tyflow.com): tyFlow (the particle system itself), tyCache, tyMesher, tySplines, tySpliner,
     tyActor, tyBitmap, the tyVortex / tyWind space warps, the PhysX vehicle helpers (tyVehicle,
     Chassis, Wheel, Joint, Strut, Tread, Turret…). Scope note: tyFlow itself is a full particle /
