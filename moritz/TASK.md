@@ -525,7 +525,13 @@ Steps:
     Text ✅, Helix ✅, Egg ✅, Section ✅ (live plane still open), Freehand ✅
   - Extended Splines ✅: WRectangle, Channel, Angle, Tee, Wide Flange (one drag sets the size;
     Max's second click for Thickness is still open). Start New Shape off works for Line only so far
-  - [ ] **tyFlow's objects** (Seb, 2026-10-27; tyFlow is a third-party Max plugin, names from
+  - [x] **tyFlow's objects**: *decided 2026-10-27 with Seb: only the ones that make meshes, and
+    nothing named after tyFlow; take from tyFlow only what Max lacks. tyMesher's Blob mode is Max's
+    own BlobMesh (Compound Objects), so Maximize builds BlobMesh (Size, Tension, Render / Viewport
+    Coarseness, Off in Viewport, Blob Objects with Add / Remove) with tyMesher's extras (Mesh
+    Volume, Resample Faces, Variation %, Smoothing, Adaptive). New Compound Objects sub-category.
+    Test: Maximize `tests/test_blobmesh.py`. The rest (particles, caches, splines from particles,
+    rigs, vehicles, space warps) is not built.* Original note: (Seb, 2026-10-27; tyFlow is a third-party Max plugin, names from
     docs.tyflow.com): tyFlow (the particle system itself), tyCache, tyMesher, tySplines, tySpliner,
     tyActor, tyBitmap, the tyVortex / tyWind space warps, the PhysX vehicle helpers (tyVehicle,
     Chassis, Wheel, Joint, Strut, Tread, Turret…). Scope note: tyFlow itself is a full particle /
