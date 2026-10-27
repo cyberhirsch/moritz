@@ -457,6 +457,29 @@ Layout from top to bottom, as in Max's Modify panel:
    object's parameters when the base is selected (Max shows one entry at a time).
 
 Steps:
+- [x] **Fixes from Seb's look at the Modify tab (2026-10-27)** *(done 2026-10-27; UI only, files
+  unaffected: "base selected" is simply no active modifier, which stock Blender also allows)*:
+  - [x] Remove Maximize's "Modifier List" dropdown: it duplicates Add Modifier; keep Add Modifier
+    (UVW Map and the Max-named modifiers moved into Add Modifier)
+  - [x] No "Max" panel: Maximize's tools (Selection, Edit Geometry…) belong in the Edit Poly
+    modifier's own settings, shown when Edit Poly is selected in the stack (Maximize rollouts in a
+    header-less subpanel of the Edit Poly, Edit Spline and Multires panels)
+  - [x] When the base object is a parametric primitive or shape, its Parameters (Length, Width,
+    Height, Segments…) show as the base entry's settings: the base row is clickable, named after
+    the kind ("Box"), and the Parameters modifier is hidden from the stack (hooks
+    `DATA_PT_modifiers.moritz_base_draw` / `moritz_base_entry`). Editable Poly and Editable Spline
+    bases show their rollouts the same way. Open: Blender's own panel list below still shows the
+    hidden Parameters modifier (collapsed)
+  - [x] The five level buttons appear twice (text row under the stack, icons in "Selection"): keep
+    them in one place, Edit Poly's Selection section, plus the levels in the stack row
+  - [ ] **Target look** (Seb's Max screenshot): the stack box with one row per entry (eye,
+    expand triangle, name; the selected row highlighted; the base object, e.g. "Box", last with no
+    eye); under it one row of icon buttons (Show End Result highlighted when on, Make Unique,
+    Remove Modifier), no text buttons; then the selected modifier's sections in Max's order: for
+    Edit Poly, Show Cage (with its two colors) at the top, then **Selection** with the five level
+    icons (Vertex, Edge, Border, Polygon, Element) as one icon row, then the other Edit Poly
+    sections. Edit Poly Mode's Model / Animate, Commit, Settings and Cancel stay left out (decided
+    2026-10-25), so only Show Cage is left of that section.
 - [x] Stage 1, Python (`bl_ui/properties_data_modifier.py`, committed d71c9ca72de; reviewed
   by the main session): list newest first, on/off toggle, base object row, Edit Poly levels below
   the list. Blender's modifier panels stay below.
@@ -485,6 +508,27 @@ Steps:
   not know the new one and falls back to the Object tab (`buttons_context.cc`), so nothing breaks
   in either direction. Objects made here are ordinary Blender objects (the parametric ones are
   Geometry Nodes modifiers, which stock Blender evaluates).*
+- [ ] **Next, before the Modify stack fixes (Seb, 2026-10-27): every parametric object of Max's
+  Create panel**, with Max's sub-category dropdown under the category icons, AutoGrid, Start New
+  Shape (shapes), and Name and Color (Max names: Box001). Each one drag-created and editable in
+  Modify like the existing primitives. ✅ = built already.
+  - Standard Primitives: Box ✅, Cone ✅, Sphere ✅, GeoSphere, Cylinder ✅, Tube ✅, Torus ✅,
+    Pyramid, Teapot, Plane ✅, TextPlus
+  - Extended Primitives: Hedra, Torus Knot, ChamferBox, ChamferCyl, OilTank, Capsule, Spindle,
+    L-Ext, Gengon, C-Ext, RingWave, Hose, Prism
+  - Splines: Line ✅, Rectangle ✅, Circle ✅, Ellipse ✅, Arc ✅, Donut ✅, NGon ✅, Star ✅,
+    Text ✅, Helix ✅, Egg ✅, Section ✅ (live plane still open), Freehand ✅
+  - Extended Splines: WRectangle, Channel, Angle, Tee, Wide Flange
+  - **tyFlow's objects** (Seb, 2026-10-27; tyFlow is a third-party Max plugin, names from
+    docs.tyflow.com): tyFlow (the particle system itself), tyCache, tyMesher, tySplines, tySpliner,
+    tyActor, tyBitmap, the tyVortex / tyWind space warps, the PhysX vehicle helpers (tyVehicle,
+    Chassis, Wheel, Joint, Strut, Tread, Turret…). Scope note: tyFlow itself is a full particle /
+    physics system (Blender's nearest: Geometry Nodes simulation zones); decide per object which
+    ones to build and how far, starting with the simple ones. tyFlow also adds about 40 modifiers
+    (tyBend, tyBoolean, tyConform, tyFaceExtrude, tyMeshToSplines, tySplineMesher, tyWeld, tySlice,
+    tyRelax, tyMultifracture…), not part of this item.
+  - *Files: like the existing ones, Geometry Nodes or Bezier curve objects that stock Blender shows
+    unchanged (only the parameter editing is lost).*
 - [x] Move Maximize's sidebar Create and Modify panels (Max tab) into the Command Panel tabs; keep
   the sidebar Max tab for the other tools
 - [x] Without Maximize, the Create tab offers Blender's own primitives (not parametric after the

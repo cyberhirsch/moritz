@@ -54,6 +54,14 @@ class ModifierAddMenu:
 
 class DATA_PT_modifiers(ModifierButtonsPanel, Panel):
     bl_label = "Modifiers"
+    # Moritz hooks for Max's base entry, set by an add-on:
+    # - `moritz_base_draw(layout, context)` draws the base object's settings, shown when the base
+    #   is selected in the stack;
+    # - `moritz_base_entry(ob)` returns (modifier, label): a modifier that is the base object's
+    #   own settings (hidden from the stack, e.g. a parametric primitive's parameters) and the base
+    #   row's label (e.g. "Box"); either may be None.
+    moritz_base_draw = None
+    moritz_base_entry = None
 
     @classmethod
     def poll(cls, context):
@@ -66,7 +74,21 @@ class DATA_PT_modifiers(ModifierButtonsPanel, Panel):
         layout.operator("wm.call_menu", text="Add Modifier", icon='ADD').name = "OBJECT_MT_modifier_add_flat"
         # Moritz: Max's modifier stack, newest on top and the base object at the bottom.
         _draw_modifier_stack(layout, context)
+        draw_base = DATA_PT_modifiers.moritz_base_draw
+        if draw_base is not None and _base_selected(context.object):
+            draw_base(layout, context)
         layout.template_modifiers()
+
+
+def _base_entry(ob):
+    """(modifier that is the base's own settings, base row label), from the add-on's hook."""
+    hook = DATA_PT_modifiers.moritz_base_entry
+    return hook(ob) if hook is not None else (None, None)
+
+
+def _base_selected(ob):
+    active = ob.modifiers.active
+    return active is None or active == _base_entry(ob)[0]
 
 
 class OBJECT_MT_modifier_add_flat(Menu):
@@ -112,8 +134,10 @@ class MODIFIER_UL_stack(bpy.types.UIList):
             row.label(text="", icon=_LEVEL_ICONS[level])
 
     def filter_items(self, _context, data, propname):
-        count = len(getattr(data, propname))
-        return [], list(reversed(range(count)))
+        items = getattr(data, propname)
+        base = _base_entry(data)[0]
+        flags = [0 if item == base else self.bitflag_filter_item for item in items]
+        return flags, list(reversed(range(len(items))))
 
 
 def _modifier_stack_index_get(ob):
@@ -129,17 +153,10 @@ def _modifier_stack_index_set(ob, index):
             mod.show_expanded = i == index
 
 
-# Sub-object levels of a modifier, as Max expands them under its row.
-_MODIFIER_LEVELS = {
-    'EDIT_POLY': (('VERTEX', "Vertex"), ('EDGE', "Edge"), ('BORDER', "Border"),
-                  ('POLYGON', "Polygon"), ('ELEMENT', "Element")),
-    'EDIT_SPLINE': (('VERTEX', "Vertex"), ('EDGE', "Segment"), ('POLYGON', "Spline")),
-}
-
-
 def _draw_modifier_stack(layout, context):
     ob = context.object
-    if not ob.modifiers:
+    base, label = _base_entry(ob)
+    if not any(mod != base for mod in ob.modifiers):
         return
     col = layout.column(align=True)
     row = col.row()
@@ -149,25 +166,23 @@ def _draw_modifier_stack(layout, context):
     side.operator("object.moritz_modifier_toggle", text="", icon='RESTRICT_RENDER_OFF').target = 'RENDER'
     side.separator()
     side.menu("MODIFIER_MT_stack_context", text="", icon='DOWNARROW_HLT')
-    active = ob.modifiers.active
+    active = None if _base_selected(ob) else ob.modifiers.active
     if active is not None:
         # The list is newest first, so up in the list is down in Blender's order.
         side.separator()
         side.operator("object.modifier_move_down", text="", icon='TRIA_UP').modifier = active.name
         side.operator("object.modifier_move_up", text="", icon='TRIA_DOWN').modifier = active.name
-    box = col.box()
-    box.scale_y = 0.8
+    # The base object, at the bottom of the stack: click it for its settings.
     data = ob.data
-    box.label(text=data.name if data else ob.name, icon='OUTLINER_DATA_' + ob.type if data else 'OBJECT_DATA')
-    active = ob.modifiers.active
-    levels = _MODIFIER_LEVELS.get(active.type) if active is not None else None
-    if active is not None and active.name in ob.get("mx_sculpt_modifiers", ()):
-        # Maximize's mid-stack Sculpt is an Edit Poly underneath, without its levels.
-        levels = None
-    if levels:
-        row = layout.row(align=True)
-        for level, text in levels:
-            row.operator("object.subobject_level", text=text).level = level
+    col.operator(
+        "object.moritz_modifier_select_base",
+        text=label or (data.name if data else ob.name),
+        icon='OUTLINER_DATA_' + ob.type if data else 'OBJECT_DATA',
+        depress=active is None,
+    )
+    # The levels are in the stack row (the active level's icon) and in the modifier's Selection
+    # rollout, as in Max: no separate row of level buttons.
+
     # Max's button row under the stack.
     row = layout.row(align=True)
     if hasattr(bpy.types, "MAXIMIZE_OT_show_end_result"):

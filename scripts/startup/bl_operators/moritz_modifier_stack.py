@@ -26,8 +26,14 @@ _clipboard = []
 
 
 def _active(context):
+    """The object and its selected modifier: None when the base is selected in the stack (no
+    active modifier, or the modifier an add-on marks as the base's own settings)."""
     ob = context.object
-    return ob, (ob.modifiers.active if ob else None)
+    mod = ob.modifiers.active if ob else None
+    hook = getattr(bpy.types.DATA_PT_modifiers, "moritz_base_entry", None)
+    if mod is not None and hook is not None and hook(ob)[0] == mod:
+        mod = None
+    return ob, mod
 
 
 def _values(mod):
@@ -197,6 +203,25 @@ class OBJECT_OT_moritz_modifier_toggle(Operator):
         return {'FINISHED'}
 
 
+class OBJECT_OT_moritz_modifier_select_base(Operator):
+    """Select the base object in the stack: its settings show instead of a modifier's"""
+    bl_idname = "object.moritz_modifier_select_base"
+    bl_label = "Select Base Object"
+    bl_options = {'INTERNAL'}
+
+    @classmethod
+    def poll(cls, context):
+        return context.object is not None
+
+    def execute(self, context):
+        ob = context.object
+        # No active modifier is the base (Max shows one entry's settings at a time).
+        ob.modifiers.active = None
+        for mod in ob.modifiers:
+            mod.show_expanded = False
+        return {'FINISHED'}
+
+
 class OBJECT_OT_moritz_modifier_delete(Operator):
     """Delete the modifier under the mouse, or the one selected in the stack (Max's Delete key)"""
     bl_idname = "object.moritz_modifier_delete"
@@ -258,6 +283,7 @@ classes = (
     OBJECT_OT_moritz_modifier_paste,
     OBJECT_OT_moritz_modifier_make_unique,
     OBJECT_OT_moritz_modifier_toggle,
+    OBJECT_OT_moritz_modifier_select_base,
     OBJECT_OT_moritz_modifier_delete,
 )
 
