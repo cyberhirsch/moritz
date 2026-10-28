@@ -272,8 +272,9 @@ ribbon (Seb's screenshots) before building.
 - [x] **Smart Extrude** *(done 2026-10-28, Maximize `smart_extrude.py`, first in Edit Polygons: drag
   along the normal (Ctrl: steps; Distance in the redo panel). Out into free space a plain extrude;
   inward a cut with the exact boolean (pocket, notch, hole through); out into other geometry a
-  union. One undo step. Open: Max's Shift+drag with the Move tool doesn't trigger it yet; a merge
-  whose walls are flush with both parts leaves extra flat edges)*
+  union. One undo step. Shift+drag of polygons with the Move or Transform tool (also on the gizmo)
+  runs it, ending on release; other tools keep Shift+drag. Open: a merge whose walls are flush with
+  both parts leaves extra flat edges; the drag follows the normal, not the gizmo axis)*
 - [ ] Missing, worth building (biggest gaps first): ~~Smart Extrude~~ (extrude faces into the mesh,
   cuts / merges automatically), **Set Flow**, **Build End / Build Corner**, Distribute and Loop Tools
   (bundle LoopTools or own versions), **GeoPoly**, Outline, Hinge, Extrude on Spline, **Paint

@@ -163,6 +163,7 @@ def apply(km, moritz=False, maya_navigation=False):
         if gizmo_km in km.items and km.available("maximize.clone_gizmo", {}):
             km.items[gizmo_km][:0] = [
                 ("maximize.clone_gizmo", _event('LEFTMOUSE', 'CLICK_DRAG', shift=True), None),
+                ("maximize.smart_extrude_drag", _event('LEFTMOUSE', 'CLICK_DRAG', shift=True), None),
                 ("gizmogroup.gizmo_tweak", _event('LEFTMOUSE', 'CLICK_DRAG', shift=True), None),
             ]
     km.bind(om, "object.hide_view_set", _event('H', alt=True), {"unselected": False})
@@ -198,6 +199,8 @@ def apply(km, moritz=False, maya_navigation=False):
     # Edit Poly.
     me = "Mesh"
     km.bind(me, "mesh.select_all", _event('D', ctrl=True), {"action": 'DESELECT'})
+    # Shift+drag of polygons with the Move tool: Smart Extrude (passes on with other tools).
+    km.bind(me, "maximize.smart_extrude_drag", _event('LEFTMOUSE', 'CLICK_DRAG', shift=True))
     km.bind(me, "mesh.select_edge_loop_multi", _event('L', alt=True))
     km.bind(me, "mesh.select_edge_ring_multi", _event('R', alt=True))
     # Double-click an edge: select its loop.
@@ -227,6 +230,10 @@ def apply(km, moritz=False, maya_navigation=False):
     # Global: undo/redo, repeat, render, animation.
     km.bind("Screen", "ed.redo", _event('Y', ctrl=True, repeat=True))
     km.bind("Screen", "screen.repeat_last", _event('SEMI_COLON'))
+    # Hold / Fetch, everywhere but editors with their own Ctrl+H (the Text Editor's Replace).
+    for idname, ev in (("maximize.hold", _event('H', ctrl=True)), ("maximize.fetch", _event('F', ctrl=True, alt=True))):
+        km.strip(ev, VIEWPORT_KEYMAPS)
+        km.bind("Window", idname, ev)
     km.bind("Screen Editing", "render.render", _event('F9'), {"use_viewport": True})
     km.bind("Screen Editing", "render.render", _event('Q', shift=True), {"use_viewport": True})
     km.bind("Screen Editing", "maximize.render_setup", _event('F10'))
