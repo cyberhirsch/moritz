@@ -163,7 +163,8 @@ def apply(km, moritz=False, maya_navigation=False):
         if gizmo_km in km.items and km.available("maximize.clone_gizmo", {}):
             km.items[gizmo_km][:0] = [
                 ("maximize.clone_gizmo", _event('LEFTMOUSE', 'CLICK_DRAG', shift=True), None),
-                ("maximize.smart_extrude_drag", _event('LEFTMOUSE', 'CLICK_DRAG', shift=True), None),
+                ("maximize.smart_extrude_drag", _event('LEFTMOUSE', 'CLICK_DRAG', shift=True),
+                 {"properties": [("gizmo", True)]}),
                 ("gizmogroup.gizmo_tweak", _event('LEFTMOUSE', 'CLICK_DRAG', shift=True), None),
             ]
     km.bind(om, "object.hide_view_set", _event('H', alt=True), {"unselected": False})
