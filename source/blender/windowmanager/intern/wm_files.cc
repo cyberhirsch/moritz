@@ -4160,6 +4160,10 @@ static wmOperatorStatus wm_save_as_mainfile_exec(bContext *C, wmOperator *op)
 
   /* Set compression flag. */
   SET_FLAG_FROM_TEST(fileflags, RNA_boolean_get(op->ptr, "compress"), G_FILE_COMPRESS);
+  /* Moritz: a copy that remembers the open file, as autosave does (Hold / Fetch). */
+  if (use_save_as_copy && RNA_boolean_get(op->ptr, "recovery")) {
+    fileflags |= G_FILE_RECOVER_WRITE;
+  }
 
   const bool success = wm_file_write(
       C, filepath, fileflags, remap_mode, use_save_as_copy, op->reports);
@@ -4289,6 +4293,13 @@ void WM_OT_save_as_mainfile(wmOperatorType *ot)
       "Save Copy",
       "Save a copy of the actual working state but does not make saved file active");
   RNA_def_property_flag(prop, PROP_SKIP_SAVE);
+  prop = RNA_def_boolean(ot->srna,
+                         "recovery",
+                         false,
+                         "Recovery Copy",
+                         "Moritz: with Save Copy, store the open file's path in the copy, as autosave "
+                         "does, so recovering it (Recover Auto Save) works on the open file again");
+  RNA_def_property_flag(prop, PROP_HIDDEN | PROP_SKIP_SAVE);
 
   prop = RNA_def_boolean(
       ot->srna,

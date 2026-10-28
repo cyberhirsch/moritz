@@ -105,6 +105,17 @@ Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberh
 - [x] Editors: Graph Editor / Dope Sheet, shader editor, Outliner F2
 - [x] Moritz column in the comparison page; assert keys in the background test (`test_keymap_options.py`); 146 of 216 Max keys, 0 conflicts. Also Shift+Z/Y view undo, Alt+` Show End Result, F5–F8 axis constraints
 
+### Hold / Fetch (Seb asked, 2026-10-28) — add-on work (Maximize), files unaffected
+*Done 2026-10-28 (Maximize `hold.py`). Needed one small core option after all: Save As copy with
+`recovery=True` stores the open file's path in the copy, as autosave does, and Fetch loads it through
+Recover Auto Save. The held copy is an ordinary .blend.*
+- [x] **Hold** (Ctrl+H, Max's key; today it hides the selection, and Alt+H already hides): save a
+  copy of the scene to Moritz's temp folder; the open file and its path stay as they are
+- [x] **Fetch** (Ctrl+Alt+F): ask "Restore the held scene?", then load the copy. It must keep the
+  current file's path and name, so Ctrl+S still saves to the user's file, not to the temp copy. Also
+  in Edit > Hold / Fetch.
+- Blender today: undo history, File > Revert, Auto Save; no deliberate snapshot
+
 ### Cameras (Seb, 2026-10-25) — all add-on work (Maximize), files unaffected
 - [x] *(2026-10-26, Maximize `cameras.py`; V in Object Mode, Edit Mode keeps Blender's V; also View > Cameras)* **Point-of-view menu** (Max's "[Camera001]" / "[Top]" label menu), also on V over a viewport. Entries: the scene's cameras (look through), Perspective, Orthographic, Top/Bottom/Front/Back/Left/Right, and:
   - [x] **Select Camera**: selects the camera you are looking through (in Blender today: click the camera frame's edge, or the Outliner)
