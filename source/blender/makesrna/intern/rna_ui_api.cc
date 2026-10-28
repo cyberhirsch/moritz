@@ -2214,6 +2214,11 @@ void RNA_api_ui_layout(StructRNA *srna)
   func = RNA_def_function(srna, "template_modifiers", "template_modifiers");
   RNA_def_function_flag(func, FUNC_USE_CONTEXT);
   RNA_def_function_ui_description(func, "Generates the UI layout for the modifier stack");
+  RNA_def_boolean(func,
+                  "only_active",
+                  false,
+                  "Only Active",
+                  "Moritz: only the active modifier's panel, as Max shows one modifier at a time");
 
   func = RNA_def_function(srna, "template_strip_modifiers", "template_strip_modifiers");
   RNA_def_function_flag(func, FUNC_USE_CONTEXT);

@@ -144,6 +144,8 @@ struct Layout : public Item, NonCopyable, NonMovable {
   bool activate_init_ = false;
   bool enabled_ = false;
   bool redalert_ = false;
+  /** Moritz: operator buttons draw their text on the left. */
+  bool text_left_ = false;
   /** For layouts inside grid-flow, they and their items shall never have a fixed maximal size. */
   bool variable_size_ = false;
   LayoutAlign alignment_ = {};
@@ -170,6 +172,10 @@ struct Layout : public Item, NonCopyable, NonMovable {
    * action when pressing return, in popup dialogs this overrides default confirmation buttons.
    */
   void active_default_set(bool active_default);
+
+  [[nodiscard]] bool text_left() const;
+  /** Moritz: operator buttons in this layout draw their text on the left, like list rows. */
+  void text_left_set(bool text_left);
 
   [[nodiscard]] bool activate_init() const;
   /**
@@ -795,6 +801,15 @@ inline bool Layout::active_default() const
 inline void Layout::active_default_set(bool active_default)
 {
   active_default_ = active_default;
+}
+
+inline bool Layout::text_left() const
+{
+  return text_left_;
+}
+inline void Layout::text_left_set(bool text_left)
+{
+  text_left_ = text_left;
 }
 
 inline bool Layout::activate_init() const

@@ -12,7 +12,7 @@ themselves are plain, so stock Blender sees independent copies.
 
 import bpy
 from bpy.app.handlers import persistent
-from bpy.props import BoolProperty, EnumProperty
+from bpy.props import BoolProperty, EnumProperty, StringProperty
 from bpy.types import Operator
 
 LINKS = "mx_modifier_links"
@@ -222,6 +222,127 @@ class OBJECT_OT_moritz_modifier_select_base(Operator):
         return {'FINISHED'}
 
 
+# Stack entries open to show their sub-object levels: (object name, modifier name or "" for the
+# base). Not saved, as in Max.
+_open_entries = set()
+
+
+def is_entry_open(ob, mod):
+    return (ob.name, mod.name if mod is not None else "") in _open_entries
+
+
+def _select_entry(ob, name):
+    """Select a stack entry by modifier name ("" for the base object)."""
+    if name:
+        ob.moritz_modifier_stack_index = ob.modifiers.find(name)
+    else:
+        bpy.ops.object.moritz_modifier_select_base()
+
+
+class OBJECT_OT_moritz_modifier_select(Operator):
+    """Select this entry of the modifier stack: its settings show below"""
+    bl_idname = "object.moritz_modifier_select"
+    bl_label = "Select Stack Entry"
+    bl_options = {'INTERNAL'}
+
+    modifier: StringProperty(name="Modifier", description="Modifier name, empty for the base object")
+
+    @classmethod
+    def poll(cls, context):
+        return context.object is not None
+
+    def execute(self, context):
+        ob = context.object
+        if self.modifier and self.modifier not in ob.modifiers:
+            return {'CANCELLED'}
+        from bl_ui.properties_data_modifier import _base_selected
+        current = "" if _base_selected(ob) else ob.modifiers.active.name
+        if current != self.modifier and context.mode != 'OBJECT':
+            # Another entry: leave the sub-object level of this one first, as Max does.
+            _set_level(context, 'OBJECT')
+        _select_entry(ob, self.modifier)
+        return {'FINISHED'}
+
+
+def _set_level(context, level):
+    if hasattr(bpy.types, "MAXIMIZE_OT_subobject"):
+        return bpy.ops.maximize.subobject(level=level)
+    if level in {'SEGMENT', 'SPLINE'}:
+        level = 'VERTEX'
+    return bpy.ops.object.subobject_level(level=level)
+
+
+class OBJECT_OT_moritz_stack_expand(Operator):
+    """Show or hide this entry's sub-object levels"""
+    bl_idname = "object.moritz_stack_expand"
+    bl_label = "Expand Stack Entry"
+    bl_options = {'INTERNAL'}
+
+    modifier: StringProperty(name="Modifier", description="Modifier name, empty for the base object")
+
+    @classmethod
+    def poll(cls, context):
+        return context.object is not None
+
+    def execute(self, context):
+        key = (context.object.name, self.modifier)
+        if key in _open_entries:
+            _open_entries.discard(key)
+        else:
+            _open_entries.add(key)
+        if context.area is not None:
+            context.area.tag_redraw()
+        return {'FINISHED'}
+
+
+class OBJECT_OT_moritz_stack_level(Operator):
+    """Edit this entry at this sub-object level (click again to go back to the object)"""
+    bl_idname = "object.moritz_stack_level"
+    bl_label = "Sub-Object Level"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    modifier: StringProperty(name="Modifier", description="Modifier name, empty for the base object")
+    level: StringProperty(name="Level")
+
+    @classmethod
+    def poll(cls, context):
+        ob = context.object
+        return ob is not None and ob.type in {'MESH', 'CURVE'}
+
+    def execute(self, context):
+        bpy.ops.object.moritz_modifier_select(modifier=self.modifier)
+        _set_level(context, self.level)
+        return {'FINISHED'}
+
+
+class OBJECT_OT_moritz_modifier_rename(Operator):
+    """Rename the selected modifier"""
+    bl_idname = "object.moritz_modifier_rename"
+    bl_label = "Rename Modifier"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    name: StringProperty(name="Name")
+
+    @classmethod
+    def poll(cls, context):
+        return _active(context)[1] is not None
+
+    def invoke(self, context, _event):
+        self.name = _active(context)[1].name
+        return context.window_manager.invoke_props_dialog(self)
+
+    def execute(self, context):
+        ob, mod = _active(context)
+        old = mod.name
+        mod.name = self.name
+        # Keep the Paste Instanced links under the new name.
+        links = ob.get(LINKS)
+        if links and old in links:
+            links[mod.name] = links[old]
+            del links[old]
+        return {'FINISHED'}
+
+
 class OBJECT_OT_moritz_modifier_delete(Operator):
     """Delete the modifier under the mouse, or the one selected in the stack (Max's Delete key)"""
     bl_idname = "object.moritz_modifier_delete"
@@ -285,6 +406,10 @@ classes = (
     OBJECT_OT_moritz_modifier_toggle,
     OBJECT_OT_moritz_modifier_select_base,
     OBJECT_OT_moritz_modifier_delete,
+    OBJECT_OT_moritz_modifier_select,
+    OBJECT_OT_moritz_stack_expand,
+    OBJECT_OT_moritz_stack_level,
+    OBJECT_OT_moritz_modifier_rename,
 )
 
 _keymap_items = []

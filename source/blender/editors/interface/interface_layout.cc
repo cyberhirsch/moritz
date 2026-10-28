@@ -1479,6 +1479,11 @@ static Button *uiItemFullO_ptr_ex(Layout *layout,
     button_flag_enable(but, BUT_ACTIVE_DEFAULT);
   }
 
+  if (layout->text_left()) {
+    button_drawflag_disable(but, BUT_TEXT_RIGHT);
+    button_drawflag_enable(but, BUT_TEXT_LEFT);
+  }
+
   /* assign properties */
   if (r_opptr) {
     PointerRNA *opptr = button_operator_ptr_ensure(but);
@@ -5117,6 +5122,7 @@ void LayoutInternal::init_from_parent(Layout *litem, Layout *layout, int align)
   litem->enabled_ = true;
   litem->context_ = layout->context_;
   litem->redalert_ = layout->redalert_;
+  litem->text_left_ = layout->text_left_;
   litem->w_ = layout->w_;
   litem->emboss_ = layout->emboss_;
   litem->flag_ = (layout->flag_ & (ItemInternalFlag::PropSep | ItemInternalFlag::PropDecorate |

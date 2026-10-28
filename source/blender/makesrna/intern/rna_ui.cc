@@ -1422,6 +1422,16 @@ static void rna_UILayout_active_default_set(PointerRNA *ptr, bool value)
   ptr->data_as<Layout>()->active_default_set(value);
 }
 
+static bool rna_UILayout_use_text_left_get(PointerRNA *ptr)
+{
+  return ptr->data_as<const Layout>()->text_left();
+}
+
+static void rna_UILayout_use_text_left_set(PointerRNA *ptr, bool value)
+{
+  ptr->data_as<Layout>()->text_left_set(value);
+}
+
 static bool rna_UILayout_activate_init_get(PointerRNA *ptr)
 {
   return ptr->data_as<const Layout>()->activate_init();
@@ -1741,6 +1751,14 @@ static void rna_def_ui_layout(BlenderRNA *brna)
                            "Active",
                            "When false, all items within this layout are grayed out. Values can "
                            "still be changed and interactions are allowed");
+
+  prop = RNA_def_property(srna, "use_text_left", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(
+      prop, "rna_UILayout_use_text_left_get", "rna_UILayout_use_text_left_set");
+  RNA_def_property_ui_text(prop,
+                           "Text Left",
+                           "Moritz: operator buttons in this layout draw their text on the left, "
+                           "like list rows");
 
   prop = RNA_def_property(srna, "active_default", PROP_BOOLEAN, PROP_NONE);
   RNA_def_property_boolean_funcs(

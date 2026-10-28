@@ -2597,7 +2597,7 @@ void template_path_builder(Layout *layout,
                            StringRefNull propname,
                            PointerRNA *root_ptr,
                            std::optional<StringRefNull> text);
-void template_modifiers(Layout *layout, bContext *C);
+void template_modifiers(Layout *layout, bContext *C, bool only_active);
 void template_strip_modifiers(Layout *layout, bContext *C);
 void template_scene_compositor_effects(Layout *layout, bContext *C);
 

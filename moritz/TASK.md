@@ -472,7 +472,11 @@ Steps:
     hidden Parameters modifier (collapsed)
   - [x] The five level buttons appear twice (text row under the stack, icons in "Selection"): keep
     them in one place, Edit Poly's Selection section, plus the levels in the stack row
-  - [ ] **Target look** (Seb's Max screenshot): the stack box with one row per entry (eye,
+  - [x] **Target look** *(done 2026-10-28: stack drawn by hand with left-aligned rows (new
+    `UILayout.use_text_left`), levels under an open entry, `template_modifiers(only_active=True)`
+    shows only the selected entry's panel, so the hidden Parameters panel is gone; Show Cage at the
+    top of Edit Poly, its two colors stay in Edit Geometry. Also fixed: Edit Poly / Edit Spline
+    sessions ended right after starting in the app. UI only, files unaffected)* (Seb's Max screenshot): the stack box with one row per entry (eye,
     expand triangle, name; the selected row highlighted; the base object, e.g. "Box", last with no
     eye); under it one row of icon buttons (Show End Result highlighted when on, Make Unique,
     Remove Modifier), no text buttons; then the selected modifier's sections in Max's order: for
@@ -508,6 +512,16 @@ Steps:
   not know the new one and falls back to the Object tab (`buttons_context.cc`), so nothing breaks
   in either direction. Objects made here are ordinary Blender objects (the parametric ones are
   Geometry Nodes modifiers, which stock Blender evaluates).*
+- [ ] **Quad primitives** (Seb, 2026-10-28; differs from Max's triangle-fan caps): all primitives
+  come with quads. A **Quad Cap** checkbox, on by default, per primitive: an inner quad grid plus
+  quad rings to the edge (Cap Segments = rings), clean with Sides a multiple of 4, one triangle to fit
+  otherwise (same rule as Edit Poly's Cap). UVs stay clean.
+  - Quad caps: Cylinder, Cone, ChamferCyl, Spindle, Gengon, Prism caps
+  - Quad poles (quad-sphere style): Sphere, Capsule, OilTank
+  - Already quads: Box, ChamferBox, Plane, Tube, Torus, Torus Knot, L-Ext, C-Ext, RingWave, Hose
+  - Stay triangles: GeoSphere and Hedra (triangles are the point of them), Pyramid's sloped sides,
+    Teapot
+  - *Files: unaffected (Geometry Nodes primitives, one more input).*
 - [x] **Next, before the Modify stack fixes (Seb, 2026-10-27): every parametric object of Max's
   Create panel**, with Max's sub-category dropdown under the category icons, AutoGrid, Start New
   Shape (shapes), and Name and Color (Max names: Box001). Each one drag-created and editable in
