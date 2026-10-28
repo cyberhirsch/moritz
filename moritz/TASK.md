@@ -273,18 +273,23 @@ ribbon (Seb's screenshots) before building.
   along the normal (Ctrl: steps; Distance in the redo panel). Out into free space a plain extrude;
   inward a cut with the exact boolean (pocket, notch, hole through); out into other geometry a
   union. One undo step. Shift+drag of polygons with the Move or Transform tool (also on the gizmo)
-  runs it, ending on release; other tools keep Shift+drag. Open: a merge whose walls are flush with
-  both parts leaves extra flat edges; the drag follows the normal, not the gizmo axis)*
+  runs it: a real Move of a preview extrusion (gizmo axis, X / Y / Z, snapping), then Smart Extrude
+  along that move, one undo step; other tools keep Shift+drag. Merges with flush walls weld the
+  boolean's slivers and drop its flat edges, leaving clean quads (2026-10-28))*
 - [x] **Set Flow** *(done 2026-10-28, Maximize `poly_tools.py`, Edge level > Loops: the selected edges'
   vertices go onto a curve through the two vertices on each side across the loop; Amount, Auto
   Loop. Skips poles and vertices without a clear crossing loop)*
-- [ ] Missing, worth building (biggest gaps first): ~~Smart Extrude~~ (extrude faces into the mesh,
-  cuts / merges automatically), ~~Set Flow~~, **Build End / Build Corner**, Distribute and Loop Tools
-  (bundle LoopTools or own versions), **GeoPoly**, Outline, Hinge, Extrude on Spline, **Paint
-  Connect**, grow / shrink loop and ring one step at a time, Loop / Ring modes, Random Loops, Auto
-  Loop, Make Planar X / Y / Z, To View / To Grid, Previous / Next Modifier, Generate Topology,
-  Selection tab's Top / Bottom / Left / Right / Half, By Perspective / View, Pivot Distance, By
-  Numeric
+- [x] **The rest of Edit Poly** *(done 2026-10-28, Maximize `poly_ribbon.py`, test
+  `test_poly_ribbon.py`)*: Grow / Shrink Loop and Ring one step, Random Loops, Loop / Ring click
+  modes (a click picks the whole loop or ring), Build End (two quads become three, the loops end;
+  pick the two vertices, entry first), Build Corner (turn edges inside their quads), Distribute,
+  LoopTools' Center / Straighten / Circle / Curve as our own (with Auto Loop), GeoPoly, Generate
+  Topology (Quads, Diamonds, Fan, Triangles, Inset), To View / To Grid, Previous / Next Modifier,
+  Paint Connect (Blender's Knife), Selection tab Top / Bottom / Left / Right, Half, By Perspective,
+  By View, Pivot Distance, By Numeric. Outline, Hinge, Extrude Along Spline, Make Planar X / Y / Z
+  and Auto Loop were already there. Viewport tools started from a panel button (Cut, Paint Connect,
+  the view-based selections) use the active viewport: the one whose view changed last. Not done:
+  Max's Paint Connect auto-midpoints (the Knife needs Ctrl)
 - [ ] **Retopo modifier** (Seb, 2026-10-28): a new modifier named "Retopo" that holds all the
   conform / retopology features in one place, instead of a Freeform tab. Proposed contents (to
   confirm):
@@ -379,9 +384,8 @@ asked for Max's behavior here, so this overrides "only what Max does better" for
   splines), Fuse, Attach (object level), Reset Tangents / Make First / Reverse, Trim / Extend /
   Fillet / Chamfer / Outline / Break / Connect; in the Edit Spline quad and the Modify tab
   (Rendering, Interpolation, Selection, Geometry rollouts). Pressing 1/2/3 on a parametric shape
-  converts it first. Show Selected Segs done 2026-10-26 (red overlay). **Open:** Bind/Unbind
-  (Blender has no bound vertices: needs core), Lock Handles Alike/All, and a hover highlight for
-  segments.
+  converts it first. Show Selected Segs done 2026-10-26 (red overlay). Bind / Unbind, Lock Handles
+  Alike / All and the hover highlight were done since (`spline_more.py`, commit 417eef2).
 - [x] **Creation as in Max** (done 2026-10-25): Line with Initial Type (Corner/Smooth) and Drag
   Type (Corner/Smooth/Bezier), Backspace removes the last vertex, Shift for 90 degrees, clicking
   the first vertex asks "Close spline?", Start New Shape off adds to the selected shape; Keyboard
@@ -465,7 +469,7 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 - [x] **Imperial fractions**: unit display and parsing (`blenkernel/intern/unit.cc`), Scene > Units > Fractional Inches
 - [x] **Freeze**: objects with selection disabled draw gray (workbench); Freeze Selection / Unfreeze All in the quad menu; the Outliner's selectable column is the Freeze column
 - [x] **Smoothing groups** *(Maximize, `smoothing.py`)*: face attribute `smoothing_groups`, the 32-button panel, Auto Smooth, Select By SG, Groups From Sharp Edges; sharp edges follow the groups, FBX writes them as smoothing groups
-- [x] **Instance vs Reference** *(Maximize)*: instances and references share the mesh and the original's modifier stack (a Shared Stack Geometry Nodes modifier); Make Unique. Open: modifiers added to an instance don't reach the original
+- [x] **Instance vs Reference** *(Maximize)*: instances and references share the mesh and the original's modifier stack (a Shared Stack Geometry Nodes modifier); Make Unique. A modifier added to an instance goes on the shared stack (the original's), as in Max; references keep theirs (2026-10-28)
 - [x] **Modifier gizmos** *(Maximize, `modifier_gizmos.py`)*: Simple Deform (Bend, Twist, Taper, Stretch) dial and arrow; FFD stays Blender's Lattice
 - [x] **Performance**: profile a 10k-object scene (Outliner, undo, selection): `moritz/docs/performance.md`
 - [x] Undo hotspot: keep the depsgraph relations when an undo step changed none (800 ms -> 85 ms at 10k objects; `memfile_undo.cc`, `test_undo_relations.py`)
@@ -483,8 +487,8 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
   asset paths from the 11th stream, but with the Summary Information streams present that is
   `DocumentSummaryInformation`, and `FileAssetMetaData3` is the 12th, so every lookup missed. Now
   found by name; plus the `None` fix, per-slot reads and full paths. kitchen.max: 0 errors, 5 of the
-  Physical textures load (was 0), 15 s. Open: the Dishwasher's material (from an FBX / glTF import)
-  isn't a type the importer knows, so that object gets no material. Offered upstream with Seb's OK:
+  Physical textures load (was 0), 15 s. The Dishwasher's USD Preview Surface material is read now
+  too (its four OSL bitmap maps load; 2026-10-28, not offered upstream yet). Offered upstream with Seb's OK:
   https://github.com/nrgsille76/io_scene_max/pull/50; drop our patch once a release has it)* (Seb, 2026-10-28). Error on every
   Physical material: `'PhysicalMtl' Error: argument should be a str or an os.PathLike object ...,
   not 'dict'` (kitchen.max and the Torus exporter test scene). **Cause found:** `get_metadata()`
@@ -564,8 +568,8 @@ Steps:
     Height, Segments…) show as the base entry's settings: the base row is clickable, named after
     the kind ("Box"), and the Parameters modifier is hidden from the stack (hooks
     `DATA_PT_modifiers.moritz_base_draw` / `moritz_base_entry`). Editable Poly and Editable Spline
-    bases show their rollouts the same way. Open: Blender's own panel list below still shows the
-    hidden Parameters modifier (collapsed)
+    bases show their rollouts the same way. The base's own modifier panel no longer shows under its
+    rollouts (new `template_modifiers(exclude=...)`, 2026-10-28)
   - [x] The five level buttons appear twice (text row under the stack, icons in "Selection"): keep
     them in one place, Edit Poly's Selection section, plus the levels in the stack row
   - [x] **Target look** *(done 2026-10-28: stack drawn by hand with left-aligned rows (new
@@ -609,8 +613,8 @@ Steps:
   in either direction. Objects made here are ordinary Blender objects (the parametric ones are
   Geometry Nodes modifiers, which stock Blender evaluates).*
 - [x] **Quad primitives** *(done 2026-10-28, Maximize `quad_caps.py`: Quad Cap / Quad Poles on by
-  default, off gives the old caps; Cap Segs added to ChamferCyl, Spindle and Gengon. Open: L-Ext and
-  C-Ext still have n-gon caps (they are not convex, the quad disc needs a convex rim))* (Seb, 2026-10-28; differs from Max's triangle-fan caps): all primitives
+  default, off gives the old caps; Cap Segs added to ChamferCyl, Spindle and Gengon. L-Ext and C-Ext
+  caps are split into 2 and 3 convex quads (2026-10-28))* (Seb, 2026-10-28; differs from Max's triangle-fan caps): all primitives
   come with quads. A **Quad Cap** checkbox, on by default, per primitive: an inner quad grid plus
   quad rings to the edge (Cap Segments = rings), clean with Sides a multiple of 4, one triangle to fit
   otherwise (same rule as Edit Poly's Cap). UVs stay clean.
@@ -631,8 +635,10 @@ Steps:
     Pyramid ✅, Teapot ✅ (Utah patches, Body / Handle / Spout / Lid), Plane ✅, TextPlus ✅ (filled
     Blender text; Text is the outline-only one)
   - Extended Primitives ✅: Hedra, Torus Knot, ChamferBox, ChamferCyl, OilTank, Capsule, Spindle,
-    L-Ext, Gengon, C-Ext, RingWave, Hose, Prism. Open: Hedra's Star1/Star2 families and P/Q/R
-    axis scaling, RingWave's animation (Growth, Outer/Inner Edge Breakup), Hose binding to objects
+    L-Ext, Gengon, C-Ext, RingWave, Hose, Prism. Done 2026-10-28: Hedra Star1 (small stellated
+    dodecahedron) / Star2 (great stellated dodecahedron) and Axis Scaling P / Q / R (triangles,
+    squares, pentagons pushed out); RingWave Growth (once / cyclic), crawling Major / Minor waves and
+    Inner edge breakup; Hose Bound to Object Pivots (Top / Bottom Object, Tension)
   - Splines: Line ✅, Rectangle ✅, Circle ✅, Ellipse ✅, Arc ✅, Donut ✅, NGon ✅, Star ✅,
     Text ✅, Helix ✅, Egg ✅, Section ✅ (live plane still open), Freehand ✅
   - Extended Splines ✅: WRectangle, Channel, Angle, Tee, Wide Flange (one drag sets the size;
@@ -659,6 +665,27 @@ Steps:
   first redo); with it, the parametric ones
 - [x] Docs: `max_users.md` (Command Panel, Create, Modify), PATCHES.md (tests done:
   `moritz/tests/test_command_panel.py`)
+
+### Icons for the Max functions (Seb, 2026-10-28)
+- [ ] *(draft shown to Seb, waiting for his review: don't integrate or rebuild before his OK)* Own
+  icons in Blender's style (16 px, flat white, orange for the part the tool changes), drawn from the
+  meaning, not copied from Autodesk's icons. **Only where Max has an icon and Blender has none**
+  (Seb: text buttons in Max stay text buttons). **Max's icons are the inspiration** (Seb): same
+  picture, Blender's style. Max 2026's icons are in `UI_ln/IconsDark.rcc` (Qt resource, unpacked
+  only to look); Border is an open loop, Element a solid cube, spline vertices plus marks,
+  Segment dots and a line, Spline a polyline, Show End Result a test tube (half / full), Make
+  Unique two shared circles splitting into two. The Scene Explorer column icons are inside
+  `SceneExplorer.dll`, not looked at yet. Second draft (2026-10-28): the 9 from Max's pictures;
+  Display as Box, See-Through and the four modifier icons still from the first draft. List:
+  - Edit Poly sub-object levels: Border, Element (Blender has vertex, edge, face).
+  - Edit Spline sub-object levels: Vertex, Segment, Spline.
+  - Stack buttons: Show End Result, Make Unique (Blender has the eye and remove).
+  - Outliner columns: Display as Box, See-Through (Blender has Freeze, eye, renderable).
+  - The Edit Poly, Edit Spline, Sculpt and Retopo modifiers: no icon in Max, but Blender's stack
+    list needs one per modifier type.
+- [ ] After the OK: decide where they go. In Maximize as PNGs: no rebuild, but only in panels the
+  add-on draws. In `release/datafiles/icons_svg`: they work everywhere, but that's a core change
+  and needs a **rebuild**. Stock Blender files are unaffected either way.
 
 ## Phase 7 — Outliner with Max's Scene Explorer features (plan, 2026-10-25)
 
