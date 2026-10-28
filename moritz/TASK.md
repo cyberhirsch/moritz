@@ -469,6 +469,26 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 - [x] V-Ray/Corona/Physical/Standard → Principled converter (`max_materials.py`), used by the import
 - [x] License check of the direct `.max` importer: "Import Autodesk MAX (.max)" 1.9.2 (extensions.blender.org/add-ons/io-scene-max, Sebastian Sille et al.) is GPL-3.0-or-later, compatible with Moritz; imports meshes, UVs and Standard/Physical/V-Ray/Corona materials, Blender 4.2+
 - [x] Bundled unmodified in `release/extensions/system/io_scene_max` (the System extensions repository), enabled by default (File > Import > Autodesk MAX (.max)); tested on a real 33 MB kitchen scene: 22 meshes, 233k vertices in 10 s; Physical material textures fail inside the extension (upstream bug), so the exporter route stays the better one when Max is at hand
+- [x] **Fix the Physical material textures in the .max importer** *(done 2026-10-28, our copy
+  patched, see PATCHES.md "Pipeline". The real cause was one step earlier: the importer reads the
+  asset paths from the 11th stream, but with the Summary Information streams present that is
+  `DocumentSummaryInformation`, and `FileAssetMetaData3` is the 12th, so every lookup missed. Now
+  found by name; plus the `None` fix, per-slot reads and full paths. kitchen.max: 0 errors, 5 of the
+  Physical textures load (was 0), 15 s. Open: the Dishwasher's material (from an FBX / glTF import)
+  isn't a type the importer knows, so that object gets no material. Upstream offer still waits for
+  Seb's OK)* (Seb, 2026-10-28). Error on every
+  Physical material: `'PhysicalMtl' Error: argument should be a str or an os.PathLike object ...,
+  not 'dict'` (kitchen.max and the Torus exporter test scene). **Cause found:** `get_metadata()`
+  (`import_max.py` line 863) ends with `return pathdata`; when the bitmap's index isn't in the
+  metadata table, it falls through and returns the whole table (a dict) instead of `None`, and
+  `Path(bitmap)` in `get_physical_material` raises, which loses all of the material's textures, not
+  just the missing one. Fix: return `None` there, and resolve each slot on its own so one bad slot
+  doesn't drop the others. Then check why the index is missing: fixed slot numbers (1, 2, 4, 21, 24)
+  that may not match Max 2026's Physical material, or maps wrapped in Color Correction, Normal Bump
+  or OSL bitmaps. Steps: reproduce with the kitchen .max and the console, compare the slots with a
+  Physical material saved in Max 2026, patch our copy (GPL allows it; record it in PATCHES.md and
+  `MORITZ.txt`, which says "unmodified" today), then offer the fix upstream
+  (github.com/nrgsille76/io_scene_max) only with Seb's OK
 - [x] FBX presets: "To 3ds Max" / "From 3ds Max" (scene units, smoothing groups, no leaf bones)
 - [x] Portable zip: `moritz/tools/make_portable_zip.py` (add-on copied in, no debug symbols or build tools); smoke-tested
 - [x] Windows installer: `moritz/tools/make_msi.py` (WiX 5, Program Files\Moritz, Start Menu shortcut, own upgrade code, no file associations)

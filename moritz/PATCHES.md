@@ -62,6 +62,12 @@ Areas dock into each other as tabs, Adobe-style; dragging empty header space mov
 
 - `scripts/presets/operator/export_scene.fbx/To 3ds Max.py`, `import_scene.fbx/From 3ds Max.py` — FBX presets for 3ds Max (smoothing groups, units, no leaf bones)
 - `moritz/docs/max_users.md` — where Max's features are in Moritz
+- `release/extensions/system/io_scene_max/import_max.py` — the bundled .max importer (1.9.2), patched
+  (`Moritz patch` comments): the asset paths stream `FileAssetMetaData` is found by name (with the
+  Summary Information streams it isn't entry 11, so every lookup missed); a missed lookup returns
+  `None` instead of the whole table (which made every Physical material lose all its maps); each
+  Physical map is read on its own; maps keep their full path, so they load from where Max had them
+  (still looked for next to the .max file otherwise)
 
 ## Repository
 
