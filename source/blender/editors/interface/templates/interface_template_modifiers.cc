@@ -54,7 +54,7 @@ static bool panels_match_modifiers(ARegion *region, const Span<ModifierData *> s
   return i == shown.size();
 }
 
-void template_modifiers(Layout * /*layout*/, bContext *C, const bool only_active)
+void template_modifiers(Layout * /*layout*/, bContext *C, const bool only_active, const char *exclude)
 {
   ARegion *region = CTX_wm_region(C);
 
@@ -69,6 +69,10 @@ void template_modifiers(Layout * /*layout*/, bContext *C, const bool only_active
       continue;
     }
     if (only_active && !(md.flag & eModifierFlag_Active)) {
+      continue;
+    }
+    /* Moritz: a modifier shown another way (a parametric base's own settings). */
+    if (exclude && exclude[0] && STREQ(md.name, exclude)) {
       continue;
     }
     shown.append(&md);

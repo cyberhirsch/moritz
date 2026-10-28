@@ -2,6 +2,8 @@ Bundled with Moritz, patched: see the "Moritz patch" comments in import_max.py a
 moritz/PATCHES.md (Pipeline). In short: the FileAssetMetaData stream is found by name, a missed
 asset lookup returns None, Physical material maps are read one by one and keep their full path.
 Offered upstream: https://github.com/nrgsille76/io_scene_max/pull/50
+Not offered yet: USD Preview Surface materials (with their OSL maps), a metallic map slot, and no
+parenting of a node to itself.
 
 Import Autodesk MAX (.max) 1.9.2
 https://extensions.blender.org/add-ons/io-scene-max/

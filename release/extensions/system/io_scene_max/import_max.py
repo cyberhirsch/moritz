@@ -69,6 +69,7 @@ SKIN_MTL = 0x44CFDE95bEC41C73  # CoronaSkinMtl
 HAIR_MTL = 0xCA41F54622C05DD6  # CoronaHairMtl
 RAYT_MTL = 0x329B106E27190FF4  # RaytraceMtl
 PHYS_MTL = 0xDEADC0013D6B1CEC  # PhysicalMtl
+USDP_MTL = 0x4787F1C76AFA4933  # USD Preview Surface (Moritz patch)
 CORO_MTL = 0x448931DD70BE6506  # CoronaMtl
 ARCH_MTL = 0x4A16365470B05735  # ArchMtl
 VRAY_MTL = 0x7034695C37BF3F2F  # VRayMtl
@@ -1380,6 +1381,66 @@ def get_physical_material(phys):
     return material
 
 
+def get_osl_bitmap(chunk):
+    """Moritz patch: the image path of an OSL bitmap map (as behind a USD Preview Surface's Map
+    Output Selector). Its parameter block keeps the image's asset id in the last four bytes of a
+    16-byte chunk (0x0F > 0x02)."""
+    if chunk is None:
+        return None
+    for ref in get_references(chunk):
+        if ref is None:
+            continue
+        if get_cls_name(ref).strip("'") == "OSL Map":
+            path = get_osl_bitmap(ref)
+            if path:
+                return path
+            continue
+        for block in getattr(ref, "children", None) or []:
+            if block.types != 0x0F:
+                continue
+            for child in block.children or []:
+                data = child.data
+                if child.types == 0x02 and isinstance(data, (bytes, bytearray)) and len(data) == 16:
+                    path = get_metadata(int.from_bytes(bytes(data[12:16]), "little"))
+                    if isinstance(path, str) and path:
+                        return path
+    return None
+
+
+def get_usd_material(refs):
+    """Moritz patch: Max's USD Preview Surface. Its parameters (base color 1, metallic 3, emissive 5,
+    roughness 7, ior 21) and maps (base color 0, metallic 1, roughness 3, normal 5) are in the
+    third reference."""
+    material = None
+    try:
+        params = refs[2]
+        material = Material()
+        maps = get_reference(params)
+
+        def slot_map(key):
+            try:
+                return get_osl_bitmap(maps.get(key))
+            except Exception as exc:
+                print("	'USDPreviewSurface' map %d Error:" % key, exc)
+                return None
+        material.set('diffuse', get_rgb(params, 0x01))
+        material.set('metallic', get_value(params, 0x03))
+        material.set('emissive', get_rgb(params, 0x05))
+        roughness = get_value(params, 0x07)
+        if roughness is not None:
+            material.set('shinines', 1.0 - roughness)
+        ior = get_value(params, 0x15)
+        if ior is not None:
+            material.set('refraction', ior)
+        for key, slot in ((0, 'bitmap'), (1, 'metalmap'), (3, 'shinmap'), (5, 'normalmap')):
+            path = slot_map(key)
+            if path is not None:
+                material.set(slot, path)
+    except Exception as exc:
+        print("	'USDPreviewSurface' Error:", exc)
+    return material
+
+
 def get_raytrace_material(rays):
     material = None
     try:
@@ -1626,6 +1687,10 @@ def adjust_material(filename, search, obj, mat):
             mtl_name = id_chunk.get_first(0x4001).data
             refs = get_references(mat)
             material = get_physical_material(refs)
+        elif (uid == USDP_MTL):  # USD Preview Surface (Moritz patch)
+            mtl_name = get_material_name(mat) or None
+            refs = get_references(mat)
+            material = get_usd_material(refs)
         elif (uid == RAYT_MTL):  # RaytraceMtl
             mtl_name = get_material_name(mat)
             refs = get_references(mat)
@@ -1693,6 +1758,12 @@ def adjust_material(filename, search, obj, mat):
             glossmap = material.get('glossmap', None)
             transmap = material.get('transmap', None)
             normalmap = material.get('normalmap', None)
+            metalmap = material.get('metalmap', None)
+            if (metalmap is not None):  # Moritz patch
+                image = load_image(str(metalmap), dirname, place_holder=False, recursive=search, check_existing=True)
+                if (image is not None):
+                    image.colorspace_settings.is_data = True
+                    shader.metallic_texture.image = image
             if (texname is not None):
                 image = load_image(str(texname), dirname, place_holder=False, recursive=search, check_existing=True)
                 if (image is not None):
@@ -2245,6 +2316,8 @@ def make_scene(context, settings, mscale, transform, parent):
         obj_mtx = matrix_dict.get(idx, mathutils.Matrix())
         prt_mtx = matrix_dict.get(pt_name, mathutils.Matrix())
         for obj in objs:
+            # Moritz patch: never the object itself (a node listed as its own parent).
+            parents = [p for p in (parents or []) if p is not obj]
             if parents:
                 try:
                     obj.parent = parents[0]

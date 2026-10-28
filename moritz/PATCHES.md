@@ -67,7 +67,9 @@ Areas dock into each other as tabs, Adobe-style; dragging empty header space mov
   Summary Information streams it isn't entry 11, so every lookup missed); a missed lookup returns
   `None` instead of the whole table (which made every Physical material lose all its maps); each
   Physical map is read on its own; maps keep their full path, so they load from where Max had them
-  (still looked for next to the .max file otherwise)
+  (still looked for next to the .max file otherwise); USD Preview Surface materials are read (base
+  color, metallic, emissive, roughness, IOR and their OSL bitmap maps, plus a metallic map slot in
+  the material builder); a node listed as its own parent is not parented
 
 ## Repository
 

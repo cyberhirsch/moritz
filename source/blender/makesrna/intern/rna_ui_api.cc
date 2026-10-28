@@ -2219,6 +2219,12 @@ void RNA_api_ui_layout(StructRNA *srna)
                   false,
                   "Only Active",
                   "Moritz: only the active modifier's panel, as Max shows one modifier at a time");
+  RNA_def_string(func,
+                 "exclude",
+                 nullptr,
+                 MAX_NAME,
+                 "Exclude",
+                 "Moritz: a modifier whose panel is not shown (one the add-on draws another way)");
 
   func = RNA_def_function(srna, "template_strip_modifiers", "template_strip_modifiers");
   RNA_def_function_flag(func, FUNC_USE_CONTEXT);

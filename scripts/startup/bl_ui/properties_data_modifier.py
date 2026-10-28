@@ -75,10 +75,18 @@ class DATA_PT_modifiers(ModifierButtonsPanel, Panel):
         # Moritz: Max's modifier stack, newest on top and the base object at the bottom.
         _draw_modifier_stack(layout, context)
         draw_base = DATA_PT_modifiers.moritz_base_draw
+        exclude = ""
         if draw_base is not None and _base_selected(context.object):
+            # The base's own settings, in place of its hidden modifier's panel.
             draw_base(layout, context)
+            base = _base_entry(context.object)[0]
+            exclude = base.name if base is not None else ""
         # Max shows the selected entry's settings only.
-        layout.template_modifiers(only_active=True)
+        try:
+            layout.template_modifiers(only_active=True, exclude=exclude)
+        except TypeError:
+            # A build from before `exclude`.
+            layout.template_modifiers(only_active=True)
 
 
 def _base_entry(ob):
