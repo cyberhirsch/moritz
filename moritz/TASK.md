@@ -275,8 +275,11 @@ ribbon (Seb's screenshots) before building.
   union. One undo step. Shift+drag of polygons with the Move or Transform tool (also on the gizmo)
   runs it, ending on release; other tools keep Shift+drag. Open: a merge whose walls are flush with
   both parts leaves extra flat edges; the drag follows the normal, not the gizmo axis)*
+- [x] **Set Flow** *(done 2026-10-28, Maximize `poly_tools.py`, Edge level > Loops: the selected edges'
+  vertices go onto a curve through the two vertices on each side across the loop; Amount, Auto
+  Loop. Skips poles and vertices without a clear crossing loop)*
 - [ ] Missing, worth building (biggest gaps first): ~~Smart Extrude~~ (extrude faces into the mesh,
-  cuts / merges automatically), **Set Flow**, **Build End / Build Corner**, Distribute and Loop Tools
+  cuts / merges automatically), ~~Set Flow~~, **Build End / Build Corner**, Distribute and Loop Tools
   (bundle LoopTools or own versions), **GeoPoly**, Outline, Hinge, Extrude on Spline, **Paint
   Connect**, grow / shrink loop and ring one step at a time, Loop / Ring modes, Random Loops, Auto
   Loop, Make Planar X / Y / Z, To View / To Grid, Previous / Next Modifier, Generate Topology,
