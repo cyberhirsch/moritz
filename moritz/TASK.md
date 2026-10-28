@@ -232,6 +232,56 @@ Operation panel covers the live values but sits in the corner and has no Apply a
     Fatten (Alt+S), no rebuild
   - Delete Isolated Vertices option: deleting faces already removes loose vertices
   - Full Max caddies: Blender's Adjust Last Operation panel plus Apply and Continue instead
+### Edit Poly: Max's Modeling ribbon (Seb, 2026-10-28)
+
+Decision (Seb, 2026-10-28): no ribbon. Conform / retopology features go into the new Retopo
+modifier (below); **everything else from the ribbon goes into the Edit Poly modifier**, in its
+sections: selection tools (Modify Selection, the Selection tab's picks) in Selection; Loops tools
+in a Loops section at Edge level; the per-level tools in Edit Vertices / Edges / Borders /
+Polygons; Geometry (All), Align, Subdivision, Triangulation and Properties in Edit Geometry and
+the Polygon sections. Rare ones in closed sub-panels, ordered by the priority list above.
+
+What the ribbon (Graphite Modeling Tools) offers beyond the Edit Poly panel, against Blender.
+Panel list from Autodesk's 2012-2016 help plus newer tools from memory; check against the 2026
+ribbon (Seb's screenshots) before building.
+- Blender has it in some form, needs a Max button / name: Quadrify All / Selection (Tris to
+  Quads), Symmetry Tools (Symmetrize), Similar, Outline selection (Select Boundary Loop), Dot Loop
+  / Dot Ring (Checker Deselect), Fill selection (shortest path fill), NURMS (Subdivision Surface),
+  Cap Poly (Fill), Insert Loop (Loop Cut), Remove Loop (Dissolve Edge Loop), Hard / Smooth / Smooth
+  30 (Shade Auto Smooth), Selection tab's NonQuads (Faces by Sides), Open (Non Manifold), Random,
+  Symmetry (Select Mirror), By Normal; Freeform's Draw On (face snapping) and Step Build (Poly
+  Build); Distribute and Loop Tools (Center, Space, Curve, Circle, Straighten) are in the free
+  LoopTools extension, not in Blender itself
+- [ ] Missing, worth building (biggest gaps first): **Smart Extrude** (extrude faces into the mesh,
+  cuts / merges automatically), **Set Flow**, **Build End / Build Corner**, Distribute and Loop Tools
+  (bundle LoopTools or own versions), **GeoPoly**, Outline, Hinge, Extrude on Spline, **Paint
+  Connect**, grow / shrink loop and ring one step at a time, Loop / Ring modes, Random Loops, Auto
+  Loop, Make Planar X / Y / Z, To View / To Grid, Previous / Next Modifier, Generate Topology,
+  Selection tab's Top / Bottom / Left / Right / Half, By Perspective / View, Pivot Distance, By
+  Numeric
+- [ ] **Retopo modifier** (Seb, 2026-10-28): a new modifier named "Retopo" that holds all the
+  conform / retopology features in one place, instead of a Freeform tab. Proposed contents (to
+  confirm):
+  - Conform: target object(s), offset, projection (nearest / along normal / view), keep the mesh on
+    the surface while you edit (what Blender's Shrinkwrap modifier and face snapping do today)
+  - Freeform PolyDraw tools on the target, as Edit Mode tools while the modifier is selected:
+    Step Build and Extend (Blender's Poly Build), Draw On, Strips, Surface, Topology (draw lines,
+    fill with quads), Splines, Shapes, Branches, Optimize (simplify brush)
+  - Display: Blender's Retopology overlay (see-through, hidden-wire) as the modifier's display
+    settings
+  - Open: also Max's automatic Retopology modifier (QuadriFlow / Voxel Remesh in Blender) as an
+    "Auto" section? Note the name: Max's own Retopology modifier is the automatic remesher, so
+    "Retopo" here means the manual tools plus conform.
+  - Engine: likely add-on (a Geometry Nodes conform modifier with Sample Nearest Surface / Raycast,
+    plus Edit Mode tools); Bsurfaces as a reference for Strips / Surface. *Files: a Geometry Nodes
+    modifier, stock Blender keeps and evaluates it.*
+- Freeform's Blender equivalents today: Step Build / Extend = Poly Build, Draw On = face snapping
+  plus the Retopology overlay and Shrinkwrap, Splines = the curve Draw tool on surfaces, Strips /
+  Surface / Topology = the Bsurfaces extension (roughly); nothing for Shapes and Branches; Optimize
+  is roughly Dyntopo's simplify brush
+- Left out: Paint Deform (Sculpt Mode, decided), Object Paint (Geometry Nodes scattering is the
+  nearest; decide later), Populate (crowds, out of scope)
+
 ### Sculpt modifier (Seb's decision, 2026-10-25; after Phase 3b)
 
 One **Sculpt** modifier that unifies Blender's Multires modifier and the sculpt brush settings,
@@ -512,7 +562,9 @@ Steps:
   not know the new one and falls back to the Object tab (`buttons_context.cc`), so nothing breaks
   in either direction. Objects made here are ordinary Blender objects (the parametric ones are
   Geometry Nodes modifiers, which stock Blender evaluates).*
-- [ ] **Quad primitives** (Seb, 2026-10-28; differs from Max's triangle-fan caps): all primitives
+- [x] **Quad primitives** *(done 2026-10-28, Maximize `quad_caps.py`: Quad Cap / Quad Poles on by
+  default, off gives the old caps; Cap Segs added to ChamferCyl, Spindle and Gengon. Open: L-Ext and
+  C-Ext still have n-gon caps (they are not convex, the quad disc needs a convex rim))* (Seb, 2026-10-28; differs from Max's triangle-fan caps): all primitives
   come with quads. A **Quad Cap** checkbox, on by default, per primitive: an inner quad grid plus
   quad rings to the edge (Cap Segments = rings), clean with Sides a multiple of 4, one triangle to fit
   otherwise (same rule as Edit Poly's Cap). UVs stay clean.
