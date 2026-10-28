@@ -269,7 +269,12 @@ ribbon (Seb's screenshots) before building.
   Symmetry (Select Mirror), By Normal; Freeform's Draw On (face snapping) and Step Build (Poly
   Build); Distribute and Loop Tools (Center, Space, Curve, Circle, Straighten) are in the free
   LoopTools extension, not in Blender itself
-- [ ] Missing, worth building (biggest gaps first): **Smart Extrude** (extrude faces into the mesh,
+- [x] **Smart Extrude** *(done 2026-10-28, Maximize `smart_extrude.py`, first in Edit Polygons: drag
+  along the normal (Ctrl: steps; Distance in the redo panel). Out into free space a plain extrude;
+  inward a cut with the exact boolean (pocket, notch, hole through); out into other geometry a
+  union. One undo step. Open: Max's Shift+drag with the Move tool doesn't trigger it yet; a merge
+  whose walls are flush with both parts leaves extra flat edges)*
+- [ ] Missing, worth building (biggest gaps first): ~~Smart Extrude~~ (extrude faces into the mesh,
   cuts / merges automatically), **Set Flow**, **Build End / Build Corner**, Distribute and Loop Tools
   (bundle LoopTools or own versions), **GeoPoly**, Outline, Hinge, Extrude on Spline, **Paint
   Connect**, grow / shrink loop and ring one step at a time, Loop / Ring modes, Random Loops, Auto
