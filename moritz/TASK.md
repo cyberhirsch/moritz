@@ -290,22 +290,17 @@ ribbon (Seb's screenshots) before building.
   and Auto Loop were already there. Viewport tools started from a panel button (Cut, Paint Connect,
   the view-based selections) use the active viewport: the one whose view changed last. Not done:
   Max's Paint Connect auto-midpoints (the Knife needs Ctrl)
-- [ ] **Retopo modifier** (Seb, 2026-10-28): a new modifier named "Retopo" that holds all the
-  conform / retopology features in one place, instead of a Freeform tab. Proposed contents (to
-  confirm):
-  - Conform: target object(s), offset, projection (nearest / along normal / view), keep the mesh on
-    the surface while you edit (what Blender's Shrinkwrap modifier and face snapping do today)
-  - Freeform PolyDraw tools on the target, as Edit Mode tools while the modifier is selected:
-    Step Build and Extend (Blender's Poly Build), Draw On, Strips, Surface, Topology (draw lines,
-    fill with quads), Splines, Shapes, Branches, Optimize (simplify brush)
-  - Display: Blender's Retopology overlay (see-through, hidden-wire) as the modifier's display
-    settings
-  - Open: also Max's automatic Retopology modifier (QuadriFlow / Voxel Remesh in Blender) as an
-    "Auto" section? Note the name: Max's own Retopology modifier is the automatic remesher, so
-    "Retopo" here means the manual tools plus conform.
-  - Engine: likely add-on (a Geometry Nodes conform modifier with Sample Nearest Surface / Raycast,
-    plus Edit Mode tools); Bsurfaces as a reference for Strips / Surface. *Files: a Geometry Nodes
-    modifier, stock Blender keeps and evaluates it.*
+- [x] **Freeform modifier** *(Seb, 2026-10-28: "we already have retopo modifiers, let's make one
+  called Freeform"; Maximize `freeform.py`, test `test_freeform.py`)*: a Geometry Nodes modifier
+  named "Freeform" keeps the mesh on a Draw On surface (Surface object, Offset, Conform strength);
+  stock Blender evaluates it. Its panel holds Max's PolyDraw: Drag (Move with surface snapping),
+  Step Build / Extend / Optimize (Blender's Poly Build), Conform (put the selection onto the
+  surface now), Strips, Surface, Shapes, Topology (lines across each other become quads), Branches
+  (extrude the selection along a stroke, Branch Taper), Splines (new spline objects), Min Distance,
+  Solve Surface with its Angle, New Object (an empty Freeform mesh on the selected object), and the
+  Retopology overlay under Display. Not done: Max's Optimize brush (Poly Build's Shift+click
+  instead), drawing that snaps onto existing borders beyond welding nearby vertices, Paint Deform
+  (Sculpt modifier). Automatic retopology stays Blender's Remesh / QuadriFlow.
 - Freeform's Blender equivalents today: Step Build / Extend = Poly Build, Draw On = face snapping
   plus the Retopology overlay and Shrinkwrap, Splines = the curve Draw tool on surfaces, Strips /
   Surface / Topology = the Bsurfaces extension (roughly); nothing for Shapes and Branches; Optimize
@@ -676,7 +671,13 @@ Steps:
   Segment dots and a line, Spline a polyline, Show End Result a test tube (half / full), Make
   Unique two shared circles splitting into two. The Scene Explorer column icons are inside
   `SceneExplorer.dll`, not looked at yet. Second draft (2026-10-28): the 9 from Max's pictures;
-  Display as Box, See-Through and the four modifier icons still from the first draft. List:
+  Display as Box, See-Through and the four modifier icons still from the first draft. **Border and
+  Element: keep the first draft** (cube with the border / one element in orange; Seb: it matches
+  Blender's style better than the loop and the solid cube). Third draft (2026-10-28, Seb: "style
+  Blender, inspiration 3ds Max"): all icons in the first draft's style (white lines, grey shade,
+  orange for the part that's picked or changed) with Max's pictures as the idea: plus marks on a
+  curve, an orange segment between two vertices, an orange polyline, a test tube filling orange,
+  shared circles splitting into orange ones. List:
   - Edit Poly sub-object levels: Border, Element (Blender has vertex, edge, face).
   - Edit Spline sub-object levels: Vertex, Segment, Spline.
   - Stack buttons: Show End Result, Make Unique (Blender has the eye and remove).
