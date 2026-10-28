@@ -1349,7 +1349,7 @@ def get_physical_material(phys):
                 path = get_bitmap(textures.get(key))
                 return path if isinstance(path, str) and path else None
             except Exception as exc:
-                print("	'PhysicalMtl' map %d Error:" % key, exc)
+                print("\t'PhysicalMtl' map %d Error:" % key, exc)
                 return None
         bitmap = slot_map(1)
         glossmap = slot_map(2)
