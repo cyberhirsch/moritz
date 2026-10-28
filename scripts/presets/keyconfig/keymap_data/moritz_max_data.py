@@ -195,6 +195,8 @@ def apply(km, moritz=False, maya_navigation=False):
     # (the operator passes the click through at the other levels).
     for mods, props in (({}, {}), ({"ctrl": True}, {"extend": True}), ({"alt": True}, {"deselect": True})):
         km.append("Mesh", "maximize.subobject_pick", _event('LEFTMOUSE', 'CLICK', **mods), props)
+        # Loop / Ring mode: a click picks the whole loop or ring (passes on when off).
+        km.append("Mesh", "maximize.loop_mode_pick", _event('LEFTMOUSE', 'CLICK', **mods), props)
 
     # --------------------------------------------------------------------------
     # Edit Poly.
