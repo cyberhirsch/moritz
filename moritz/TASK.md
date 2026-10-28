@@ -475,8 +475,8 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
   `DocumentSummaryInformation`, and `FileAssetMetaData3` is the 12th, so every lookup missed. Now
   found by name; plus the `None` fix, per-slot reads and full paths. kitchen.max: 0 errors, 5 of the
   Physical textures load (was 0), 15 s. Open: the Dishwasher's material (from an FBX / glTF import)
-  isn't a type the importer knows, so that object gets no material. Upstream offer still waits for
-  Seb's OK)* (Seb, 2026-10-28). Error on every
+  isn't a type the importer knows, so that object gets no material. Offered upstream with Seb's OK:
+  https://github.com/nrgsille76/io_scene_max/pull/50; drop our patch once a release has it)* (Seb, 2026-10-28). Error on every
   Physical material: `'PhysicalMtl' Error: argument should be a str or an os.PathLike object ...,
   not 'dict'` (kitchen.max and the Torus exporter test scene). **Cause found:** `get_metadata()`
   (`import_max.py` line 863) ends with `return pathdata`; when the bitmap's index isn't in the
