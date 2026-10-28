@@ -244,7 +244,13 @@ the Polygon sections. Rare ones in closed sub-panels, ordered by the priority li
 What the ribbon (Graphite Modeling Tools) offers beyond the Edit Poly panel, against Blender.
 Panel list from Autodesk's 2012-2016 help plus newer tools from memory; check against the 2026
 ribbon (Seb's screenshots) before building.
-- Blender has it in some form, needs a Max button / name: Quadrify All / Selection (Tris to
+- [x] *(done 2026-10-28, Maximize: Selection gets Dot Loop / Dot Ring, Similar, Fill, Outline and a
+  closed "Select By" (NonQuads, Open, Random, Symmetry); a Loops section at Edge level (Insert Loop,
+  Remove Loop); Edit Geometry gets closed "Geometry (All)" (Quadrify All / Selection, Symmetrize) and
+  "Subdivision" (MeshSmooth, Tessellate); Smoothing Groups moved into Edit Poly at Polygon level
+  with Smooth / Smooth 30 / Hard. Already there: Cap, Swift Loop, Hard / Smooth edges, Outline,
+  Hinge, Extrude on Spline (Edit Polygons). Left: By Normal, Freeform's to Retopo)*
+  Blender has it in some form, needs a Max button / name: Quadrify All / Selection (Tris to
   Quads), Symmetry Tools (Symmetrize), Similar, Outline selection (Select Boundary Loop), Dot Loop
   / Dot Ring (Checker Deselect), Fill selection (shortest path fill), NURMS (Subdivision Surface),
   Cap Poly (Fill), Insert Loop (Loop Cut), Remove Loop (Dissolve Edge Loop), Hard / Smooth / Smooth
