@@ -297,6 +297,7 @@ void modifier_type_init(ModifierTypeInfo *types[])
   INIT_TYPE(QuadifyMesh);
   INIT_TYPE(ProOptimizer);
   INIT_TYPE(VertexPaint);
+  INIT_TYPE(Retopology);
 #undef INIT_TYPE
 }
 

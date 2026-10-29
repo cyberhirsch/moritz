@@ -146,9 +146,11 @@ Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberh
      available, so the layout doesn't jump.
   Points 2, 4 and 5 should work in Python (`quad_menu.py`). A pixel-exact look probably needs a
   small core menu type and a **rebuild**; batch it with the other core changes.
-- [ ] **Quad menu, point 3:** the quadrant names as a dark band through the middle with Max's four
-  small squares at the center. Python panels can't draw a custom band; it needs a small core menu
-  type (custom drawing) and a **rebuild**. Batch it with the next core changes.
+- [x] *(done 2026-10-29 in Python after all, Maximize `quad_menu.py`: the quadrant titles are
+  boxed rows meeting at the cursor, a band through the middle; the quadrants lost their own boxes
+  so the band stands out. Left out: Max's four small squares at the center, cosmetic)* **Quad
+  menu, point 3:** the quadrant names as a dark band through the middle with Max's four small
+  squares at the center.
 - [x] **Viewport navigation**: MMB pan, Alt+MMB orbit, Ctrl+Alt+MMB zoom; orbit around the selection and zoom about the mouse are set on first enable
 - [x] **Max layout for new files** (`viewport.py`, load_post handler): quad view, centimeters, sidebar on the Max tab (preference "Max Layout for New Files"). Done in the add-on instead of an app template.
 - [x] **Max English** (`vocabulary.py`): about 40 Blender labels renamed (Merge by Distance → Weld, Bevel → Chamfer, Join → Attach…), preference "Max English", default on
@@ -766,7 +768,13 @@ tyFlow isn't installed there. Status per group, to go through with Seb:
     Material / UV Boundaries, Keep Normals, Symmetry. The Max match is phase 2 in
     `moritz/docs/max_mesh_modifiers_design.md`: attribute-aware quadrics, Favor Compact Faces,
     Prevent Flips, and a precomputed collapse order so the slider is instant.)*
-  - **Retopology:** Max's algorithm is better; try to match it (Remesh isn't enough).
+  - [x] *(done 2026-10-29, native RETOPOLOGY modifier in `MOD_max_mesh.cc`: cleanup (weld, loose,
+    degenerate; a voxel pass when non-manifold, where QuadriFlow alone fails), Symmetry X / Y / Z
+    (one half solved, conformed, then mirrored, exactly symmetric), Face Count, Auto Edge (sharp
+    edges), Preserve Boundary, Conform onto the original with Relax passes, Seed. The Max list's
+    Retopology entry uses it. Test: `moritz/tests/test_retopology_native.py`. Not matched: Max's
+    background job and guide edges from an Edit Poly selection; ReForm itself is unpublished)*
+    **Retopology:** Max's algorithm is better; try to match it (Remesh isn't enough).
     *(2026-10-29: planned in `moritz/docs/max_mesh_modifiers_design.md`: a native RETOPOLOGY
     modifier with Max's pre-processing (cleanup to manifold), feature edges, symmetry, a Face
     Count target, Conform and Relax afterwards, and the solve in a background job. ReForm is

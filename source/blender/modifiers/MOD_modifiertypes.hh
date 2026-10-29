@@ -109,6 +109,7 @@ extern ModifierTypeInfo modifierType_MeshClean;
 extern ModifierTypeInfo modifierType_QuadifyMesh;
 extern ModifierTypeInfo modifierType_ProOptimizer;
 extern ModifierTypeInfo modifierType_VertexPaint;
+extern ModifierTypeInfo modifierType_Retopology;
 
 /* MOD_util.cc */
 

@@ -1417,6 +1417,9 @@ void BKE_modifier_blend_read_data(BlendDataReader *reader, ListBaseT<ModifierDat
       else if (mx_type && mx_type->type == IDP_STRING && STREQ(IDP_string_get(mx_type), "VERTEX_PAINT")) {
         md->type = eModifierType_VertexPaint;
       }
+      else if (mx_type && mx_type->type == IDP_STRING && STREQ(IDP_string_get(mx_type), "RETOPOLOGY")) {
+        md->type = eModifierType_Retopology;
+      }
     }
 
     /* If linking from a library, clear 'local' library override flag. */

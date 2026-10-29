@@ -265,6 +265,11 @@ const EnumPropertyItem rna_enum_object_modifier_type_items[] = {
      ICON_VPAINT_HLT,
      "VertexPaint",
      "A vertex color layer in the modifier stack"},
+    {eModifierType_Retopology,
+     "RETOPOLOGY",
+     ICON_MOD_REMESH,
+     "Retopology",
+     "Rebuild the surface as clean quads: cleanup, symmetry, a face count, conform and relax"},
     {eModifierType_Weld,
      "WELD",
      ICON_AUTOMERGE_OFF,
@@ -2297,6 +2302,13 @@ MX_BOOL(rna_ProOptimizerModifier_use_keep_normals, "keep_normals", false)
 MX_BOOL(rna_ProOptimizerModifier_use_favor_compact, "favor_compact", true)
 MX_INT(rna_ProOptimizerModifier_symmetry_axis, "symmetry_axis", -1)
 
+MX_INT(rna_RetopologyModifier_face_count, "face_count", 2000)
+MX_INT(rna_RetopologyModifier_symmetry_axis, "symmetry_axis", -1)
+MX_INT(rna_RetopologyModifier_relax_iterations, "relax_iterations", 2)
+MX_INT(rna_RetopologyModifier_seed, "seed", 0)
+MX_BOOL(rna_RetopologyModifier_use_preserve_sharp, "preserve_sharp", true)
+MX_BOOL(rna_RetopologyModifier_use_preserve_boundary, "preserve_boundary", true)
+MX_BOOL(rna_RetopologyModifier_use_conform, "conform", true)
 #undef MX_BOOL
 #undef MX_INT
 #undef MX_FLOAT
@@ -8046,6 +8058,87 @@ static void rna_def_modifier_max_mesh(BlenderRNA *brna)
   RNA_def_function_flag(func, FUNC_USE_SELF_ID);
 }
 
+static void rna_def_modifier_retopology(BlenderRNA *brna)
+{
+  StructRNA *srna;
+  PropertyRNA *prop;
+
+  static const EnumPropertyItem symmetry_items[] = {
+      {-1, "NONE", 0, "None", ""},
+      {0, "X", 0, "X", ""},
+      {1, "Y", 0, "Y", ""},
+      {2, "Z", 0, "Z", ""},
+      {0, nullptr, 0, nullptr, nullptr},
+  };
+
+  srna = RNA_def_struct(brna, "RetopologyModifier", "Modifier");
+  RNA_def_struct_ui_text(srna,
+                         "Retopology Modifier",
+                         "Rebuild the surface as clean quads (3ds Max's Retopology modifier)");
+  RNA_def_struct_sdna(srna, "ModifierData");
+  RNA_def_struct_ui_icon(srna, ICON_MOD_REMESH);
+
+  prop = RNA_def_property(srna, "face_count", PROP_INT, PROP_NONE);
+  RNA_def_property_int_funcs(
+      prop, "rna_RetopologyModifier_face_count_get", "rna_RetopologyModifier_face_count_set", nullptr);
+  RNA_def_property_range(prop, 4, 200000);
+  RNA_def_property_int_default(prop, 2000);
+  RNA_def_property_ui_text(prop, "Face Count", "The number of quads to aim for");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "symmetry_axis", PROP_ENUM, PROP_NONE);
+  RNA_def_property_enum_items(prop, symmetry_items);
+  RNA_def_property_enum_funcs(prop,
+                              "rna_RetopologyModifier_symmetry_axis_get",
+                              "rna_RetopologyModifier_symmetry_axis_set",
+                              nullptr);
+  RNA_def_property_enum_default(prop, -1);
+  RNA_def_property_ui_text(
+      prop, "Symmetry", "Solve one half and mirror it, across the object's origin");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_preserve_sharp", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop,
+                                 "rna_RetopologyModifier_use_preserve_sharp_get",
+                                 "rna_RetopologyModifier_use_preserve_sharp_set");
+  RNA_def_property_boolean_default(prop, true);
+  RNA_def_property_ui_text(prop, "Auto Edge", "Follow sharp edges with the quad flow");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_preserve_boundary", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop,
+                                 "rna_RetopologyModifier_use_preserve_boundary_get",
+                                 "rna_RetopologyModifier_use_preserve_boundary_set");
+  RNA_def_property_boolean_default(prop, true);
+  RNA_def_property_ui_text(prop, "Preserve Boundary", "Keep open borders");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_conform", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(
+      prop, "rna_RetopologyModifier_use_conform_get", "rna_RetopologyModifier_use_conform_set");
+  RNA_def_property_boolean_default(prop, true);
+  RNA_def_property_ui_text(
+      prop, "Conform", "Project the result onto the original surface, after relaxing it");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "relax_iterations", PROP_INT, PROP_NONE);
+  RNA_def_property_int_funcs(prop,
+                             "rna_RetopologyModifier_relax_iterations_get",
+                             "rna_RetopologyModifier_relax_iterations_set",
+                             nullptr);
+  RNA_def_property_range(prop, 0, 50);
+  RNA_def_property_int_default(prop, 2);
+  RNA_def_property_ui_text(prop, "Relax", "Smoothing passes before conforming");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "seed", PROP_INT, PROP_NONE);
+  RNA_def_property_int_funcs(
+      prop, "rna_RetopologyModifier_seed_get", "rna_RetopologyModifier_seed_set", nullptr);
+  RNA_def_property_range(prop, 0, 100000);
+  RNA_def_property_ui_text(prop, "Seed", "Random seed of the quad layout");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+}
+
 static void rna_def_modifier_weld(BlenderRNA *brna)
 {
   StructRNA *srna;
@@ -12379,6 +12472,7 @@ void RNA_def_modifier(BlenderRNA *brna)
   rna_def_modifier_edit_poly(brna);
   rna_def_modifier_edit_spline(brna);
   rna_def_modifier_max_mesh(brna);
+  rna_def_modifier_retopology(brna);
   rna_def_modifier_wireframe(brna);
   rna_def_modifier_datatransfer(brna);
   rna_def_modifier_normaledit(brna);

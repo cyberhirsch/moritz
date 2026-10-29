@@ -43,7 +43,7 @@ MAX_ENTRIES = (
     ("Push", 'DISPLACE', {"direction": 'NORMAL', "strength": 0.0}, "inflate normals offset"),
     ("Quadify Mesh", 'QUADIFY_MESH', {}, "quads remesh quadriflow retopo"),
     ("Relax", 'LAPLACIANSMOOTH', {}, "smooth laplacian soften"),
-    ("Retopology", 'REMESH', {}, "remesh quads voxel retopo"),
+    ("Retopology", 'RETOPOLOGY', {}, "remesh quads quadriflow retopo topology clean"),
     ("Ripple", 'WAVE', {}, "wave radial rings water"),
     ("Shell", 'SOLIDIFY', {}, "solidify thickness"),
     ("Skin", 'ARMATURE', {}, "armature bones rig skinning deform"),
@@ -91,6 +91,7 @@ BLENDER_KEYWORDS = {
     'OCEAN': "water waves sea",
     'NODES': "geometry nodes",
     'DECIMATE': "reduce optimize polygons collapse planar",
+    'REMESH': "voxel quads retopology blocks smooth",
 }
 
 # Add-on entries (Max label, operator idname, keywords, object types), from `register_entry`.

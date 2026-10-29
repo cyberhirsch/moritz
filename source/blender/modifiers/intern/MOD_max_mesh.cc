@@ -29,6 +29,7 @@
 #include "MEM_guardedalloc.h"
 
 #include "BLI_array.hh"
+#include "BLI_kdopbvh.hh"
 #include "BLI_bounds_types.hh"
 #include "BLI_color.hh"
 #include "BLI_listbase_iterator.hh"
@@ -46,8 +47,10 @@
 #include "DNA_screen_types.h"
 
 #include "BKE_attribute.hh"
+#include "BKE_bvhutils.hh"
 #include "BKE_customdata.hh"
 #include "BKE_idprop.hh"
+#include "BKE_lib_id.hh"
 #include "BKE_mesh.hh"
 #include "BKE_mesh_remesh_voxel.hh"
 #include "BKE_modifier.hh"
@@ -465,6 +468,207 @@ static Mesh *quadify_modify(ModifierData *md, const ModifierEvalContext *ctx, Me
 /** \} */
 
 /* -------------------------------------------------------------------- */
+/** \name Retopology
+ *
+ * Max's Retopology modifier: clean the input (non-manifold input through a voxel pass, which is
+ * where QuadriFlow alone usually fails), optionally solve one half and mirror it, then QuadriFlow
+ * to a face count, and finally Conform (project onto the input) and Relax.
+ * \{ */
+
+/** Weld, remove loose and degenerate parts; returns whether the result is manifold. */
+static Mesh *retopology_clean(const Mesh *mesh, const float dist, bool &r_manifold)
+{
+  BMesh *bm = to_bmesh(mesh);
+  BMO_op_callf(bm, BMO_FLAG_DEFAULTS, "remove_doubles verts=%av dist=%f", dist);
+  BMO_op_callf(bm, BMO_FLAG_DEFAULTS, "dissolve_degenerate dist=%f edges=%ae", dist);
+  clear_tags(bm);
+  BMIter iter;
+  BMEdge *e;
+  BM_ITER_MESH (e, &iter, bm, BM_EDGES_OF_MESH) {
+    if (e->l == nullptr) {
+      BM_elem_flag_enable(e, BM_ELEM_TAG);
+    }
+  }
+  BMO_op_callf(bm, BMO_FLAG_DEFAULTS, "delete geom=%he context=%i", BM_ELEM_TAG, DEL_EDGES);
+  clear_tags(bm);
+  BMVert *v;
+  BM_ITER_MESH (v, &iter, bm, BM_VERTS_OF_MESH) {
+    if (v->e == nullptr) {
+      BM_elem_flag_enable(v, BM_ELEM_TAG);
+    }
+  }
+  BMO_op_callf(bm, BMO_FLAG_DEFAULTS, "delete geom=%hv context=%i", BM_ELEM_TAG, DEL_VERTS);
+  r_manifold = true;
+  BM_ITER_MESH (e, &iter, bm, BM_EDGES_OF_MESH) {
+    if (!BM_edge_is_manifold(e) && !BM_edge_is_boundary(e)) {
+      r_manifold = false;
+      break;
+    }
+  }
+  BM_ITER_MESH (v, &iter, bm, BM_VERTS_OF_MESH) {
+    if (!r_manifold) {
+      break;
+    }
+    if (!BM_vert_is_manifold(v) && !BM_vert_is_boundary(v)) {
+      r_manifold = false;
+    }
+  }
+  return from_bmesh(bm, mesh);
+}
+
+/** Cut away the positive side of `axis` (the side Symmetrize mirrors over). */
+static Mesh *retopology_half(const Mesh *mesh, const int axis)
+{
+  BMesh *bm = to_bmesh(mesh);
+  float plane_co[3] = {0.0f, 0.0f, 0.0f};
+  float plane_no[3] = {0.0f, 0.0f, 0.0f};
+  plane_no[axis] = 1.0f;
+  BMO_op_callf(bm,
+               BMO_FLAG_DEFAULTS,
+               "bisect_plane geom=%avef dist=%f plane_co=%v plane_no=%v use_snap_center=%b "
+               "clear_outer=%b clear_inner=%b",
+               0.00001f,
+               plane_co,
+               plane_no,
+               true,
+               true,
+               false);
+  return from_bmesh(bm, mesh);
+}
+
+static Mesh *retopology_mirror(Mesh *mesh, const int axis, const float dist)
+{
+  BMesh *bm = to_bmesh(mesh);
+  BMO_op_callf(bm,
+               BMO_FLAG_DEFAULTS,
+               "symmetrize input=%avef direction=%i dist=%f use_shapekey=%b",
+               axis,
+               dist,
+               false);
+  Mesh *result = from_bmesh(bm, mesh);
+  BKE_id_free(nullptr, mesh);
+  return result;
+}
+
+/** Conform and Relax: smooth the inner vertices, then pull every vertex onto `surface`. */
+static void retopology_conform(Mesh &mesh, const Mesh &surface, const int relax_iterations)
+{
+  bke::BVHTreeFromMesh tree = surface.bvh_corner_tris();
+  if (tree.tree == nullptr) {
+    return;
+  }
+  MutableSpan<float3> positions = mesh.vert_positions_for_write();
+  const Span<int2> edges = mesh.edges();
+  Array<int> edge_faces(edges.size(), 0);
+  const OffsetIndices faces = mesh.faces();
+  const Span<int> corner_edges = mesh.corner_edges();
+  for (const int i : faces.index_range()) {
+    for (const int e : corner_edges.slice(faces[i])) {
+      edge_faces[e]++;
+    }
+  }
+  Array<bool> fixed(positions.size(), false);
+  for (const int e : edges.index_range()) {
+    if (edge_faces[e] < 2) {
+      fixed[edges[e][0]] = fixed[edges[e][1]] = true;
+    }
+  }
+  auto project = [&]() {
+    for (float3 &co : positions) {
+      BVHTreeNearest nearest;
+      nearest.index = -1;
+      nearest.dist_sq = FLT_MAX;
+      BLI_bvhtree_find_nearest(tree.tree, co, &nearest, tree.nearest_callback, &tree);
+      if (nearest.index != -1) {
+        co = float3(nearest.co);
+      }
+    }
+  };
+  project();
+  Array<float3> sum(positions.size());
+  Array<int> count(positions.size());
+  for ([[maybe_unused]] const int iteration : IndexRange(relax_iterations)) {
+    sum.fill(float3(0.0f));
+    count.fill(0);
+    for (const int2 &edge : edges) {
+      sum[edge[0]] += positions[edge[1]];
+      sum[edge[1]] += positions[edge[0]];
+      count[edge[0]]++;
+      count[edge[1]]++;
+    }
+    for (const int v : positions.index_range()) {
+      if (!fixed[v] && count[v] > 0) {
+        positions[v] = math::interpolate(positions[v], sum[v] / float(count[v]), 0.5f);
+      }
+    }
+    project();
+  }
+  mesh.tag_positions_changed();
+}
+
+static Mesh *retopology_modify(ModifierData *md, const ModifierEvalContext *ctx, Mesh *mesh)
+{
+  const int face_count = MOD_max_mesh_int(*md, "face_count", 2000);
+  const int symmetry = std::clamp(MOD_max_mesh_int(*md, "symmetry_axis", -1), -1, 2);
+  const int relax = std::clamp(MOD_max_mesh_int(*md, "relax_iterations", 2), 0, 50);
+  if (mesh->faces_num == 0 || face_count < 4) {
+    return mesh;
+  }
+  const std::optional<Bounds<float3>> bounds = mesh->bounds_min_max();
+  if (!bounds) {
+    return mesh;
+  }
+  const float diagonal = math::distance(bounds->min, bounds->max);
+
+  /* Pre-processing. */
+  bool manifold = true;
+  Mesh *clean = retopology_clean(mesh, diagonal * 0.00001f, manifold);
+  if (!manifold) {
+    Mesh *voxel = BKE_mesh_remesh_voxel(clean, diagonal / 200.0f, 0.0f, 0.0f, nullptr);
+    if (voxel != nullptr) {
+      BKE_id_free(nullptr, clean);
+      clean = voxel;
+    }
+  }
+  /* Symmetry: solve one half (bisected at the object's origin), mirror it afterwards. */
+  Mesh *input = clean;
+  if (symmetry != -1) {
+    input = retopology_half(clean, symmetry);
+  }
+  Mesh *result = BKE_mesh_remesh_quadriflow(input,
+                                            symmetry != -1 ? face_count / 2 : face_count,
+                                            MOD_max_mesh_int(*md, "seed", 0),
+                                            flag(*md, "preserve_sharp", true),
+                                            flag(*md, "preserve_boundary", true),
+                                            false,
+                                            quadify_progress,
+                                            nullptr);
+  if (result == nullptr) {
+    if (input != clean) {
+      BKE_id_free(nullptr, input);
+    }
+    BKE_id_free(nullptr, clean);
+    BKE_modifier_set_error(ctx->object, md, "Retopology failed on this mesh");
+    return mesh;
+  }
+  /* Post-processing, on the half before mirroring, so the result stays exactly symmetric. */
+  if (flag(*md, "conform", true)) {
+    retopology_conform(*result, *input, relax);
+  }
+  if (input != clean) {
+    BKE_id_free(nullptr, input);
+  }
+  if (symmetry != -1) {
+    result = retopology_mirror(result, symmetry, diagonal * 0.001f);
+  }
+  BKE_id_free(nullptr, clean);
+  bke::mesh_remesh_reproject_attributes(*mesh, *result);
+  return result;
+}
+
+/** \} */
+
+/* -------------------------------------------------------------------- */
 /** \name ProOptimizer
  * \{ */
 
@@ -684,6 +888,10 @@ static void panel_register_vertex_paint(ARegionType *region_type)
 {
   modifier_panel_register(region_type, eModifierType_VertexPaint, draw_settings);
 }
+static void panel_register_retopology(ARegionType *region_type)
+{
+  modifier_panel_register(region_type, eModifierType_Retopology, draw_settings);
+}
 
 #define MX_INIT(fn, mx_type) \
   static void fn(ModifierData *md) \
@@ -697,6 +905,7 @@ MX_INIT(init_mesh_clean, "MESH_CLEAN")
 MX_INIT(init_quadify, "QUADIFY_MESH")
 MX_INIT(init_pro_optimizer, "PRO_OPTIMIZER")
 MX_INIT(init_vertex_paint, "VERTEX_PAINT")
+MX_INIT(init_retopology, "RETOPOLOGY")
 
 #undef MX_INIT
 
@@ -789,6 +998,15 @@ MX_TYPE_INFO(modifierType_VertexPaint,
              vertex_paint_modify,
              init_vertex_paint,
              panel_register_vertex_paint)
+MX_TYPE_INFO(modifierType_Retopology,
+             "Retopology",
+             N_("Retopology"),
+             &RNA_RetopologyModifier,
+             ModifierTypeType::Constructive,
+             ICON_MOD_REMESH,
+             retopology_modify,
+             init_retopology,
+             panel_register_retopology)
 
 #undef MX_TYPE_INFO
 

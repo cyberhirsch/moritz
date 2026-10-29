@@ -137,6 +137,7 @@ enum ModifierType : int {
   eModifierType_QuadifyMesh = 205,
   eModifierType_ProOptimizer = 206,
   eModifierType_VertexPaint = 207,
+  eModifierType_Retopology = 208,
   NUM_MODIFIER_TYPES,
 };
 
