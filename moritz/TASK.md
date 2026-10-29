@@ -16,6 +16,62 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
 - **Repos stay private.**
 - **Phase 3b:** do every item in order, then report.
 
+- *(2026-10-29)* **Moritz is a Blender alternative, not Blender plus an add-on.** Seb: "moritz
+  should not feel like a blender alternative that ships with an addon. it should just feel like a
+  blender alternative." In Moritz there is **no "Max" sidebar tab**; it stays only in Maximize on
+  stock Blender. Its contents move to native places in Moritz (proposal):
+  - Modifier Stack (Edit Poly, Collapse To / All): into the Modify tab's stack.
+  - Hierarchy (Affect Pivot Only, Center to Object, Align to World, Reset XForm): ~~a Hierarchy
+    tab~~ no tab, see the Utilities decision below.
+  - Utilities (Transform Type-In, Align, Array, Spacing Tool, Clone, UVW Map, Select by Name): a
+    **Utilities** tab, as in Max, or the menus they belong in (Object, Edit), with the keys.
+    **Decided (Seb, 2026-10-29): a new Command Panel tab "Utilities"** holds **Align** (with a
+    "pivot only" option), **Array**, **Spacing Tool** and **Object Paint**, combined. The rest
+    goes to the menus or to Blender's own command (see the comparison below).
+    - **Object Paint** (new; from Seb's screenshot of Max 2026's Object Paint tab), Max's
+      features:
+      - Paint Objects: a list of objects to paint with (pick, edit list), Fill # (place N along
+        the last stroke).
+      - Paint On: Grid / Surface / Selection (like Freeform's Draw On) and Offset.
+      - Brush Settings: Commit / Cancel; Align to the surface normal with axis X / Y / Z and flip;
+        Spacing; scatter U / V / W; rotation X / Y / Z; scale X / Y / Z in %, with a uniform lock.
+      - Blender has no built-in object painter (only Geometry Nodes scattering), so this is our
+        own tool. Reuse the Draw On code from `freeform.py`.
+    - Align's pivot-only option: align only the object's pivot (origin), not the object.
+    - **No Hierarchy tab for now (Seb, 2026-10-29).** Affect Pivot Only and Reset XForm sit in the
+      **quad menu**. **Align to World, Center to Object and Affect Pivot Only** also go into
+      **Align** in the Utilities tab.
+    - Tab: teal like Create and Modify. *Core: a new `BCONTEXT`, **rebuild**; files fine.*
+  - Named Selection Sets: the main toolbar / header, as in Max, or the Outliner.
+  - Keymap switch: Preferences and the Quick Setup only.
+  - Also check other places where the add-on shows ("Maximize" or "Max" in labels, the add-on
+    list, menus): in Moritz they read as built-in. Possibly ship Maximize's code as part of Moritz
+    instead of as an enabled add-on.
+  - *Core: new Command Panel tabs (like Create) and their order mean a **rebuild**; files are
+    fine (stock Blender falls back to the Object tab, as with Create).*
+  - *(2026-10-29)* Which Max-tab tools Blender already does better: Center to Object (Set
+    Origin), Reset XForm (Apply), Transform Type-In (sidebar, typed values), Clone (Shift+D /
+    Alt+D). About equal: Affect Pivot Only (Affect Only Origins, needs a visible button), Select by
+    Name (Outliner filter), Collapse All (Convert to Mesh). Max better, keep as tools: Align,
+    Spacing Tool, UVW Map, Named Selection Sets, Collapse To, Array (separate objects).
+  - **Transform Type-In (Seb, 2026-10-29):** always visible at the **bottom left** while a
+    transform tool (Move, Rotate, Scale) is active, like Max's X / Y / Z fields in the status
+    bar. Includes **relative** (Max's Offset mode, an Absolute / Offset toggle). No dialog, no
+    sidebar needed. Possible places: Blender's status bar (Python-drawable, so no rebuild) or a
+    viewport overlay. Watch out: Blender's Adjust Last Operation panel also sits bottom left in
+    the viewport. F12 stays as the shortcut that puts the cursor into the fields.
+  - **Reset XForm (Seb, 2026-10-29): keep Blender's Apply**; no own Reset XForm tool. In the
+    **quad menu** the entry is named "Reset XForm" and runs Blender's Apply (All Transforms).
+
+## UX rules (Seb)
+
+- *(2026-10-29)* **Modal tools and brushes never block the UI.** While a tool or brush runs (for
+  example the Conform brush), clicks on buttons and other UI still work. The click does what the
+  button does, and may end the tool if that button calls for it (another tool, another mode, a
+  sub-object level). Right-click ends the tool. Clicking elsewhere can end it too, depending on
+  where: in the viewport the click belongs to the tool; in panels, the Outliner or menus it goes to
+  the UI. Like Max. Applies to all Moritz and Maximize tools. First case: the Conform brush.
+
 ## Phase 0 — Foundation
 
 ### Repository
@@ -73,6 +129,21 @@ Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberh
 - [x] **Viewport navigation**: MMB pan, Alt+MMB orbit, Ctrl+Alt+MMB zoom; orbit around the selection and zoom about the mouse are set on first enable
 - [x] **Max layout for new files** (`viewport.py`, load_post handler): quad view, centimeters, sidebar on the Max tab (preference "Max Layout for New Files"). Done in the add-on instead of an app template.
 - [x] **Max English** (`vocabulary.py`): about 40 Blender labels renamed (Merge by Distance → Weld, Bevel → Chamfer, Join → Attach…), preference "Max English", default on
+- [x] *(done 2026-10-29, Maximize `vocabulary.py`: preference Names = Follow Keymap / Blender / Max /
+  Moritz, also in the Quick Setup and the Keymap preferences; needs the interface translation on,
+  which the scheme switches on. Modifier names: see Phase 6)* *(Seb, 2026-10-29: "we have keyboard shortcut schemes, can we have name schemes too?" →
+  "good idea")* **Name schemes**, like the keymap presets, replacing the "Max English" switch:
+  - **Blender:** Blender's names, unchanged.
+  - **Max:** Max's names wherever Max has one.
+  - **Moritz:** Max's names, with Blender's name in the tooltip so tutorials and F3 search still
+    work. This matches the two shortcuts shown in menus.
+  - Chosen in the Quick Setup and in Preferences next to the keymap; by default it follows the
+    chosen keymap.
+  - Still a translation (`bpy.app.translations`), so files and the Python API are unchanged and
+    stock Blender is unaffected.
+  - Check whether it needs Blender's interface-translation setting switched on.
+  - The Max table needs to grow well beyond today's ~40 labels.
+  - In Moritz it reads as built-in, not as an add-on option (see Decisions).
 - [x] **Max-named operators** (`vocabulary.py`): 35 aliases (Weld, Target Weld, Swift Loop, Cap, Bridge, Detach, TurboSmooth, Shell…) in the header **Max** menu, so F3 menu search finds them
 - [x] **Transform Type-In** (F12): Move, Rotate and Scale; absolute and offset in world space; objects and Edit Poly
 - [x] **Pivot tools**: Affect Pivot Only (Insert), Center to Object, Align to World, Reset XForm
@@ -100,6 +171,24 @@ Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberh
 - [x] Keymap presets Blender / Max / Moritz in Moritz itself (`presets/keyconfig/Max.py`, `Moritz.py`, data copied from Maximize); chosen in the Quick Setup on first start; Moritz is the default. Maximize's keys (quad menu, tools, 1–6) are bound only while the add-on is enabled
 - [x] Moritz selection behavior from the plan: Ctrl+click toggle, double-click loop/children, Ctrl+Alt+double-click ring, Ctrl+Shift+click shortest path, window/crossing by drag direction (`region_select.py`), Q cycling region shapes, hover highlight (`hover.py`), visible-only sub-objects with Alt+Shift+X to select through
 - [x] Restore free Blender keys (numpad views)
+- [x] *(done 2026-10-29, Maximize 92afaa8, Moritz cc59f46f5ee: plain middle mouse stripped from the
+  "3D View Tool:" keymaps; app test: all six tool/keymap cases pan)* *(Seb, 2026-10-29: "when a transform tool is selected, the middle mouse button no longer
+  controls the viewport")* **Bug: middle mouse stops panning with a tool active.** Cause:
+  Industry Compatible (the base of the Max and Moritz keymaps) copies every non-select tool's
+  left-drag to middle mouse, Maya-style (`industry_compatible_data.py` around line 3907, loop
+  over the "Tool:" keymaps; also `transform.translate` on MIDDLEMOUSE CLICK_DRAG around line
+  1010). Those tool keymaps win over `view3d.move` on MIDDLEMOUSE. Max always pans with the
+  middle mouse, so the **Max and Moritz keymaps drop these middle-mouse copies**. It's a Python
+  keymap change, so no rebuild. Update `keymap_max.py`, the core copy `moritz_max_data.py`, and
+  the coverage check.
+- [x] *(done 2026-10-29: Tab toggles Edit Mode in Object Non-modal; Space is `maximize.space_key` in
+  Frames: maximizes over a 3D View, plays elsewhere, stops playback; Max's Selection Lock stays on
+  its Max key)* *(Seb, 2026-10-29)* **Moritz keymap only** (not the Max one):
+  - **Tab** still toggles Object / Edit Mode, in addition to the number keys 1–6.
+  - **Space** maximizes the viewport, in addition to Alt+W.
+  - Check what Space does now in the Moritz keymap and what it loses (in Max: Selection Lock
+    Toggle; Blender's own Space binding). Freeform's modal tools also use Space to finish, and that
+    stays inside the tool.
 - [x] Both shortcuts in menus and tooltips (Max key and Blender key), so Blender tutorials stay usable (core: `WM_keymap_lookup_blender_begin`)
 - [x] Preferences: Maya navigation, F frames selection, Blender modal keys (Preferences > Keymap, under the Max and Moritz keymaps)
 - [x] Editors: Graph Editor / Dope Sheet, shader editor, Outliner F2
@@ -301,6 +390,54 @@ ribbon (Seb's screenshots) before building.
   Retopology overlay under Display. Not done: Max's Optimize brush (Poly Build's Shift+click
   instead), drawing that snaps onto existing borders beyond welding nearby vertices, Paint Deform
   (Sculpt modifier). Automatic retopology stays Blender's Remesh / QuadriFlow.
+- [x] *(done 2026-10-29, Maximize 4685a44)* *(Seb, 2026-10-29: "conform brush works nicely")* **Conform brush: choose the normal.** A
+  setting in the Conform brush options for the direction vertices move along: the **target's**
+  normal (the Draw On surface) or the **active object's** own normal (the mesh being conformed).
+  Also follow the new UX rule (see UX rules): clicks on buttons work while the brush runs.
+  *(Built by the main session: `conform_direction`, Target / Active Object, in `freeform.py`.)*
+  *(Seb, 2026-10-29: add **Nearest** and **View** too.)* Four choices for every Conform brush:
+  Target (along the surface's normal), Active Object (along the mesh's own normals), Nearest
+  (straight to the closest point on the surface), View (along the view direction, as if
+  projected from the camera). Today's Target description also says "to the nearest point":
+  split the two cleanly. *(Seb: show it as a **dropdown**, not a row of buttons.)*
+  *Built as a dropdown with the four: Target uses **one shared direction**, the surface normal
+  under the brush (for Conform All: nearest the selection's middle), because "along the
+  surface's normal" per vertex is mathematically the same as Nearest. Active Object = vertex
+  normals, Nearest = closest point, View = view direction.*
+- [x] *(done 2026-10-29, Maximize 85d694d)* *(Seb, 2026-10-29: "where are the other conform brushes?")* **The other Conform brushes are
+  missing.** Only the Conform brush and the one-shot Conform exist (`freeform.py`). Max's Freeform
+  tab has four more next to Conform: Conform Move, Conform Rotate, Conform Scale, and a fourth
+  (drawn as Conform Relax in the icon set; check its exact name and job in Max 2026). They move,
+  rotate or scale the vertices under the brush while keeping them on the target surface. The
+  icons already exist (`ff_conform_move` / `_rotate` / `_scale` / `_relax`).
+  *(Built: Conform Move / Rotate / Scale / Relax in `CONFORM_BRUSHES`, `freeform.py`.)*
+- [x] *(2026-10-29, checked against Seb's screenshot of Max 2026's Freeform tab)* **What the
+  Freeform tab has that Moritz still lacked** *(done 2026-10-29 except the open points below)*:
+  - *(done, Maximize 347a9e3)* PolyDraw **Draw On: Grid / Surface / Selection**, for PolyDraw and
+    the Conform brushes. Grid = the ground, or in Top / Front / Side the view's plane through the
+    origin.
+  - *(done, Maximize c16f511: a Paint Deform rollout in Edit Poly, own brushes on the mesh, not
+    Sculpt Mode; Shift, Shift Rotate, Shift Scale, Push/Pull, Relax/Soften, Flatten,
+    Pinch/Spread, Smudge, Noise, Exaggerate, Revert; right-click or Enter commits, Esc cancels,
+    Ctrl inverts; Size, Strength, Push/Pull Value)* **Paint Deform** (Shift, Shift Rotate, Shift Scale, Push/Pull, Relax/Soften, Flatten,
+    Pinch/Spread, Smudge, Noise, Exaggerate; Pick, Commit / Cancel / Revert, brush presets).
+    `freeform.py` says the Sculpt modifier covers it, but Max uses these as brushes on a low-poly
+    Edit Poly mesh, from buttons. Blender's sculpt brushes come close (Grab / Elastic, Draw /
+    Inflate, Smooth, Flatten, Pinch, Snake Hook); Noise and Exaggerate have no counterpart. Seb
+    wants the buttons in Edit Poly (icons `pd_*` are done). Decide: buttons that start Blender's
+    sculpt brushes on the Edit Poly mesh, or own brushes like Conform.
+  - Everything else on the tab is built: Drag, Conform and its four brushes, Step Build, Extend,
+    Optimize, Shapes, Splines, Surface, Topology, Strips, Branches.
+- [ ] **Freeform, still open:** Paint Deform's Pick (lock an object), brush presets (Max's
+  Defaults), Mirror; the `ff_*` / `pd_*` icons aren't integrated (where icons go is still Seb's
+  decision). All 38 test files pass, but nothing has been tried with a real mouse yet: Seb to
+  try the brushes.
+- [x] *(done 2026-10-29, Maximize 85d694d: every Conform brush starts from Object Mode, enters Edit
+  Mode for the session and goes back at the end)* *(Seb, 2026-10-29: "why does conform brush only work in edit mode?")* **Conform brushes in
+  Object Mode too**, as in Max, where Freeform works at any level. Simplest way: started in
+  Object Mode, the brush enters Edit Mode for the stroke and returns when it ends. Watch out: it
+  edits the base mesh, so a Moritz Edit Poly modifier above it can make what you see differ from
+  what you paint.
 - Freeform's Blender equivalents today: Step Build / Extend = Poly Build, Draw On = face snapping
   plus the Retopology overlay and Shrinkwrap, Splines = the curve Draw tool on surfaces, Strips /
   Surface / Topology = the Bsurfaces extension (roughly); nothing for Shapes and Branches; Optimize
@@ -520,6 +657,84 @@ from Blender (or going back to it).
   make a level active, reorder), the selected modifier's settings below; Blender's full modifier
   panels stay available underneath. *Files: UI only, unaffected.*
 
+### Max 2026's modifier list against Blender (Seb, 2026-10-29: "let's go through the 3dsmax modifier list")
+
+Source: Seb's Max 2026, printed by MAXScript (`Modifier.classes` and `SpacewarpModifier.classes`, the
+creatable ones): 139 object-space and 13 world-space modifiers. No tyFlow modifiers are listed, so
+tyFlow isn't installed there. Status per group, to go through with Seb:
+- **Blender has it** (use Blender's, Max name in the name scheme): Array, Bend / Taper / Twist /
+  Stretch (Simple Deform), Boolean, Chamfer (Bevel), Cloth, Conform (Shrinkwrap), Crease /
+  CreaseSet (crease attributes), Displace, Edit Normals (Normal Edit), FFD (Lattice, but needs a
+  lattice object), Lathe (Screw), Linked XForm (Hook), Mirror / Symmetry (Mirror with Bisect),
+  MeshSmooth / TurboSmooth / OpenSubdiv / Subdivide / Tessellate (Subdivision Surface), Morpher
+  (shape keys), MultiRes / Optimize / ProOptimizer (Decimate), Path Deform (Curve), Skin / Physique
+  (Armature), Skin Wrap / SurfDeform / PatchDeform (Surface Deform, Mesh Deform), Point Cache
+  (Mesh Cache), Relax (Laplacian / Corrective Smooth), Smooth (Smooth by Angle), Retopology
+  (Remesh / QuadriFlow; Moritz Freeform), Ripple / Wave (Wave), Shell (Solidify), Spherify (Cast),
+  UVW Xform (UV Warp), Camera Map (UV Project), Vertex Weld / Welder (Weld), Weighted Normals,
+  Attribute Transfer (Data Transfer), MassFX RBody (Rigid Body), Hair and Fur (hair curves).
+- **Moritz has it:** Edit Poly, Edit Spline, UVW Map; Edit Mesh / Edit Patch are covered by Edit
+  Poly.
+- **Missing, worth discussing:**
+  - Selection modifiers that pass a sub-object selection up the stack: Mesh Select, Poly Select,
+    Vol. Select, SplineSelect, FFD Select. Blender's stack has no selection passing (only vertex
+    groups / Geometry Nodes).
+  - FFD as a real stack modifier with its own control points (no separate lattice object),
+    including FFD(cyl).
+  - XForm (a gizmo transform in the stack), Affect Region, Push, Skew, Squeeze, Melt, Noise (as one
+    modifier), Slice, Cap Holes, Face Extrude, Quadify Mesh, Delete Mesh, Normal (flip), Mesh
+    Cleaner, Preserve, Lattice (struts and joints; Blender's Wireframe has no joints), Substitute,
+    Material / MaterialByElement, MapScaler (real-world map size), Unwrap UVW as a stack item.
+  - **Spline modifiers.** Blender curves have no modifier stack of their own: Extrude, Bevel, Bevel
+    Profile, Sweep, Renderable Spline, CrossSection, Surface, Spline Chamfer, Spline Mirror, Spline
+    Overlap, Spline Relax, Normalize Spline, Optimize Spline, Trim/Extend, Spline Morph, Spline
+    Influence, Spline IK Control, DeleteSpline. Some exist as curve settings (extrude, bevel
+    depth / object) or Geometry Nodes.
+- **Skip** (renderer, plugin or legacy): the seven Arnold modifiers, Civil View Extrude Building,
+  Garment Maker, mCloth, Flex, Particle Face Creator / Skinner, PFlow Collision Shape, the Patch
+  modifiers (Patch Select, DeletePatch, Turn to Patch), HSDS, Disp Approx, Displace NURBS, Surface
+  Mapper, Attribute Holder, Data Channel / Select By Channel, the UV as Color / HSL modifiers,
+  Filter Mesh Colors By Hue, Turn to Mesh / Poly, UVW Mapping Add / Clear, VertexPaint, STL Check,
+  Skin Morph, Surface Select, Projection, Spline IK Control? (check).
+
+- *(Seb, 2026-10-29)* **"Moritz list" column, a proposal** (Blender / Max / Mix / Skip per
+  modifier). The list's labels follow the name scheme. **The editable list is the artifact
+  [Moritz Modifier List](https://claude.ai/artifact/UJ3umZx3yP95ychyW6HwDd)**: all 152 rows with
+  the name in Blender, where it lives in Blender, the Moritz column (editable) and a comment per
+  row, in its database (`lists/modifiers`). Seb comments there; read it back before deciding.
+- *(Seb's comments in the list, read 2026-10-29)* Everything not named here stays as proposed.
+  - **Extrude, Bevel, Bevel Profile become one modifier:** Extrude with three buttons on top
+    (Extrude / Bevel / Profile), like Simple Deform's mode buttons.
+  - **Cap Holes:** Max version, with a quad cap option (like Edit Poly's Cap).
+  - **Conform:** keep Blender's Shrinkwrap as it is.
+  - **Edit Mesh → Mix:** Edit Poly needs Edit Mesh's **Explode** feature, and maybe a **Show
+    Normals** display option.
+  - **Lathe:** Seb finds "Screw" a bad name. Blender's Screw modifier does make real screws
+    (Screw offset + iterations give threads and springs), so **both**: Lathe (no offset) and Screw
+    (with offset), one Blender modifier underneath. **Corrected (Seb, 2026-10-29): keep the Screw
+    modifier as it is**, one entry. Only the name scheme changes it: in the Max scheme it
+    displays as **Lathe**, in the Blender scheme as Screw.
+  - **Noise → Max**, **Normal → Max** (own modifiers, not only Blender's under a Max name).
+  - **ProOptimizer:** Max's algorithm is better; try to match it (Decimate underneath isn't
+    enough).
+  - **Retopology:** Max's algorithm is better; try to match it (Remesh isn't enough).
+  - **Quadify Mesh** and **Unwrap UVW:** not later, plan them now (both native, rebuild).
+  - **STL Check → Max**, **VertexPaint → Max**.
+  - **Turn to Poly → Mix:** what Seb needs from it is removing vertices on straight edges that
+    only have two edges. Proposal: a **mesh cleaning modifier** with that option (and others).
+  - **Camera Map (WSM) → Max:** what Seb needs is Max's **Camera Map Per Pixel** (a map, not a
+    modifier, a 3ds Max plugin). Blender's shaders can do it with the Texture Coordinate node's
+    Window / Camera output; plan it as a Moritz material map or node group.
+- *(Seb, 2026-10-29: "when we search in the modifier list for bend, can it show simple deform?")*
+  **Search keywords for the Add Modifier filter.** Each entry matches its Max name, its Blender
+  name and a few words for what it does. For example, "bend" finds Bend and Simple Deform (Simple
+  Deform's keywords: bend, taper, twist, stretch), and "solidify" finds Shell in the Max scheme.
+  This works in our own flat list; Blender's menu search only matches labels.
+- *(2026-10-29)* **Name clashes** to label differently in the Max scheme: Skin (Max = Armature,
+  Blender = Skin modifier), Smooth (Max = Smooth by Angle, Blender = vertex smoothing), Lattice
+  (Max = struts and joints, Blender = Max's FFD), Bevel (Max = spline bevel, Blender = Max's
+  Chamfer).
+
 ### Max-style modifier stack in the Modify tab (plan, Seb, 2026-10-25)
 
 Layout from top to bottom, as in Max's Modify panel:
@@ -598,6 +813,15 @@ Steps:
   Down buttons and Ctrl+Up / Down until then). Warn before the core change.
 - *Files: UI only. The only stored values are the modifiers' own expand flags (`show_expanded`) and
   their order, which stock Blender reads the same way.*
+- [ ] *(Seb, 2026-10-29)* **Tab order and color:** Modify moves to second place, right under
+  Create, as in Max's Command Panel. The other tabs keep Blender's order (Tool, Render, Output,
+  View Layer, Scene, World, Collection, Object, Particles, Physics, Constraints, Data, Material).
+  Create and Modify get a **distinct color** of their own, so they stand out from Blender's tabs
+  (Blender uses grey for scene tabs, orange for Object, blue for modifiers / physics /
+  constraints, green for data, red for material). **Seb picked teal** (Max's accent, which no
+  Blender tab uses), 2026-10-29. *Core: the tab order is in `buttons_context.cc` / `space_buttons.cc`, the colors in the
+  icon sheet (or new icons for the two tabs); needs a **rebuild**. Files: the tab is saved as a
+  number, the numbers don't change, so stock Blender is unaffected.*
 - [x] **New "Create" tab** (new `BCONTEXT_CREATE`, first in the tab column, shown with or without
   a selected object), Max's categories: Geometry, Shapes, Lights, Cameras, Helpers, Space Warps,
   Systems; "Object Type" buttons and Name and Color, as in Max. All parametric objects live here:
@@ -662,7 +886,7 @@ Steps:
   `moritz/tests/test_command_panel.py`)
 
 ### Icons for the Max functions (Seb, 2026-10-28)
-- [ ] *(draft shown to Seb, waiting for his review: don't integrate or rebuild before his OK)* Own
+- [x] *(Seb approved the fourth draft, 2026-10-29; SVGs handed to the main session)* Own
   icons in Blender's style (16 px, flat white, orange for the part the tool changes), drawn from the
   meaning, not copied from Autodesk's icons. **Only where Max has an icon and Blender has none**
   (Seb: text buttons in Max stay text buttons). **Max's icons are the inspiration** (Seb): same
@@ -673,17 +897,48 @@ Steps:
   `SceneExplorer.dll`, not looked at yet. Second draft (2026-10-28): the 9 from Max's pictures;
   Display as Box, See-Through and the four modifier icons still from the first draft. **Border and
   Element: keep the first draft** (cube with the border / one element in orange; Seb: it matches
-  Blender's style better than the loop and the solid cube). Third draft (2026-10-28, Seb: "style
-  Blender, inspiration 3ds Max"): all icons in the first draft's style (white lines, grey shade,
-  orange for the part that's picked or changed) with Max's pictures as the idea: plus marks on a
-  curve, an orange segment between two vertices, an orange polyline, a test tube filling orange,
-  shared circles splitting into orange ones. List:
+  Blender's style better than the loop and the solid cube). **Correction (Seb, 2026-10-29):** he
+  meant the Border and Element icons Moritz uses now (Maximize `maximize/icons/border.png`,
+  `element.png`, in the Selection row). **That's the style for all of them:** Blender's
+  select-mode look, thick strokes, the picked part solid white, the context grey, rounded corners,
+  no orange. Fourth draft (2026-10-29) in that style, Max's pictures as the idea: plus marks on a
+  curve, one white segment, a white polyline, a test tube filling white, grey shared circles
+  splitting into white ones, a bounding box around a grey ball, a see-through front face. List:
   - Edit Poly sub-object levels: Border, Element (Blender has vertex, edge, face).
   - Edit Spline sub-object levels: Vertex, Segment, Spline.
   - Stack buttons: Show End Result, Make Unique (Blender has the eye and remove).
   - Outliner columns: Display as Box, See-Through (Blender has Freeze, eye, renderable).
   - The Edit Poly, Edit Spline, Sculpt and Retopo modifiers: no icon in Max, but Blender's stack
     list needs one per modifier type.
+- [x] *(Seb approved 2026-10-29; 28 SVGs handed to the main session)* **Freeform ribbon icons** (Seb:
+  "do these", screenshot of Max's Freeform tab), same style. They have icons in Max, so they get
+  icons here too:
+  - PolyDraw, for the Retopo modifier: Drag, Conform, Conform Move / Rotate / Scale / Relax, Step
+    Build, Extend, Optimize, Grid, Shapes, Splines, Surface, Topology, Strips, Branches, Pick.
+  - Paint Deform, for Edit Poly: Shift, Shift Rotate / Scale, Push/Pull, Relax/Soften, Flatten,
+    Pinch/Spread, Smudge, Noise, Exaggerate, Pick (locked).
+  - Conform (Seb): a plane conformed to a ball, drawn as a slice (grey cut-through ball, white
+    plane bent around its top); the Conform Move / Rotate / Scale / Relax icons use the same
+    slice. Seb picked **variant A** (plain plane hugging the ball, 2026-10-29).
+  - Commit, Cancel and Revert use Blender's CHECKMARK, X and LOOP_BACK; Defaults (brush presets)
+    uses BRUSH_DATA.
+- [x] *(Seb approved 2026-10-29; 29 SVGs handed to the main session)* **Modeling ribbon icons** (Seb:
+  "make these", screenshot of Max's Modeling tab), same style, for the Edit Poly sections (no
+  ribbon, see Phase 2):
+  - Polygon Modeling: Soft Selection, Preserve UVs, Collapse Stack. The levels already have icons.
+  - Modify Selection: Grow, Shrink, Loop, Ring. Loop / Ring + and - use Blender's ADD and REMOVE.
+  - Edit: Repeat Last, NURMS, QSlice, Cut, Swift Loop, P Connect, and the four Constraints (none,
+    edge, face, normal).
+  - Geometry: Relax, Attach, Create. Subdivision: MeshSmooth, Tessellate, Use Displacement.
+  - Align: Make Planar, To View, To Grid; X / Y / Z stay text buttons.
+  - Properties: Hard, Smooth, Smooth 30. *(Seb, 2026-10-29: the first ones were unclear. Redrawn
+    on a low-poly cylinder: Hard = each facet its own shade; Smooth = one even shade, edges only
+    dotted; Smooth 30 = smooth sides, but a hard edge at the cap with an angle mark. Seb: faceted
+    and smooth must be clearer, use gradients. Third try: Hard = five flat-shaded facets in
+    steps; Smooth = one continuous gradient across the side, cap blended too; Smooth 30 = the
+    same smooth side, cap a separate flat shade with a dark edge. Approved and handed to the
+    main session, 2026-10-29.)*
+  - *(2026-10-29: the other 26 were approved and handed to the main session as SVGs.)*
 - [ ] After the OK: decide where they go. In Maximize as PNGs: no rebuild, but only in panels the
   add-on draws. In `release/datafiles/icons_svg`: they work everywhere, but that's a core change
   and needs a **rebuild**. Stock Blender files are unaffected either way.

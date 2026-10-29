@@ -106,10 +106,19 @@ class OBJECT_MT_modifier_add_flat(Menu):
     bl_options = {'SEARCH_ON_KEY_PRESS'}
 
     def draw(self, context):
+        from bl_operators import moritz_modifier_list
         layout = self.layout
         layout.operator_context = 'INVOKE_REGION_WIN'
-        # The operator's own list is already filtered by the object type, with category headings.
-        layout.operator_enum("object.modifier_add", "type")
+        # Search by Max name, Blender name or keyword ("bend" finds Simple Deform).
+        layout.operator("object.moritz_modifier_search", text="Search...", icon='VIEWZOOM')
+        layout.separator()
+        if moritz_modifier_list.name_scheme() in {'MAX', 'MORITZ'}:
+            # Max's names, one alphabetical list as in Max's Modifier List.
+            layout.operator_context = 'EXEC_REGION_WIN'
+            moritz_modifier_list.draw_flat(layout, context)
+        else:
+            # The operator's own list is already filtered by the object type, with category headings.
+            layout.operator_enum("object.modifier_add", "type")
         layout.separator()
         layout.menu("OBJECT_MT_modifier_add", text="More (Geometry Nodes Assets)")
 
