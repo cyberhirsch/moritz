@@ -355,6 +355,16 @@ def _numpad_views(km):
     km.view("view3d.localview", _event('NUMPAD_SLASH'))
 
 
+def _moritz_keys(km):
+    """Moritz: Tab toggles Object / Edit Mode as in Blender, beside Max's 1-6 levels (the search
+    stays on X), and Space maximizes the viewport beside Alt+W (play stays on Max's /, and Space
+    still plays outside the viewport)."""
+    km.remove("3D View", "wm.search_menu", _event('TAB'))
+    km.bind("Object Non-modal", "object.mode_set", _event('TAB'), {"mode": 'EDIT', "toggle": True})
+    # In Frames, where Space plays: the 3D View keymap comes after it.
+    km.bind("Frames", "maximize.space_key", _event('SPACE'))
+
+
 def _moritz_selection(km):
     """Moritz: window or crossing by drag direction."""
     for name in ("3D View Tool: Select Box", "3D View Tool: Select Box (fallback)"):
@@ -432,6 +442,7 @@ def generate_keymaps(industry_compatible, params, moritz=False, available=None, 
     _editors(km)
     if moritz:
         _moritz_selection(km)
+        _moritz_keys(km)
     if options.get("use_maya_navigation"):
         _maya_navigation(km)
     if options.get("use_f_frames_selection"):
