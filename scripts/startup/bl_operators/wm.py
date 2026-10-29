@@ -3532,6 +3532,11 @@ class WM_MT_splash_quick_setup(Menu):
         else:
             sub.menu("USERPREF_MT_keyconfigs", text="Other Keymaps")
 
+        # Moritz: the name scheme, which by default follows the keymap (Maximize's preference).
+        addon = prefs.addons.get("maximize")
+        if addon is not None and hasattr(addon.preferences, "name_scheme"):
+            col.prop(addon.preferences, "name_scheme")
+
         if hasattr(kc_prefs, "select_mouse"):
             col.row().prop(kc_prefs, "select_mouse", text="Mouse Select", expand=True)
 

@@ -2287,6 +2287,13 @@ class USERPREF_PT_keymap(KeymapPanel, Panel):
 
         # start = time.time()
 
+        # Moritz: the name scheme goes with the keymap (Maximize's preference).
+        addon = context.preferences.addons.get("maximize")
+        if addon is not None and hasattr(addon.preferences, "name_scheme"):
+            row = layout.row()
+            row.use_property_split = True
+            row.prop(addon.preferences, "name_scheme")
+
         # Keymap Settings
         draw_keymaps(context, layout)
 
