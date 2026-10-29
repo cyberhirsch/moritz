@@ -126,8 +126,15 @@ Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberh
 - [x] **Max keymap** (`keymap_max.py`): Industry Compatible plus Max 2026 keys (views T/B/F/L/P/U/C, Z / Ctrl+Alt+Z / Ctrl+Shift+Z zoom extents, Alt+W, Alt+Q, Alt+X, F3/F4, G, 7, S/A snaps, H, Alt+A, F12, Insert, M, F9/F10/Shift+Q, K/N, `/` `,` `.` Home/End, Ctrl+Y redo, `;` repeat, Ctrl+V clone, Ctrl+C camera from view, 1–6 sub-object levels, Edit Poly keys); Ctrl+click adds and Alt+click removes from the selection; default keymap
 - [x] Keymap switch: Preferences > Add-ons > Maximize, Max menu > Keymap, sidebar > Max > Keymap; the splash screen lists "Max" with the other keymap presets
 - [x] **Quad menu** (`quad_menu.py`): right-click pie with Display, Viewport, Tools / Edit Poly and Transform quadrants, per mode
-- [ ] *(Seb, 2026-10-29, from a screenshot of Max 2026's quad menu: "looks a little better than
-  what we have")* **Quad menu closer to Max's look:**
+- [x] *(points 1, 2, 4 and 5 done 2026-10-29, Maximize `quad_menu.py`: flat text rows without
+  icons, emboss off; thin lines between groups; the text faces the cursor (row alignment, so
+  point 1 needed no core change); a settings square at the outer edge for Extrude, Bevel,
+  Chamfer, Inset, Connect, Weld and Bridge when the caddy is on; Convert To as a submenu; the
+  current sub-object level framed (a checkmark squeezed the short labels; pressed-in buttons move
+  the popover's anchor); unavailable entries gray out through their polls. Test: Maximize
+  `tests/test_quad_menu.py`. Point 3 continues below.)* *(Seb, 2026-10-29, from a screenshot of
+  Max 2026's quad menu: "looks a little better than what we have")* **Quad menu closer to Max's
+  look:**
   1. **Text faces the cursor:** left quadrants right-aligned, right quadrants left-aligned.
      *Possibly core:* Python can't right-align a button's own text.
   2. **Flat menu rows**, not buttons: compact, no icons, thin separators between groups; only the
@@ -139,6 +146,9 @@ Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberh
      available, so the layout doesn't jump.
   Points 2, 4 and 5 should work in Python (`quad_menu.py`). A pixel-exact look probably needs a
   small core menu type and a **rebuild**; batch it with the other core changes.
+- [ ] **Quad menu, point 3:** the quadrant names as a dark band through the middle with Max's four
+  small squares at the center. Python panels can't draw a custom band; it needs a small core menu
+  type (custom drawing) and a **rebuild**. Batch it with the next core changes.
 - [x] **Viewport navigation**: MMB pan, Alt+MMB orbit, Ctrl+Alt+MMB zoom; orbit around the selection and zoom about the mouse are set on first enable
 - [x] **Max layout for new files** (`viewport.py`, load_post handler): quad view, centimeters, sidebar on the Max tab (preference "Max Layout for New Files"). Done in the add-on instead of an app template.
 - [x] **Max English** (`vocabulary.py`): about 40 Blender labels renamed (Merge by Distance → Weld, Bevel → Chamfer, Join → Attach…), preference "Max English", default on
