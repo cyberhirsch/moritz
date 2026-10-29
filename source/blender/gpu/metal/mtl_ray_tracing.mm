@@ -70,11 +70,12 @@ void MTLBottomLevelAS::add_geometry(IndexBuf &index_buffer, VertBuf &vertex_buff
   MTLAccelerationStructureTriangleGeometryDescriptor *geo =
       [MTLAccelerationStructureTriangleGeometryDescriptor descriptor];
   geo.vertexBuffer = vertex_metal_buffer;
-  geo.vertexBufferOffset = 0;
+  /* Metal has no base vertex for geometry descriptors, so it is folded into the buffer offset. */
+  geo.vertexBufferOffset = index_buffer.index_base_get() * vertex_buffer.format.stride;
   geo.vertexStride = vertex_buffer.format.stride;
   geo.vertexFormat = MTLAttributeFormatFloat3;
   geo.indexBuffer = index_metal_buffer;
-  geo.indexBufferOffset = 0;
+  geo.indexBufferOffset = index_buffer.index_start_get() * to_bytesize(mtl_index.index_type());
   geo.indexType = mtl_index.is_32bit() ? MTLIndexTypeUInt32 : MTLIndexTypeUInt16;
   geo.triangleCount = index_count / 3;
   geo.opaque = YES;
@@ -202,23 +203,29 @@ void MTLTopLevelAS::build()
         descriptor_count * sizeof(MTLAccelerationStructureUserIDInstanceDescriptor), true);
     MTLAccelerationStructureUserIDInstanceDescriptor *descs =
         (MTLAccelerationStructureUserIDInstanceDescriptor *)instance_buffer->get_host_ptr();
-    int64_t descs_count = 0;
-    for (int64_t i = 0; i < instance_count; i++) {
+    /* Bottom level structures without geometry are nil and can't be added to the array. Keep
+     * their instances so instance indices match #add_instance, but reference another structure
+     * and mask them out so they are never hit. */
+    id<MTLAccelerationStructure> fallback_blas = nil;
+    for (const Instance &inst : instances_) {
+      if (inst.blas->acceleration_structure() != nil) {
+        fallback_blas = inst.blas->acceleration_structure();
+        break;
+      }
+    }
+
+    const int64_t descs_count = (fallback_blas != nil) ? instance_count : 0;
+    for (int64_t i = 0; i < descs_count; i++) {
       const Instance &inst = instances_[i];
       id<MTLAccelerationStructure> blas = inst.blas->acceleration_structure();
-      if (blas == nil) {
-        /* Skip bottom level structures without geometry, they can't be added to the array. */
-        continue;
-      }
-      descs[descs_count].transformationMatrix = pack_transform(inst.transform);
-      descs[descs_count].options = MTLAccelerationStructureInstanceOptionOpaque;
-      descs[descs_count].mask = inst.mask;
-      descs[descs_count].intersectionFunctionTableOffset = 0;
-      descs[descs_count].accelerationStructureIndex = uint32_t(descs_count);
+      descs[i].transformationMatrix = pack_transform(inst.transform);
+      descs[i].options = MTLAccelerationStructureInstanceOptionOpaque;
+      descs[i].mask = (blas != nil) ? inst.mask : 0;
+      descs[i].intersectionFunctionTableOffset = 0;
+      descs[i].accelerationStructureIndex = uint32_t(i);
       /* Per-instance custom index; hardcoded 0 to match Vulkan until add_instance exposes it. */
-      descs[descs_count].userID = 0;
-      [blas_array addObject:blas];
-      descs_count++;
+      descs[i].userID = 0;
+      [blas_array addObject:(blas != nil) ? blas : fallback_blas];
     }
     desc.instanceCount = descs_count;
     desc.instanceDescriptorType = MTLAccelerationStructureInstanceDescriptorTypeUserID;

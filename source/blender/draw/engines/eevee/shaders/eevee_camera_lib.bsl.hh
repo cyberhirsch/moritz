@@ -155,7 +155,7 @@ float2 fisheye_lens_polynomial_from_direction(CameraData cam, float3 dir)
       r_min = max(r_min, r * side);
     }
     r += step;
-    if (is_folded || r * side <= r_min || r * side >= r_max) {
+    if (is_folded || r * side < r_min || r * side > r_max) {
       r = side * 0.5f * (r_min + r_max);
     }
 
@@ -244,6 +244,20 @@ float2 uv_from_view(float4x4 projmat, bool is_persp, float3 vV)
 
 float3 view_from_uv(CameraData cam, float2 uv)
 {
+  if (is_panoramic(cam.type) && cam.type != CAMERA_PANO_EQUIRECT &&
+      cam.type != CAMERA_PANO_CENTRAL_CYLINDRICAL)
+  {
+    /* uv can land past the camera's frame in viewport so we need to bound it. Equirectangular
+     * and central cylindrical are periodic/meant to wrap instead of clip. Add a margin to avoid
+     * clipping edge AA taps. */
+    const float margin = 0.1f;
+    float2 frame_uv = uv * cam.uv_scale + cam.uv_bias;
+    if (any(lessThan(frame_uv, float2(-margin))) ||
+        any(greaterThan(frame_uv, float2(1.0f + margin))))
+    {
+      return float3(0.0f);
+    }
+  }
   float3 vV;
   switch (cam.type) {
     default:
