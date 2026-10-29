@@ -21,6 +21,7 @@ _modules = [
     "properties_animviz",
     "properties_constraint",
     "properties_create",
+    "properties_utilities",
     "properties_data_armature",
     "properties_data_bone",
     "properties_data_camera",

@@ -707,6 +707,7 @@ static bool buttons_context_path(
       break;
     case BCONTEXT_TOOL:
     case BCONTEXT_CREATE:
+    case BCONTEXT_UTILITIES:
       found = true;
       break;
     case BCONTEXT_OBJECT:
@@ -980,8 +981,9 @@ int /*eContextResult*/ buttons_context(const bContext *C,
     return CTX_RESULT_MEMBER_NOT_FOUND;
   }
 
-  /* The Create tab, like the Tool tab, uses the window's context (active object, scene). */
-  if (ELEM(sbuts->mainb, BCONTEXT_TOOL, BCONTEXT_CREATE)) {
+  /* The Create and Utilities tabs, like the Tool tab, use the window's context (active object,
+   * scene). */
+  if (ELEM(sbuts->mainb, BCONTEXT_TOOL, BCONTEXT_CREATE, BCONTEXT_UTILITIES)) {
     return CTX_RESULT_MEMBER_NOT_FOUND;
   }
 
@@ -1301,7 +1303,7 @@ int /*eContextResult*/ buttons_context(const bContext *C,
 static bool buttons_panel_context_poll(const bContext *C, PanelType * /*pt*/)
 {
   SpaceProperties *sbuts = CTX_wm_space_properties(C);
-  return !ELEM(sbuts->mainb, BCONTEXT_TOOL, BCONTEXT_CREATE);
+  return !ELEM(sbuts->mainb, BCONTEXT_TOOL, BCONTEXT_CREATE, BCONTEXT_UTILITIES);
 }
 
 static void buttons_panel_context_draw(const bContext *C, Panel *panel)

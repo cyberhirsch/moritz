@@ -376,6 +376,10 @@ void BKE_modifier_copydata_ex(const ModifierData *md, ModifierData *target, cons
   }
 
   if (md->system_properties) {
+    /* Moritz: a native Max modifier's `init_data` already made the target's group. */
+    if (target->system_properties) {
+      IDP_FreeProperty_ex(target->system_properties, false);
+    }
     target->system_properties = IDP_CopyProperty_ex(md->system_properties, flag);
   }
 }
@@ -1394,6 +1398,24 @@ void BKE_modifier_blend_read_data(BlendDataReader *reader, ListBaseT<ModifierDat
                STREQ(IDP_string_get(mx_type), "EDIT_SPLINE"))
       {
         md->type = eModifierType_EditSpline;
+      }
+      else if (mx_type && mx_type->type == IDP_STRING && STREQ(IDP_string_get(mx_type), "CAP_HOLES")) {
+        md->type = eModifierType_CapHoles;
+      }
+      else if (mx_type && mx_type->type == IDP_STRING && STREQ(IDP_string_get(mx_type), "MAX_NORMAL")) {
+        md->type = eModifierType_MaxNormal;
+      }
+      else if (mx_type && mx_type->type == IDP_STRING && STREQ(IDP_string_get(mx_type), "MESH_CLEAN")) {
+        md->type = eModifierType_MeshClean;
+      }
+      else if (mx_type && mx_type->type == IDP_STRING && STREQ(IDP_string_get(mx_type), "QUADIFY_MESH")) {
+        md->type = eModifierType_QuadifyMesh;
+      }
+      else if (mx_type && mx_type->type == IDP_STRING && STREQ(IDP_string_get(mx_type), "PRO_OPTIMIZER")) {
+        md->type = eModifierType_ProOptimizer;
+      }
+      else if (mx_type && mx_type->type == IDP_STRING && STREQ(IDP_string_get(mx_type), "VERTEX_PAINT")) {
+        md->type = eModifierType_VertexPaint;
       }
     }
 

@@ -291,6 +291,12 @@ void modifier_type_init(ModifierTypeInfo *types[])
   INIT_TYPE(GreasePencilTexture);
   INIT_TYPE(EditPoly);
   INIT_TYPE(EditSpline);
+  INIT_TYPE(CapHoles);
+  INIT_TYPE(MaxNormal);
+  INIT_TYPE(MeshClean);
+  INIT_TYPE(QuadifyMesh);
+  INIT_TYPE(ProOptimizer);
+  INIT_TYPE(VertexPaint);
 #undef INIT_TYPE
 }
 

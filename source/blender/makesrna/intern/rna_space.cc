@@ -599,7 +599,7 @@ const EnumPropertyItem rna_enum_clip_editor_mode_items[] = {
  * but helps for contextless access (e.g. doc, i18n...).
  */
 const EnumPropertyItem buttons_context_items[] = {
-    {BCONTEXT_CREATE, "CREATE", ICON_ADD, "Create", "Create objects"},
+    {BCONTEXT_CREATE, "CREATE", ICON_TAB_CREATE, "Create", "Create objects"},
     {BCONTEXT_TOOL, "TOOL", ICON_TOOL_SETTINGS, "Tool", "Active Tool and Workspace settings"},
     {BCONTEXT_RENDER, "RENDER", ICON_SCENE, "Render", "Render Properties"},
     {BCONTEXT_OUTPUT, "OUTPUT", ICON_OUTPUT, "Output", "Output Properties"},
@@ -618,7 +618,7 @@ const EnumPropertyItem buttons_context_items[] = {
      ICON_CONSTRAINT,
      "Constraints",
      "Object Constraint Properties"},
-    {BCONTEXT_MODIFIER, "MODIFIER", ICON_MODIFIER, "Modify", "Modifier stack and properties"},
+    {BCONTEXT_MODIFIER, "MODIFIER", ICON_TAB_MODIFY, "Modify", "Modifier stack and properties"},
     {BCONTEXT_DATA, "DATA", ICON_NONE, "Data", "Object Data Properties"},
     {BCONTEXT_BONE, "BONE", ICON_BONE_DATA, "Bone", "Bone Properties"},
     {BCONTEXT_BONE_CONSTRAINT,
@@ -637,6 +637,11 @@ const EnumPropertyItem buttons_context_items[] = {
      ICON_SEQ_STRIP_MODIFIER,
      "Strip Modifiers",
      "Strip Modifier Properties"},
+    {BCONTEXT_UTILITIES,
+     "UTILITIES",
+     ICON_TAB_UTILITIES,
+     "Utilities",
+     "Align, Array, Spacing Tool and Object Paint"},
     {0, nullptr, 0, nullptr, nullptr},
 };
 
@@ -6390,6 +6395,7 @@ static void rna_def_space_properties_filter(StructRNA *srna)
       "show_properties_texture",          "show_properties_particles",
       "show_properties_physics",          "show_properties_effects",
       "show_properties_strip",            "show_properties_strip_modifier",
+      "show_properties_utilities",
   };
 
   for (const int i : IndexRange(BCONTEXT_TOT)) {

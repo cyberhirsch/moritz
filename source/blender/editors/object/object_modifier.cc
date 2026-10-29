@@ -1502,6 +1502,8 @@ void OBJECT_OT_modifier_add(wmOperatorType *ot)
   prop = RNA_def_enum(
       ot->srna, "type", rna_enum_object_modifier_type_items, eModifierType_Subsurf, "Type", "");
   RNA_def_enum_funcs(prop, modifier_add_itemf);
+  /* Moritz: modifier names have their own context (falls back to the default one). */
+  RNA_def_property_translation_context(prop, BLT_I18NCONTEXT_MODIFIER);
   ot->prop = prop;
   modifier_register_use_selected_objects_prop(ot);
 }

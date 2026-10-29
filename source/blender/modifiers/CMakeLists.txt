@@ -34,6 +34,7 @@ set(SRC
   intern/MOD_dynamicpaint.cc
   intern/MOD_edgesplit.cc
   intern/MOD_edit_poly.cc
+  intern/MOD_max_mesh.cc
   intern/MOD_edit_spline.cc
   intern/MOD_explode.cc
   intern/MOD_fluid.cc
@@ -121,6 +122,7 @@ set(SRC
 
   MOD_edit_poly.hh
   MOD_edit_spline.hh
+  MOD_max_mesh.hh
   MOD_modifiertypes.hh
   MOD_nodes.hh
   intern/MOD_grease_pencil_util.hh

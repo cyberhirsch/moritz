@@ -130,6 +130,13 @@ enum ModifierType : int {
   eModifierType_EditPoly = 200,
   /* Moritz only, stored like Edit Poly (see `MOD_edit_spline.cc`). */
   eModifierType_EditSpline = 201,
+  /* Moritz only: Max's mesh modifiers, stored like Edit Poly (see `MOD_max_mesh.cc`). */
+  eModifierType_CapHoles = 202,
+  eModifierType_MaxNormal = 203,
+  eModifierType_MeshClean = 204,
+  eModifierType_QuadifyMesh = 205,
+  eModifierType_ProOptimizer = 206,
+  eModifierType_VertexPaint = 207,
   NUM_MODIFIER_TYPES,
 };
 

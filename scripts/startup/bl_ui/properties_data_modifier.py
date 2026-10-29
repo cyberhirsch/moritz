@@ -253,8 +253,10 @@ def _draw_modifier_stack(layout, context):
     if hasattr(bpy.types, "MAXIMIZE_OT_show_end_result"):
         mods = [mod for mod in ob.modifiers if mod != base]
         end_result = bool(mods) and all(mod.show_in_editmode for mod in mods)
-        row.operator("maximize.show_end_result", text="", icon='MODIFIER_ON', depress=end_result)
-    row.operator("object.moritz_modifier_make_unique", text="", icon='UNLINKED')
+        row.operator("maximize.show_end_result", text="",
+                     icon='MX_SHOW_END_RESULT_ON' if end_result else 'MX_SHOW_END_RESULT',
+                     depress=end_result)
+    row.operator("object.moritz_modifier_make_unique", text="", icon='MX_MAKE_UNIQUE')
     sub = row.row(align=True)
     sub.enabled = active is not None
     sub.operator("object.moritz_modifier_delete", text="", icon='TRASH')

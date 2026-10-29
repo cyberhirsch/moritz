@@ -43,6 +43,7 @@
 
 #include "MOD_edit_poly.hh"
 #include "MOD_edit_spline.hh"
+#include "MOD_max_mesh.hh"
 
 #include "BKE_idprop.hh"
 #include "DNA_curves_types.h"
@@ -234,6 +235,36 @@ const EnumPropertyItem rna_enum_object_modifier_type_items[] = {
      ICON_CURVE_BEZCURVE,
      "Edit Spline",
      "Edit knots and splines in the stack, following the modifiers below"},
+    {eModifierType_CapHoles,
+     "CAP_HOLES",
+     ICON_MOD_SOLIDIFY,
+     "Cap Holes",
+     "Fill the open borders, with a quad grid or one polygon"},
+    {eModifierType_MaxNormal,
+     "MAX_NORMAL",
+     ICON_NORMALS_FACE,
+     "Normal",
+     "Make the face directions consistent (Unify) or turn them around (Flip)"},
+    {eModifierType_MeshClean,
+     "MESH_CLEAN",
+     ICON_BRUSH_DATA,
+     "Mesh Clean",
+     "Weld, remove vertices on straight edges, loose and degenerate geometry"},
+    {eModifierType_QuadifyMesh,
+     "QUADIFY_MESH",
+     ICON_MOD_REMESH,
+     "Quadify Mesh",
+     "Rebuild the surface with quads of a size relative to the object"},
+    {eModifierType_ProOptimizer,
+     "PRO_OPTIMIZER",
+     ICON_MOD_DECIM,
+     "ProOptimizer",
+     "Reduce the vertex count, keeping borders, material and UV boundaries"},
+    {eModifierType_VertexPaint,
+     "VERTEX_PAINT",
+     ICON_VPAINT_HLT,
+     "VertexPaint",
+     "A vertex color layer in the modifier stack"},
     {eModifierType_Weld,
      "WELD",
      ICON_AUTOMERGE_OFF,
@@ -2213,6 +2244,99 @@ static bool rna_EditSplineModifier_adaptive_get(PointerRNA *ptr)
 static void rna_EditSplineModifier_adaptive_set(PointerRNA *ptr, bool value)
 {
   edit_spline_int_set(ptr, "adaptive", value);
+}
+
+
+/* Moritz: Max's mesh modifiers keep their settings in `system_properties` (`MOD_max_mesh.cc`). */
+#define MX_BOOL(fn, key, fallback) \
+  static bool fn##_get(PointerRNA *ptr) \
+  { \
+    return MOD_max_mesh_int(*ptr->data_as<ModifierData>(), key, fallback) != 0; \
+  } \
+  static void fn##_set(PointerRNA *ptr, bool value) \
+  { \
+    MOD_max_mesh_int_set(*ptr->data_as<ModifierData>(), key, value); \
+  }
+#define MX_INT(fn, key, fallback) \
+  static int fn##_get(PointerRNA *ptr) \
+  { \
+    return MOD_max_mesh_int(*ptr->data_as<ModifierData>(), key, fallback); \
+  } \
+  static void fn##_set(PointerRNA *ptr, int value) \
+  { \
+    MOD_max_mesh_int_set(*ptr->data_as<ModifierData>(), key, value); \
+  }
+#define MX_FLOAT(fn, key, fallback) \
+  static float fn##_get(PointerRNA *ptr) \
+  { \
+    return MOD_max_mesh_float(*ptr->data_as<ModifierData>(), key, fallback); \
+  } \
+  static void fn##_set(PointerRNA *ptr, float value) \
+  { \
+    MOD_max_mesh_float_set(*ptr->data_as<ModifierData>(), key, value); \
+  }
+MX_BOOL(rna_CapHolesModifier_use_quad_cap, "quad_cap", true)
+MX_BOOL(rna_CapHolesModifier_use_smooth, "smooth", false)
+MX_BOOL(rna_MaxNormalModifier_use_unify, "unify", true)
+MX_BOOL(rna_MaxNormalModifier_use_flip, "flip", false)
+MX_BOOL(rna_MeshCleanModifier_use_weld, "weld", true)
+MX_FLOAT(rna_MeshCleanModifier_weld_distance, "weld_distance", 0.0001f)
+MX_BOOL(rna_MeshCleanModifier_use_remove_straight, "remove_straight", true)
+MX_FLOAT(rna_MeshCleanModifier_straight_angle, "straight_angle", 0.017453292f)
+MX_BOOL(rna_MeshCleanModifier_use_remove_loose, "remove_loose", true)
+MX_BOOL(rna_MeshCleanModifier_use_remove_degenerate, "remove_degenerate", true)
+MX_FLOAT(rna_QuadifyMeshModifier_quad_size, "quad_size", 4.0f)
+MX_BOOL(rna_QuadifyMeshModifier_use_preserve_sharp, "preserve_sharp", false)
+MX_BOOL(rna_QuadifyMeshModifier_use_preserve_boundary, "preserve_boundary", true)
+MX_INT(rna_QuadifyMeshModifier_seed, "seed", 0)
+MX_FLOAT(rna_ProOptimizerModifier_vertex_percent, "vertex_percent", 50.0f)
+MX_BOOL(rna_ProOptimizerModifier_use_protect_borders, "protect_borders", true)
+MX_BOOL(rna_ProOptimizerModifier_use_keep_material_boundaries, "keep_material_boundaries", true)
+MX_BOOL(rna_ProOptimizerModifier_use_keep_uv_boundaries, "keep_uv_boundaries", true)
+MX_BOOL(rna_ProOptimizerModifier_use_keep_normals, "keep_normals", false)
+MX_INT(rna_ProOptimizerModifier_symmetry_axis, "symmetry_axis", -1)
+
+#undef MX_BOOL
+#undef MX_INT
+#undef MX_FLOAT
+
+static void rna_VertexPaintModifier_layer_get(PointerRNA *ptr, char *value)
+{
+  const std::string layer = MOD_max_mesh_string(
+      *ptr->data_as<ModifierData>(), "layer", "VertexPaint");
+  strcpy(value, layer.c_str());
+}
+static int rna_VertexPaintModifier_layer_length(PointerRNA *ptr)
+{
+  return int(MOD_max_mesh_string(*ptr->data_as<ModifierData>(), "layer", "VertexPaint").size());
+}
+static void rna_VertexPaintModifier_layer_set(PointerRNA *ptr, const char *value)
+{
+  MOD_max_mesh_string_set(*ptr->data_as<ModifierData>(), "layer", value);
+}
+static bool rna_VertexPaintModifier_has_colors_get(PointerRNA *ptr)
+{
+  return MOD_vertex_paint_has_colors(*ptr->data_as<ModifierData>());
+}
+static bool rna_VertexPaintModifier_store(ID *owner_id,
+                                          ModifierData *md,
+                                          Main *bmain,
+                                          ReportList *reports,
+                                          Mesh *mesh)
+{
+  if (!MOD_vertex_paint_store(*md, *mesh, reports)) {
+    return false;
+  }
+  DEG_id_tag_update(owner_id, ID_RECALC_GEOMETRY);
+  DEG_relations_tag_update(bmain);
+  WM_main_add_notifier(NC_OBJECT | ND_MODIFIER, owner_id);
+  return true;
+}
+static void rna_VertexPaintModifier_clear(ID *owner_id, ModifierData *md)
+{
+  MOD_vertex_paint_clear(*md);
+  DEG_id_tag_update(owner_id, ID_RECALC_GEOMETRY);
+  WM_main_add_notifier(NC_OBJECT | ND_MODIFIER, owner_id);
 }
 
 static bool rna_EditPolyModifier_is_editing_get(PointerRNA *ptr)
@@ -7713,6 +7837,206 @@ static void rna_def_modifier_edit_spline(BlenderRNA *brna)
       prop, "Is Editing", "The modifier's result is being edited in Edit Mode");
 }
 
+static void rna_def_modifier_max_mesh(BlenderRNA *brna)
+{
+  StructRNA *srna;
+  PropertyRNA *prop;
+  FunctionRNA *func;
+  PropertyRNA *parm;
+
+  static const EnumPropertyItem symmetry_items[] = {
+      {-1, "NONE", 0, "None", ""},
+      {0, "X", 0, "X", ""},
+      {1, "Y", 0, "Y", ""},
+      {2, "Z", 0, "Z", ""},
+      {0, nullptr, 0, nullptr, nullptr},
+  };
+
+  srna = RNA_def_struct(brna, "CapHolesModifier", "Modifier");
+  RNA_def_struct_ui_text(srna, "Cap Holes Modifier", "Fill the open borders, with a quad grid or one polygon");
+  RNA_def_struct_sdna(srna, "ModifierData");
+  RNA_def_struct_ui_icon(srna, ICON_MOD_SOLIDIFY);
+
+  prop = RNA_def_property(srna, "use_quad_cap", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_CapHolesModifier_use_quad_cap_get", "rna_CapHolesModifier_use_quad_cap_set");
+  RNA_def_property_boolean_default(prop, true);
+  RNA_def_property_ui_text(prop, "Quad Cap", "Fill each hole with a grid of quads instead of one polygon");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_smooth", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_CapHolesModifier_use_smooth_get", "rna_CapHolesModifier_use_smooth_set");
+  RNA_def_property_boolean_default(prop, false);
+  RNA_def_property_ui_text(prop, "Smooth", "Smooth shading for the new faces");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  srna = RNA_def_struct(brna, "MaxNormalModifier", "Modifier");
+  RNA_def_struct_ui_text(srna, "Normal Modifier", "Make the face directions consistent (Unify) or turn them around (Flip)");
+  RNA_def_struct_sdna(srna, "ModifierData");
+  RNA_def_struct_ui_icon(srna, ICON_NORMALS_FACE);
+
+  prop = RNA_def_property(srna, "use_unify", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_MaxNormalModifier_use_unify_get", "rna_MaxNormalModifier_use_unify_set");
+  RNA_def_property_boolean_default(prop, true);
+  RNA_def_property_ui_text(prop, "Unify", "Make all faces point the same way, outward");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_flip", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_MaxNormalModifier_use_flip_get", "rna_MaxNormalModifier_use_flip_set");
+  RNA_def_property_boolean_default(prop, false);
+  RNA_def_property_ui_text(prop, "Flip", "Turn all faces around");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  srna = RNA_def_struct(brna, "MeshCleanModifier", "Modifier");
+  RNA_def_struct_ui_text(srna, "Mesh Clean Modifier", "Weld, remove vertices on straight edges, loose and degenerate geometry");
+  RNA_def_struct_sdna(srna, "ModifierData");
+  RNA_def_struct_ui_icon(srna, ICON_BRUSH_DATA);
+
+  prop = RNA_def_property(srna, "use_weld", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_MeshCleanModifier_use_weld_get", "rna_MeshCleanModifier_use_weld_set");
+  RNA_def_property_boolean_default(prop, true);
+  RNA_def_property_ui_text(prop, "Weld", "Merge vertices closer than the distance");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "weld_distance", PROP_FLOAT, PROP_DISTANCE);
+  RNA_def_property_float_funcs(prop, "rna_MeshCleanModifier_weld_distance_get", "rna_MeshCleanModifier_weld_distance_set", nullptr);
+  RNA_def_property_range(prop, 0.0, 1.0);
+  RNA_def_property_ui_range(prop, 0.0, 1.0, 1, 6);
+  RNA_def_property_float_default(prop, 0.0001f);
+  RNA_def_property_ui_text(prop, "Weld Distance", "Vertices closer than this are merged");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_remove_straight", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_MeshCleanModifier_use_remove_straight_get", "rna_MeshCleanModifier_use_remove_straight_set");
+  RNA_def_property_boolean_default(prop, true);
+  RNA_def_property_ui_text(prop, "Remove Straight", "Remove vertices with exactly two edges that lie on a straight line");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "straight_angle", PROP_FLOAT, PROP_ANGLE);
+  RNA_def_property_float_funcs(prop, "rna_MeshCleanModifier_straight_angle_get", "rna_MeshCleanModifier_straight_angle_set", nullptr);
+  RNA_def_property_range(prop, 0.0, 0.5);
+  RNA_def_property_ui_range(prop, 0.0, 0.5, 1, 3);
+  RNA_def_property_float_default(prop, 0.017453292f);
+  RNA_def_property_ui_text(prop, "Straight Angle", "Largest bend that still counts as straight");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_remove_loose", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_MeshCleanModifier_use_remove_loose_get", "rna_MeshCleanModifier_use_remove_loose_set");
+  RNA_def_property_boolean_default(prop, true);
+  RNA_def_property_ui_text(prop, "Remove Loose", "Remove vertices and edges without faces");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_remove_degenerate", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_MeshCleanModifier_use_remove_degenerate_get", "rna_MeshCleanModifier_use_remove_degenerate_set");
+  RNA_def_property_boolean_default(prop, true);
+  RNA_def_property_ui_text(prop, "Remove Degenerate", "Remove zero-length edges and zero-area faces");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  srna = RNA_def_struct(brna, "QuadifyMeshModifier", "Modifier");
+  RNA_def_struct_ui_text(srna, "Quadify Mesh Modifier", "Rebuild the surface with quads of a size relative to the object");
+  RNA_def_struct_sdna(srna, "ModifierData");
+  RNA_def_struct_ui_icon(srna, ICON_MOD_REMESH);
+
+  prop = RNA_def_property(srna, "quad_size", PROP_FLOAT, PROP_PERCENTAGE);
+  RNA_def_property_float_funcs(prop, "rna_QuadifyMeshModifier_quad_size_get", "rna_QuadifyMeshModifier_quad_size_set", nullptr);
+  RNA_def_property_range(prop, 0.5, 100.0);
+  RNA_def_property_ui_range(prop, 0.5, 100.0, 1, 1);
+  RNA_def_property_float_default(prop, 4.0f);
+  RNA_def_property_ui_text(prop, "Quad Size", "Edge length of the quads, in percent of the object's size");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_preserve_sharp", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_QuadifyMeshModifier_use_preserve_sharp_get", "rna_QuadifyMeshModifier_use_preserve_sharp_set");
+  RNA_def_property_boolean_default(prop, false);
+  RNA_def_property_ui_text(prop, "Preserve Sharp", "Keep sharp edges");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_preserve_boundary", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_QuadifyMeshModifier_use_preserve_boundary_get", "rna_QuadifyMeshModifier_use_preserve_boundary_set");
+  RNA_def_property_boolean_default(prop, true);
+  RNA_def_property_ui_text(prop, "Preserve Boundary", "Keep open borders");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "seed", PROP_INT, PROP_NONE);
+  RNA_def_property_int_funcs(prop, "rna_QuadifyMeshModifier_seed_get", "rna_QuadifyMeshModifier_seed_set", nullptr);
+  RNA_def_property_range(prop, 0, 100000);
+  RNA_def_property_int_default(prop, 0);
+  RNA_def_property_ui_text(prop, "Seed", "Random seed of the quad layout");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  srna = RNA_def_struct(brna, "ProOptimizerModifier", "Modifier");
+  RNA_def_struct_ui_text(srna, "ProOptimizer Modifier", "Reduce the vertex count, keeping borders, material and UV boundaries");
+  RNA_def_struct_sdna(srna, "ModifierData");
+  RNA_def_struct_ui_icon(srna, ICON_MOD_DECIM);
+
+  prop = RNA_def_property(srna, "vertex_percent", PROP_FLOAT, PROP_PERCENTAGE);
+  RNA_def_property_float_funcs(prop, "rna_ProOptimizerModifier_vertex_percent_get", "rna_ProOptimizerModifier_vertex_percent_set", nullptr);
+  RNA_def_property_range(prop, 0.0, 100.0);
+  RNA_def_property_ui_range(prop, 0.0, 100.0, 1, 1);
+  RNA_def_property_float_default(prop, 50.0f);
+  RNA_def_property_ui_text(prop, "Vertex Percent", "Vertices to keep, in percent");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_protect_borders", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_ProOptimizerModifier_use_protect_borders_get", "rna_ProOptimizerModifier_use_protect_borders_set");
+  RNA_def_property_boolean_default(prop, true);
+  RNA_def_property_ui_text(prop, "Protect Borders", "Keep open borders");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_keep_material_boundaries", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_ProOptimizerModifier_use_keep_material_boundaries_get", "rna_ProOptimizerModifier_use_keep_material_boundaries_set");
+  RNA_def_property_boolean_default(prop, true);
+  RNA_def_property_ui_text(prop, "Keep Material Boundaries", "Keep edges between materials");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_keep_uv_boundaries", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_ProOptimizerModifier_use_keep_uv_boundaries_get", "rna_ProOptimizerModifier_use_keep_uv_boundaries_set");
+  RNA_def_property_boolean_default(prop, true);
+  RNA_def_property_ui_text(prop, "Keep UV Boundaries", "Keep UV seams");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_keep_normals", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_ProOptimizerModifier_use_keep_normals_get", "rna_ProOptimizerModifier_use_keep_normals_set");
+  RNA_def_property_boolean_default(prop, false);
+  RNA_def_property_ui_text(prop, "Keep Normals", "Keep sharp edges");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "symmetry_axis", PROP_ENUM, PROP_NONE);
+  RNA_def_property_enum_items(prop, symmetry_items);
+  RNA_def_property_enum_funcs(prop, "rna_ProOptimizerModifier_symmetry_axis_get", "rna_ProOptimizerModifier_symmetry_axis_set", nullptr);
+  RNA_def_property_enum_default(prop, -1);
+  RNA_def_property_ui_text(prop, "Symmetry", "Keep the result symmetrical along this axis");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  srna = RNA_def_struct(brna, "VertexPaintModifier", "Modifier");
+  RNA_def_struct_ui_text(srna, "VertexPaint Modifier", "A vertex color layer in the modifier stack");
+  RNA_def_struct_sdna(srna, "ModifierData");
+  RNA_def_struct_ui_icon(srna, ICON_VPAINT_HLT);
+
+  prop = RNA_def_property(srna, "layer", PROP_STRING, PROP_NONE);
+  RNA_def_property_string_funcs(prop, "rna_VertexPaintModifier_layer_get", "rna_VertexPaintModifier_layer_length", "rna_VertexPaintModifier_layer_set");
+  RNA_def_property_string_default(prop, "VertexPaint");
+  RNA_def_property_ui_text(prop, "Layer", "Name of the color attribute the modifier writes");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "has_colors", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(prop, "rna_VertexPaintModifier_has_colors_get", nullptr);
+  RNA_def_property_clear_flag(prop, PROP_EDITABLE);
+  RNA_def_property_ui_text(prop, "Has Colors", "Colors are stored");
+
+  func = RNA_def_function(srna, "store", "rna_VertexPaintModifier_store");
+  RNA_def_function_ui_description(
+      func, "Keep the active color attribute of `mesh`, the modifier's input, painted");
+  RNA_def_function_flag(func, FUNC_USE_MAIN | FUNC_USE_SELF_ID | FUNC_USE_REPORTS);
+  parm = RNA_def_pointer(func, "mesh", "Mesh", "", "The painted input mesh");
+  RNA_def_parameter_flags(parm, PROP_NEVER_NULL, PARM_REQUIRED);
+  parm = RNA_def_boolean(func, "success", false, "", "");
+  RNA_def_function_return(func, parm);
+
+  func = RNA_def_function(srna, "clear", "rna_VertexPaintModifier_clear");
+  RNA_def_function_ui_description(func, "Forget the stored colors");
+  RNA_def_function_flag(func, FUNC_USE_SELF_ID);
+}
+
 static void rna_def_modifier_weld(BlenderRNA *brna)
 {
   StructRNA *srna;
@@ -11901,6 +12225,8 @@ void RNA_def_modifier(BlenderRNA *brna)
   RNA_def_property_enum_sdna(prop, nullptr, "type");
   RNA_def_property_enum_items(prop, rna_enum_object_modifier_type_items);
   RNA_def_property_ui_text(prop, "Type", "");
+  /* Moritz: modifier names have their own context (falls back to the default one). */
+  RNA_def_property_translation_context(prop, BLT_I18NCONTEXT_MODIFIER);
 
   /* flags */
   prop = RNA_def_property(srna, "show_viewport", PROP_BOOLEAN, PROP_NONE);
@@ -12043,6 +12369,7 @@ void RNA_def_modifier(BlenderRNA *brna)
   rna_def_modifier_weld(brna);
   rna_def_modifier_edit_poly(brna);
   rna_def_modifier_edit_spline(brna);
+  rna_def_modifier_max_mesh(brna);
   rna_def_modifier_wireframe(brna);
   rna_def_modifier_datatransfer(brna);
   rna_def_modifier_normaledit(brna);

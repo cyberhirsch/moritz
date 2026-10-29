@@ -25,6 +25,7 @@ MAX_ENTRIES = (
     ("Bend", 'SIMPLE_DEFORM', {"deform_method": 'BEND'}, "curve arc deform"),
     ("Boolean", 'BOOLEAN', {}, "union subtract intersect difference cut"),
     ("Camera Map", 'UV_PROJECT', {}, "uv projection projector"),
+    ("Cap Holes", 'CAP_HOLES', {}, "fill close holes borders quad grid"),
     ("Chamfer", 'BEVEL', {}, "bevel round edges fillet"),
     ("Conform", 'SHRINKWRAP', {}, "shrinkwrap project snap surface"),
     ("Displace", 'DISPLACE', {}, "height map texture offset"),
@@ -33,11 +34,14 @@ MAX_ENTRIES = (
     ("Lathe", 'SCREW', {}, "screw revolve spin turn helix spring thread"),
     ("Lattice", 'WIREFRAME', {}, "wireframe struts edges"),
     ("Linked XForm", 'HOOK', {}, "hook control object"),
+    ("Mesh Clean", 'MESH_CLEAN', {}, "cleanup weld straight loose degenerate merge"),
     ("Mirror", 'MIRROR', {}, "symmetry flip"),
+    ("Normal", 'MAX_NORMAL', {}, "flip unify recalculate face direction"),
     ("Path Deform", 'CURVE', {}, "curve follow spline"),
     ("Point Cache", 'MESH_CACHE', {}, "cache alembic mdd pc2 animation"),
-    ("ProOptimizer", 'DECIMATE', {}, "decimate reduce optimize polygons collapse"),
+    ("ProOptimizer", 'PRO_OPTIMIZER', {}, "decimate reduce optimize polygons collapse"),
     ("Push", 'DISPLACE', {"direction": 'NORMAL', "strength": 0.0}, "inflate normals offset"),
+    ("Quadify Mesh", 'QUADIFY_MESH', {}, "quads remesh quadriflow retopo"),
     ("Relax", 'LAPLACIANSMOOTH', {}, "smooth laplacian soften"),
     ("Retopology", 'REMESH', {}, "remesh quads voxel retopo"),
     ("Ripple", 'WAVE', {}, "wave radial rings water"),
@@ -51,6 +55,7 @@ MAX_ENTRIES = (
     ("Taper", 'SIMPLE_DEFORM', {"deform_method": 'TAPER'}, "scale cone narrow deform"),
     ("TurboSmooth", 'SUBSURF', {}, "subdivision surface meshsmooth opensubdiv nurms catmull"),
     ("Twist", 'SIMPLE_DEFORM', {"deform_method": 'TWIST'}, "rotate spiral deform"),
+    ("VertexPaint", 'VERTEX_PAINT', {}, "vertex colors color attribute paint"),
     ("UVW Xform", 'UV_WARP', {}, "uv warp offset scale rotate"),
     ("Vertex Weld", 'WELD', {}, "weld merge distance"),
     ("Wave", 'WAVE', {}, "ripple linear water"),
@@ -85,6 +90,7 @@ BLENDER_KEYWORDS = {
     'EXPLODE': "shatter break particles",
     'OCEAN': "water waves sea",
     'NODES': "geometry nodes",
+    'DECIMATE': "reduce optimize polygons collapse planar",
 }
 
 # Add-on entries (Max label, operator idname, keywords, object types), from `register_entry`.
@@ -155,7 +161,7 @@ def entries(ob, scheme=None):
     for mtype, it in items.items():
         if mtype in _SKIP_TYPES or not _supports(ob, mtype):
             continue
-        blender = bpy.app.translations.pgettext_iface(it.name)
+        blender = bpy.app.translations.pgettext_iface(it.name, "Modifier")
         rows = by_type.get(mtype, ())
         if max_names and rows:
             for label, words in rows:

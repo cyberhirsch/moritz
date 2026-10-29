@@ -122,6 +122,9 @@ enum eSpaceButtons_Context : short {
   BCONTEXT_COMPOSITOR = 20,
   /** Moritz: Max's Create panel. Stock Blender falls back to the Object tab. */
   BCONTEXT_CREATE = 21,
+  /** Moritz: Max's Utilities panel (Align, Array, Spacing, Object Paint). Stock Blender falls back
+   * to the Object tab. */
+  BCONTEXT_UTILITIES = 22,
 
   /* Keep last. */
   BCONTEXT_TOT,

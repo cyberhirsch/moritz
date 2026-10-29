@@ -126,10 +126,23 @@ Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberh
 - [x] **Max keymap** (`keymap_max.py`): Industry Compatible plus Max 2026 keys (views T/B/F/L/P/U/C, Z / Ctrl+Alt+Z / Ctrl+Shift+Z zoom extents, Alt+W, Alt+Q, Alt+X, F3/F4, G, 7, S/A snaps, H, Alt+A, F12, Insert, M, F9/F10/Shift+Q, K/N, `/` `,` `.` Home/End, Ctrl+Y redo, `;` repeat, Ctrl+V clone, Ctrl+C camera from view, 1–6 sub-object levels, Edit Poly keys); Ctrl+click adds and Alt+click removes from the selection; default keymap
 - [x] Keymap switch: Preferences > Add-ons > Maximize, Max menu > Keymap, sidebar > Max > Keymap; the splash screen lists "Max" with the other keymap presets
 - [x] **Quad menu** (`quad_menu.py`): right-click pie with Display, Viewport, Tools / Edit Poly and Transform quadrants, per mode
+- [ ] *(Seb, 2026-10-29, from a screenshot of Max 2026's quad menu: "looks a little better than
+  what we have")* **Quad menu closer to Max's look:**
+  1. **Text faces the cursor:** left quadrants right-aligned, right quadrants left-aligned.
+     *Possibly core:* Python can't right-align a button's own text.
+  2. **Flat menu rows**, not buttons: compact, no icons, thin separators between groups; only the
+     small settings box at the outer edge (Extrude ▢, Move ▢) for the caddy / redo panel.
+  3. **Quadrant names in the middle** as a dark band (tools 1 / tools 2 left, display / transform
+     right), with the four small squares at the center. *Possibly core:* needs custom drawing.
+  4. **Submenus with ▸** (Convert To, Viewport Lighting and Shadows) instead of long lists.
+  5. **Checkmark on the current level** (Polygon ✓) and **grayed-out entries** when not
+     available, so the layout doesn't jump.
+  Points 2, 4 and 5 should work in Python (`quad_menu.py`). A pixel-exact look probably needs a
+  small core menu type and a **rebuild**; batch it with the other core changes.
 - [x] **Viewport navigation**: MMB pan, Alt+MMB orbit, Ctrl+Alt+MMB zoom; orbit around the selection and zoom about the mouse are set on first enable
 - [x] **Max layout for new files** (`viewport.py`, load_post handler): quad view, centimeters, sidebar on the Max tab (preference "Max Layout for New Files"). Done in the add-on instead of an app template.
 - [x] **Max English** (`vocabulary.py`): about 40 Blender labels renamed (Merge by Distance → Weld, Bevel → Chamfer, Join → Attach…), preference "Max English", default on
-- [x] *(done 2026-10-29, Maximize `vocabulary.py`: preference Names = Follow Keymap / Blender / Max /
+- [x] *(table grown 2026-10-29 from 41 to 61 names, Maximize bf40154)* *(done 2026-10-29, Maximize `vocabulary.py`: preference Names = Follow Keymap / Blender / Max /
   Moritz, also in the Quick Setup and the Keymap preferences; needs the interface translation on,
   which the scheme switches on. Modifier names: see Phase 6)* *(Seb, 2026-10-29: "we have keyboard shortcut schemes, can we have name schemes too?" →
   "good idea")* **Name schemes**, like the keymap presets, replacing the "Max English" switch:
@@ -428,7 +441,10 @@ ribbon (Seb's screenshots) before building.
     sculpt brushes on the Edit Poly mesh, or own brushes like Conform.
   - Everything else on the tab is built: Drag, Conform and its four brushes, Step Build, Extend,
     Optimize, Shapes, Splines, Surface, Topology, Strips, Branches.
-- [ ] **Freeform, still open:** Paint Deform's Pick (lock an object), brush presets (Max's
+- [x] *(done 2026-10-29, Maximize 35d622e: Pick is an object field with the eyedropper, the
+  brushes then work on that object only; Mirror X / Y / Z in the object's own axes; Defaults is
+  Blender's preset menu with Fine / Medium / Broad and Add / Remove. The `ff_*` / `pd_*` icons
+  wait for the icon decision below)* **Freeform, still open:** Paint Deform's Pick (lock an object), brush presets (Max's
   Defaults), Mirror; the `ff_*` / `pd_*` icons aren't integrated (where icons go is still Seb's
   decision). All 38 test files pass, but nothing has been tried with a real mouse yet: Seb to
   try the brushes.
@@ -703,34 +719,73 @@ tyFlow isn't installed there. Status per group, to go through with Seb:
   the name in Blender, where it lives in Blender, the Moritz column (editable) and a comment per
   row, in its database (`lists/modifiers`). Seb comments there; read it back before deciding.
 - *(Seb's comments in the list, read 2026-10-29)* Everything not named here stays as proposed.
-  - **Extrude, Bevel, Bevel Profile become one modifier:** Extrude with three buttons on top
+  - [x] *(done 2026-10-29, Maximize `max_modifiers.py`, a Geometry Nodes modifier: Mode Extrude /
+    Bevel / Profile; Amount and Segments; Start Outline and three levels of Height and Outline,
+    mitered at corners; a picked Profile shape; Cap Start / End, Flip Normals, Smooth; outward
+    whichever way the shape was drawn. Test: `tests/test_max_modifiers.py`)* **Extrude, Bevel, Bevel Profile become one modifier:** Extrude with three buttons on top
     (Extrude / Bevel / Profile), like Simple Deform's mode buttons.
-  - **Cap Holes:** Max version, with a quad cap option (like Edit Poly's Cap).
+  - [x] *(done 2026-10-29, native in Moritz, `modifiers/intern/MOD_max_mesh.cc`; stock Blender keeps it as a disabled "None" modifier and Moritz revives it with its settings. Test: `moritz/tests/test_max_mesh_native.py`, with a round trip through stock Blender 5.2: Quad Cap fills each hole with a quad grid, odd
+    borders too; off, one polygon per hole; Smooth)* **Cap Holes:** Max version, with a quad cap
+    option (like Edit Poly's Cap).
   - **Conform:** keep Blender's Shrinkwrap as it is.
-  - **Edit Mesh → Mix:** Edit Poly needs Edit Mesh's **Explode** feature, and maybe a **Show
+  - [x] *(done 2026-10-29, Maximize 8001202: Explode in Edit Geometry > Geometry (All), to Objects
+    or to Elements by Angle, on the selected polygons or all; Show Normals and Scale in Edit
+    Geometry)* **Edit Mesh → Mix:** Edit Poly needs Edit Mesh's **Explode** feature, and maybe a **Show
     Normals** display option.
   - **Lathe:** Seb finds "Screw" a bad name. Blender's Screw modifier does make real screws
     (Screw offset + iterations give threads and springs), so **both**: Lathe (no offset) and Screw
     (with offset), one Blender modifier underneath. **Corrected (Seb, 2026-10-29): keep the Screw
     modifier as it is**, one entry. Only the name scheme changes it: in the Max scheme it
     displays as **Lathe**, in the Blender scheme as Screw.
-  - **Noise → Max**, **Normal → Max** (own modifiers, not only Blender's under a Max name).
+  - [x] *(Noise done: Seed, Scale, Fractal with Roughness and Iterations, Strength X / Y / Z,
+    Animate Noise with Frequency and Phase. Normal done with Flip; Unify and Flip natively since 2026-10-29 (MAX_NORMAL, in the
+    native batch; in Moritz the list uses the native one))* **Noise → Max**, **Normal → Max** (own modifiers, not only Blender's under a Max name).
   - **ProOptimizer:** Max's algorithm is better; try to match it (Decimate underneath isn't
-    enough).
+    enough). *(2026-10-29: phase 1 done, native in Moritz, `modifiers/intern/MOD_max_mesh.cc`; stock Blender keeps it as a disabled "None" modifier and Moritz revives it with its settings. Test: `moritz/tests/test_max_mesh_native.py`, with a round trip through stock Blender 5.2: Vertex %, Protect Borders, Keep
+    Material / UV Boundaries, Keep Normals, Symmetry. The Max match is phase 2 in
+    `moritz/docs/max_mesh_modifiers_design.md`: attribute-aware quadrics, Favor Compact Faces,
+    Prevent Flips, and a precomputed collapse order so the slider is instant.)*
   - **Retopology:** Max's algorithm is better; try to match it (Remesh isn't enough).
-  - **Quadify Mesh** and **Unwrap UVW:** not later, plan them now (both native, rebuild).
-  - **STL Check → Max**, **VertexPaint → Max**.
-  - **Turn to Poly → Mix:** what Seb needs from it is removing vertices on straight edges that
-    only have two edges. Proposal: a **mesh cleaning modifier** with that option (and others).
-  - **Camera Map (WSM) → Max:** what Seb needs is Max's **Camera Map Per Pixel** (a map, not a
+    *(2026-10-29: planned in `moritz/docs/max_mesh_modifiers_design.md`: a native RETOPOLOGY
+    modifier with Max's pre-processing (cleanup to manifold), feature edges, symmetry, a Face
+    Count target, Conform and Relax afterwards, and the solve in a background job. ReForm is
+    unpublished: match its results on five test meshes, not its code.)*
+  - [x] *(Quadify Mesh done 2026-10-29, native in Moritz, `modifiers/intern/MOD_max_mesh.cc`; stock Blender keeps it as a disabled "None" modifier and Moritz revives it with its settings. Test: `moritz/tests/test_max_mesh_native.py`, with a round trip through stock Blender 5.2: Quad Size % of the object, Preserve
+    Sharp / Boundary, Seed; QuadriFlow underneath, so the input must be manifold. Unwrap UVW
+    planned in `moritz/docs/max_mesh_modifiers_design.md`: the UVs stored in the stack, edited in
+    Blender's UV Editor on a stand-in, Max's tool names in the Max scheme)* **Quadify Mesh** and
+    **Unwrap UVW:** not later, plan them now (both native, rebuild).
+  - [x] *(STL Check done: open edges, multiple edges and spikes marked with red tubes, and a
+    warning in the modifier with the count. VertexPaint done 2026-10-29, native in Moritz, `modifiers/intern/MOD_max_mesh.cc`; stock Blender keeps it as a disabled "None" modifier and Moritz revives it with its settings. Test: `moritz/tests/test_max_mesh_native.py`, with a round trip through stock Blender 5.2;
+    Maximize `vertex_paint.py`: Paint opens Vertex Paint on a stand-in with the stack's result,
+    Done keeps the colors in the modifier, Cancel, Clear Colors. Test: Maximize
+    `tests/test_vertex_paint.py`)* **STL Check → Max**, **VertexPaint → Max**.
+  - [x] *(done 2026-10-29: Mesh Clean, native in Moritz, `modifiers/intern/MOD_max_mesh.cc`; stock Blender keeps it as a disabled "None" modifier and Moritz revives it with its settings. Test: `moritz/tests/test_max_mesh_native.py`, with a round trip through stock Blender 5.2: Weld with a distance, Remove
+    Straight (two-edge vertices on a straight line, with an angle), Remove Loose, Remove
+    Degenerate)* **Turn to Poly → Mix:** what Seb needs from it is removing vertices on straight
+    edges that only have two edges. Proposal: a **mesh cleaning modifier** with that option (and
+    others).
+  - [x] *(done 2026-10-29, Maximize `camera_map.py`: Shader Editor > Add > Texture > Camera Map Per
+    Pixel, or `maximize.camera_map_per_pixel`; a node group from the camera's object coordinates,
+    with drivers for lens, sensor, shift and frame aspect. Rendered from the camera it gives back
+    the image pixel for pixel: `tests/test_camera_map.py`)* **Camera Map (WSM) → Max:** what Seb needs is Max's **Camera Map Per Pixel** (a map, not a
     modifier, a 3ds Max plugin). Blender's shaders can do it with the Texture Coordinate node's
     Window / Camera output; plan it as a Moritz material map or node group.
-- *(Seb, 2026-10-29: "when we search in the modifier list for bend, can it show simple deform?")*
+- [x] *(done 2026-10-29, Moritz 11e6be316c3 `bl_operators/moritz_modifier_list.py`, Maximize
+  066b560: Search... at the top of Add Modifier matches the Max name, the Blender name and keywords,
+  shown grey on the right; in the Max and Moritz schemes the menu is Max's alphabetical list (Bend,
+  Taper, Twist, Stretch are Simple Deform presets) and a new modifier gets the Max name. Test:
+  Maximize `tests/test_modifier_list.py`)* *(Seb, 2026-10-29: "when we search in the modifier list for bend, can it show simple deform?")*
   **Search keywords for the Add Modifier filter.** Each entry matches its Max name, its Blender
   name and a few words for what it does. For example, "bend" finds Bend and Simple Deform (Simple
   Deform's keywords: bend, taper, twist, stretch), and "solidify" finds Shell in the Max scheme.
   This works in our own flat list; Blender's menu search only matches labels.
-- *(2026-10-29)* **Name clashes** to label differently in the Max scheme: Skin (Max = Armature,
+- [x] *(done 2026-10-29 in the modifier list: Skin = Armature, Lattice = Wireframe, FFD = Lattice,
+  Smooth = Smooth by Angle; Blender's own become "Skin (Blender)" and "Smooth (Blender)". The
+  translation can't do it alone: Smooth, Armature and Wireframe are also used elsewhere (shading,
+  the object type, viewport shading). Core follow-up in the native batch below: a "Modifier"
+  translation context for modifier type names, so the name scheme renames them everywhere they
+  appear and nothing else)* *(2026-10-29)* **Name clashes** to label differently in the Max scheme: Skin (Max = Armature,
   Blender = Skin modifier), Smooth (Max = Smooth by Angle, Blender = vertex smoothing), Lattice
   (Max = struts and joints, Blender = Max's FFD), Bevel (Max = spline bevel, Blender = Max's
   Chamfer).
@@ -813,7 +868,13 @@ Steps:
   Down buttons and Ctrl+Up / Down until then). Warn before the core change.
 - *Files: UI only. The only stored values are the modifiers' own expand flags (`show_expanded`) and
   their order, which stock Blender reads the same way.*
-- [ ] *(Seb, 2026-10-29)* **Tab order and color:** Modify moves to second place, right under
+- [x] *(done 2026-10-29: the tab column starts Create, Modify, Utilities, then Blender's tabs;
+  the three have teal icons of their own, `tab_create.svg`, `tab_modify.svg`, `tab_utilities.svg`.
+  The new **Utilities** tab (`BCONTEXT_UTILITIES`, `bl_ui/properties_utilities.py`) holds Align
+  with the pivot options, Array, Spacing Tool and Object Paint, drawn by Maximize; without
+  Maximize it shows Set Origin, Apply Transforms and an Array modifier. Test:
+  `moritz/tests/test_utilities_tab.py`)* *(Seb, 2026-10-29)*
+  **Tab order and color:** Modify moves to second place, right under
   Create, as in Max's Command Panel. The other tabs keep Blender's order (Tool, Render, Output,
   View Layer, Scene, World, Collection, Object, Particles, Physics, Constraints, Data, Material).
   Create and Modify get a **distinct color** of their own, so they stand out from Blender's tabs
@@ -939,7 +1000,14 @@ Steps:
     same smooth side, cap a separate flat shade with a dark edge. Approved and handed to the
     main session, 2026-10-29.)*
   - *(2026-10-29: the other 26 were approved and handed to the main session as SVGs.)*
-- [ ] After the OK: decide where they go. In Maximize as PNGs: no rebuild, but only in panels the
+- [x] *(Seb, 2026-10-29: core. Done: the 69 icons are `release/datafiles/icons_svg/mx_*.svg`,
+  `ICON_MX_*`, imported by `moritz/tools/import_icons.py` (CSS classes inlined, drawn on Blender's
+  1600-unit canvas). Wired: 47 in Maximize, through `mx_icons.mx_icon()`, which falls back to the old
+  icon in Blender builds without them; Show End Result and Make Unique under the stack. Not
+  placed yet, no button for them: the four constraint icons, NURMS, Use Displacement, Soft
+  Selection, Display as Box and See-Through. The Add Modifier list's add-on entries take no icon
+  yet, so the MOD_ icons don't show there.)* After the OK: decide where they go. In Maximize as
+  PNGs: no rebuild, but only in panels the
   add-on draws. In `release/datafiles/icons_svg`: they work everywhere, but that's a core change
   and needs a **rebuild**. Stock Blender files are unaffected either way.
 

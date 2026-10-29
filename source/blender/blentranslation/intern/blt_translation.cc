@@ -50,10 +50,19 @@ static std::optional<StringRefNull> pgettext(StringRef msgctxt, const StringRef 
     return translation;
   }
 #  ifdef WITH_PYTHON
-  return BPY_app_translations_py_pgettext(msgctxt, msgid);
-#  else
-  return std::nullopt;
+  if (const std::optional<StringRefNull> translation = BPY_app_translations_py_pgettext(msgctxt,
+                                                                                        msgid))
+  {
+    return translation;
+  }
 #  endif
+  /* Moritz: modifier type names have their own context, so a name scheme can rename a modifier
+   * without renaming the same word elsewhere (Smooth, Armature, Wireframe). The languages' own
+   * translations of those names are in the default context. */
+  if (msgctxt == BLT_I18NCONTEXT_MODIFIER) {
+    return pgettext(BLT_I18NCONTEXT_DEFAULT, msgid);
+  }
+  return std::nullopt;
 #else
   UNUSED_VARS(msgctxt, msgid);
   return std::nullopt;

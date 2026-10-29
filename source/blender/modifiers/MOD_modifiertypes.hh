@@ -103,6 +103,12 @@ extern ModifierTypeInfo modifierType_GreasePencilBuild;
 extern ModifierTypeInfo modifierType_GreasePencilTexture;
 extern ModifierTypeInfo modifierType_EditPoly;
 extern ModifierTypeInfo modifierType_EditSpline;
+extern ModifierTypeInfo modifierType_CapHoles;
+extern ModifierTypeInfo modifierType_MaxNormal;
+extern ModifierTypeInfo modifierType_MeshClean;
+extern ModifierTypeInfo modifierType_QuadifyMesh;
+extern ModifierTypeInfo modifierType_ProOptimizer;
+extern ModifierTypeInfo modifierType_VertexPaint;
 
 /* MOD_util.cc */
 

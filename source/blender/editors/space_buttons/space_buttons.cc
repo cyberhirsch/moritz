@@ -175,6 +175,8 @@ void ED_buttons_visible_tabs_menu(bContext *C, ui::Layout *layout, void * /*arg*
   /* These can be reordered freely. */
   constexpr std::array<StringRefNull, BCONTEXT_TOT> filter_items = {
       "show_properties_create",
+      "show_properties_modifiers",
+      "show_properties_utilities",
       "show_properties_tool",
       "show_properties_render",
       "show_properties_output",
@@ -184,7 +186,6 @@ void ED_buttons_visible_tabs_menu(bContext *C, ui::Layout *layout, void * /*arg*
       "show_properties_world",
       "show_properties_collection",
       "show_properties_object",
-      "show_properties_modifiers",
       "show_properties_effects",
       "show_properties_particles",
       "show_properties_physics",
@@ -222,14 +223,22 @@ Vector<eSpaceButtons_Context> ED_buttons_tabs_list(const SpaceProperties *sbuts,
   };
 
   auto add_tab = [&](eSpaceButtons_Context tab) {
-    /* The Create tab needs no data, so it is there before the first redraw computes the path. */
-    const bool available = tab == BCONTEXT_CREATE || sbuts->pathflag & (1 << tab);
+    /* The Create and Utilities tabs need no data, so they are there before the first redraw
+     * computes the path. */
+    const bool available = ELEM(tab, BCONTEXT_CREATE, BCONTEXT_UTILITIES) ||
+                           sbuts->pathflag & (1 << tab);
     if (available && (!apply_filter || filter & (1 << tab))) {
       tabs.append(tab);
     }
   };
 
+  /* Moritz: Max's Command Panel tabs first: Create, Modify, Utilities. */
   add_tab(BCONTEXT_CREATE);
+  add_tab(BCONTEXT_MODIFIER);
+  add_tab(BCONTEXT_UTILITIES);
+
+  add_spacer();
+
   add_tab(BCONTEXT_TOOL);
 
   add_spacer();
@@ -248,7 +257,6 @@ Vector<eSpaceButtons_Context> ED_buttons_tabs_list(const SpaceProperties *sbuts,
   add_spacer();
 
   add_tab(BCONTEXT_OBJECT);
-  add_tab(BCONTEXT_MODIFIER);
   add_tab(BCONTEXT_SHADERFX);
   add_tab(BCONTEXT_PARTICLE);
   add_tab(BCONTEXT_PHYSICS);
@@ -317,6 +325,8 @@ static const char *buttons_main_region_context_string(const short mainb)
       return "compositor";
     case BCONTEXT_CREATE:
       return "create";
+    case BCONTEXT_UTILITIES:
+      return "utilities";
   }
 
   /* All the cases should be handled. */
@@ -376,7 +386,7 @@ static bool property_search_for_context(const bContext *C, ARegion *region, Spac
 {
   const char *contexts[2] = {buttons_main_region_context_string(sbuts->mainb), nullptr};
 
-  if (ELEM(sbuts->mainb, BCONTEXT_TOOL, BCONTEXT_CREATE)) {
+  if (ELEM(sbuts->mainb, BCONTEXT_TOOL, BCONTEXT_CREATE, BCONTEXT_UTILITIES)) {
     return false;
   }
 
