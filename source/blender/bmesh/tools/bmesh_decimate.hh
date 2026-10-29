@@ -37,6 +37,23 @@ void BM_mesh_decimate_collapse(BMesh *bm,
                                float symmetry_eps);
 
 /**
+ * Moritz (3ds Max's ProOptimizer): #BM_mesh_decimate_collapse, plus
+ * - edges tagged #BM_ELEM_TAG_ALT are kept in place like open borders: a plane through the edge on
+ *   each side holds its vertices, so the edge can still lose vertices along its length (UV seams,
+ *   material boundaries, hard edges);
+ * - `compact_weight` > 0 favors compact triangles: thin results cost more.
+ */
+void BM_mesh_decimate_collapse_ex(BMesh *bm,
+                                  float factor,
+                                  float *vweights,
+                                  float vweight_factor,
+                                  bool do_triangulate,
+                                  int symmetry_axis,
+                                  float symmetry_eps,
+                                  bool use_feature_edges,
+                                  float compact_weight);
+
+/**
  * \param tag_only: so we can call this from an operator.
  */
 void BM_mesh_decimate_unsubdivide_ex(BMesh *bm, int iterations, bool tag_only);

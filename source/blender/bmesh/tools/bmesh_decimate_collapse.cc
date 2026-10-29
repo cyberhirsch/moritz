@@ -8,6 +8,7 @@
  * BMesh decimator that uses an edge collapse method.
  */
 
+#include <algorithm>
 #include <cstddef>
 
 #include "MEM_guardedalloc.h"
@@ -16,6 +17,7 @@
 #include "BLI_enum_flags.hh"
 #include "BLI_heap.hh"
 #include "BLI_linklist.hh"
+#include "BLI_math_constants.hh"
 #include "BLI_math_geom_c.hh"
 #include "BLI_math_vector_c.hh"
 #include "BLI_memarena.hh"
@@ -57,6 +59,11 @@ namespace blender {
  * cane give issues with very small faces. 1e-2 is too big, see: #48154.
  */
 #define OPTIMIZE_EPS 1e-8
+
+/* Moritz: the options of #BM_mesh_decimate_collapse_ex for the decimation running on this thread
+ * (they are read deep in the edge cost code). */
+static thread_local bool g_use_feature_edges = false;
+static thread_local float g_compact_weight = 0.0f;
 #define COST_INVALID FLT_MAX
 
 enum CD_UseFlag {
@@ -72,6 +79,28 @@ ENUM_OPERATORS(CD_UseFlag)
 /**
  * \param vquadrics: must be calloc'd
  */
+/** A plane through `e` perpendicular to `f`, added to both vertices with the boundary weight. */
+static void bm_decim_add_edge_plane(BMEdge *e, const BMFace *f, Quadric *vquadrics)
+{
+  float edge_vector[3];
+  float edge_plane[3];
+  double edge_plane_db[4];
+  sub_v3_v3v3(edge_vector, e->v2->co, e->v1->co);
+  cross_v3_v3v3(edge_plane, edge_vector, f->no);
+  copy_v3db_v3fl(edge_plane_db, edge_plane);
+  if (normalize_v3_db(edge_plane_db) <= double(FLT_EPSILON)) {
+    return;
+  }
+  Quadric q;
+  float center[3];
+  mid_v3_v3v3(center, e->v1->co, e->v2->co);
+  edge_plane_db[3] = -dot_v3db_v3fl(edge_plane_db, center);
+  BLI_quadric_from_plane(&q, edge_plane_db);
+  BLI_quadric_mul(&q, BOUNDARY_PRESERVE_WEIGHT);
+  BLI_quadric_add_qu_qu(&vquadrics[BM_elem_index_get(e->v1)], &q);
+  BLI_quadric_add_qu_qu(&vquadrics[BM_elem_index_get(e->v2)], &q);
+}
+
 static void bm_decim_build_quadrics(BMesh *bm, Quadric *vquadrics)
 {
   BMIter iter;
@@ -124,7 +153,44 @@ static void bm_decim_build_quadrics(BMesh *bm, Quadric *vquadrics)
         BLI_quadric_add_qu_qu(&vquadrics[BM_elem_index_get(e->v2)], &q);
       }
     }
+    else if (g_use_feature_edges && e->l && BM_elem_flag_test(e, BM_ELEM_TAG_ALT)) {
+      /* Feature edges: held from both sides. */
+      BMLoop *l_iter = e->l;
+      do {
+        bm_decim_add_edge_plane(e, l_iter->f, vquadrics);
+      } while ((l_iter = l_iter->radial_next) != e->l);
+    }
   }
+}
+
+/** Triangle quality: 1 for equilateral, 0 for degenerate. */
+static float bm_decim_tri_quality(const float a[3], const float b[3], const float c[3])
+{
+  const float len_sq = len_squared_v3v3(a, b) + len_squared_v3v3(b, c) + len_squared_v3v3(c, a);
+  if (len_sq <= 0.0f) {
+    return 0.0f;
+  }
+  return (4.0f * float(M_SQRT3) * area_tri_v3(a, b, c)) / len_sq;
+}
+
+/**
+ * Favor Compact Faces: the worst quality of the triangles around `e` after moving both vertices
+ * to `co` (the two triangles of `e` disappear and are skipped).
+ */
+static float bm_decim_compact_cost(BMEdge *e, const float co[3])
+{
+  float worst = 1.0f;
+  for (BMVert *v : {e->v1, e->v2}) {
+    BMIter iter;
+    BMLoop *l;
+    BM_ITER_ELEM (l, &iter, v, BM_LOOPS_OF_VERT) {
+      if (l->f->len != 3 || BM_vert_in_face(e->v1 == v ? e->v2 : e->v1, l->f)) {
+        continue;
+      }
+      worst = std::min(worst, bm_decim_tri_quality(co, l->next->v->co, l->prev->v->co));
+    }
+  }
+  return (1.0f - worst) * BM_edge_calc_length_squared(e);
 }
 
 static void bm_decim_calc_target_co_db(BMEdge *e, double optimize_co[3], const Quadric *vquadrics)
@@ -278,6 +344,11 @@ static void bm_decim_build_edge_cost_single(BMEdge *e,
     q2 = &vquadrics[BM_elem_index_get(e->v2)];
 
     cost = (BLI_quadric_evaluate(q1, optimize_co) + BLI_quadric_evaluate(q2, optimize_co));
+    if (g_compact_weight > 0.0f) {
+      float co[3];
+      copy_v3fl_v3db(co, optimize_co);
+      cost = fabsf(cost) + g_compact_weight * bm_decim_compact_cost(e, co);
+    }
   }
 
   /* NOTE: 'cost' shouldn't be negative but happens sometimes with small values.
@@ -1289,6 +1360,24 @@ static bool bm_decim_edge_collapse(BMesh *bm,
 
 /* Main Decimate Function
  * ********************** */
+
+void BM_mesh_decimate_collapse_ex(BMesh *bm,
+                                  const float factor,
+                                  float *vweights,
+                                  const float vweight_factor,
+                                  const bool do_triangulate,
+                                  const int symmetry_axis,
+                                  const float symmetry_eps,
+                                  const bool use_feature_edges,
+                                  const float compact_weight)
+{
+  g_use_feature_edges = use_feature_edges;
+  g_compact_weight = compact_weight;
+  BM_mesh_decimate_collapse(
+      bm, factor, vweights, vweight_factor, do_triangulate, symmetry_axis, symmetry_eps);
+  g_use_feature_edges = false;
+  g_compact_weight = 0.0f;
+}
 
 void BM_mesh_decimate_collapse(BMesh *bm,
                                const float factor,

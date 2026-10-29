@@ -468,50 +468,21 @@ static Mesh *quadify_modify(ModifierData *md, const ModifierEvalContext *ctx, Me
 /** \name ProOptimizer
  * \{ */
 
-static bool uv_boundary(const BMVert *v, const int cd_uv)
+/** The edge separates different UVs (a seam in the first UV map). */
+static bool uv_seam_edge(const BMEdge *e, const int cd_uv)
 {
-  if (cd_uv == -1) {
+  if (cd_uv == -1 || e->l == nullptr || e->l->radial_next == e->l) {
     return false;
   }
-  const BMLoop *first = nullptr;
-  BMIter iter;
-  BMLoop *l;
-  BM_ITER_ELEM (l, &iter, const_cast<BMVert *>(v), BM_LOOPS_OF_VERT) {
-    if (first == nullptr) {
-      first = l;
-    }
-    else if (!equals_v2v2(BM_ELEM_CD_GET_FLOAT_P(first, cd_uv), BM_ELEM_CD_GET_FLOAT_P(l, cd_uv)))
-    {
-      return true;
-    }
-  }
-  return false;
-}
-
-static bool material_boundary(const BMVert *v)
-{
-  int material = -1;
-  BMIter iter;
-  BMFace *f;
-  BM_ITER_ELEM (f, &iter, const_cast<BMVert *>(v), BM_FACES_OF_VERT) {
-    if (material != -1 && f->mat_nr != material) {
-      return true;
-    }
-    material = f->mat_nr;
-  }
-  return false;
-}
-
-static bool hard_edge_vert(const BMVert *v)
-{
-  BMIter iter;
-  BMEdge *e;
-  BM_ITER_ELEM (e, &iter, const_cast<BMVert *>(v), BM_EDGES_OF_VERT) {
-    if (!BM_elem_flag_test(e, BM_ELEM_SMOOTH) && e->l && e->l->radial_next != e->l) {
-      return true;
-    }
-  }
-  return false;
+  const BMLoop *l_a = e->l;
+  const BMLoop *l_b = e->l->radial_next;
+  /* The loops of the same vertex on both sides: a loop starts at its vertex. */
+  const BMLoop *l_b_same = (l_b->v == l_a->v) ? l_b : l_b->next;
+  const BMLoop *l_b_other = (l_b->v == l_a->v) ? l_b->next : l_b;
+  return !equals_v2v2(BM_ELEM_CD_GET_FLOAT_P(l_a, cd_uv),
+                      BM_ELEM_CD_GET_FLOAT_P(l_b_same, cd_uv)) ||
+         !equals_v2v2(BM_ELEM_CD_GET_FLOAT_P(l_a->next, cd_uv),
+                      BM_ELEM_CD_GET_FLOAT_P(l_b_other, cd_uv));
 }
 
 static Mesh *pro_optimizer_modify(ModifierData *md,
@@ -526,11 +497,13 @@ static Mesh *pro_optimizer_modify(ModifierData *md,
   const bool materials = flag(*md, "keep_material_boundaries", true);
   const bool uvs = flag(*md, "keep_uv_boundaries", true);
   const bool normals = flag(*md, "keep_normals", false);
+  const bool compact = flag(*md, "favor_compact", true);
   const int symmetry = MOD_max_mesh_int(*md, "symmetry_axis", -1);
 
   BMesh *bm = to_bmesh(mesh);
   const int cd_uv = CustomData_get_offset(&bm->ldata, CD_PROP_FLOAT2);
-  /* A weight of 0 keeps a vertex (its edges never collapse). */
+
+  /* Protect Borders: the border vertices stay (a weight of 0 never collapses). */
   Array<float> weights(bm->totvert, 1.0f);
   bool any_kept = false;
   BMIter iter;
@@ -538,21 +511,38 @@ static Mesh *pro_optimizer_modify(ModifierData *md,
   int i;
   BM_ITER_MESH_INDEX (v, &iter, bm, BM_VERTS_OF_MESH, i) {
     BM_elem_index_set(v, i);
-    if ((borders && BM_vert_is_boundary(v)) || (materials && material_boundary(v)) ||
-        (uvs && uv_boundary(v, cd_uv)) || (normals && hard_edge_vert(v)))
-    {
+    if (borders && BM_vert_is_boundary(v)) {
       weights[i] = 0.0f;
       any_kept = true;
     }
   }
   bm->elem_index_dirty &= ~BM_VERT;
-  BM_mesh_decimate_collapse(bm,
-                            std::clamp(percent / 100.0f, 0.0f, 1.0f),
-                            any_kept ? weights.data() : nullptr,
-                            1.0f,
-                            true,
-                            std::clamp(symmetry, -1, 2),
-                            0.00002f);
+
+  /* Material and UV boundaries and hard edges stay in place but can still lose vertices along
+   * their length, as in Max (the decimation holds them like open borders). */
+  bool any_feature = false;
+  BMEdge *e;
+  BM_ITER_MESH (e, &iter, bm, BM_EDGES_OF_MESH) {
+    bool feature = false;
+    if (e->l && e->l->radial_next != e->l) {
+      feature = (materials && e->l->f->mat_nr != e->l->radial_next->f->mat_nr) ||
+                (uvs && uv_seam_edge(e, cd_uv)) ||
+                (normals && !BM_elem_flag_test(e, BM_ELEM_SMOOTH));
+    }
+    BM_elem_flag_set(e, BM_ELEM_TAG_ALT, feature);
+    any_feature |= feature;
+  }
+
+  BM_mesh_decimate_collapse_ex(bm,
+                               std::clamp(percent / 100.0f, 0.0f, 1.0f),
+                               any_kept ? weights.data() : nullptr,
+                               1.0f,
+                               true,
+                               std::clamp(symmetry, -1, 2),
+                               0.00002f,
+                               any_feature,
+                               compact ? 1.0f : 0.0f);
+  BM_mesh_elem_hflag_disable_all(bm, BM_EDGE, BM_ELEM_TAG_ALT, false);
   return from_bmesh(bm, mesh);
 }
 

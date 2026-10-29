@@ -750,8 +750,19 @@ tyFlow isn't installed there. Status per group, to go through with Seb:
   - [x] *(Noise done: Seed, Scale, Fractal with Roughness and Iterations, Strength X / Y / Z,
     Animate Noise with Frequency and Phase. Normal done with Flip; Unify and Flip natively since 2026-10-29 (MAX_NORMAL, in the
     native batch; in Moritz the list uses the native one))* **Noise → Max**, **Normal → Max** (own modifiers, not only Blender's under a Max name).
-  - **ProOptimizer:** Max's algorithm is better; try to match it (Decimate underneath isn't
-    enough). *(2026-10-29: phase 1 done, native in Moritz, `modifiers/intern/MOD_max_mesh.cc`; stock Blender keeps it as a disabled "None" modifier and Moritz revives it with its settings. Test: `moritz/tests/test_max_mesh_native.py`, with a round trip through stock Blender 5.2: Vertex %, Protect Borders, Keep
+  - [x] *(phase 2 done 2026-10-29: UV seams, material boundaries and hard edges stay in place
+    but thin out along their length, held by planes like open borders, instead of frozen;
+    Favor Compact Faces (on by default) adds a triangle-quality cost; Prevent Flips was already
+    in Blender's collapse. Core: `BM_mesh_decimate_collapse_ex` in `bmesh_decimate_collapse.cc`,
+    Blender's Decimate unchanged. Measured 2.5–4.2 s on 261k triangles, so Max's "Calculate
+    once, then an instant slider" is not matched: continuing from the last result would make the
+    output depend on slider history; a true progressive-mesh cache is a separate item below.
+    Test: `test_max_mesh_native.py`, boundary 21 → 12 vertices at 0.0 offset, mean triangle
+    quality 0.794 → 0.813)* **ProOptimizer:** Max's algorithm is better; try to match it
+    (Decimate underneath isn't enough).
+  - [ ] **ProOptimizer instant slider:** record the full collapse order once (progressive mesh),
+    keyed by the input, and replay a prefix for each Vertex %, attributes included. Only worth
+    it for meshes over ~100k triangles; deterministic, unlike reusing the last result. *(2026-10-29: phase 1 done, native in Moritz, `modifiers/intern/MOD_max_mesh.cc`; stock Blender keeps it as a disabled "None" modifier and Moritz revives it with its settings. Test: `moritz/tests/test_max_mesh_native.py`, with a round trip through stock Blender 5.2: Vertex %, Protect Borders, Keep
     Material / UV Boundaries, Keep Normals, Symmetry. The Max match is phase 2 in
     `moritz/docs/max_mesh_modifiers_design.md`: attribute-aware quadrics, Favor Compact Faces,
     Prevent Flips, and a precomputed collapse order so the slider is instant.)*

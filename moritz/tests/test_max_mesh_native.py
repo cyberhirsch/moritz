@@ -149,6 +149,46 @@ me = evaluated(vp_obj)
 out = me.color_attributes.get("VertexPaint")
 check("vertex paint writes", out is not None and abs(out.data[3].color[0] - 3 / 8) < 1e-5)
 
+# ProOptimizer phase 2: a material boundary stays in place but thins out along its length.
+mat = fresh("OptMat", bpy.ops.mesh.primitive_grid_add, x_subdivisions=20, y_subdivisions=20, size=2)
+mat.data.materials.append(bpy.data.materials.new("A"))
+mat.data.materials.append(bpy.data.materials.new("B"))
+for poly in mat.data.polygons:
+    poly.material_index = 1 if poly.center.x > 0 else 0
+on_line = sum(1 for v in mat.data.vertices if abs(v.co.x) < 1e-4)
+pm = mat.modifiers.new("ProOptimizer", 'PRO_OPTIMIZER')
+pm.vertex_percent = 30.0
+pm.use_protect_borders = False
+me = evaluated(mat)
+edge_faces = {}
+for poly in me.polygons:
+    for key in poly.edge_keys:
+        edge_faces.setdefault(key, []).append(poly.material_index)
+boundary = [k for k, mats in edge_faces.items() if len(set(mats)) > 1]
+verts = {i for k in boundary for i in k}
+check("material boundary in place", boundary and all(abs(me.vertices[i].co.x) < 1e-3 for i in verts),
+      max((abs(me.vertices[i].co.x) for i in verts), default=None))
+check("material boundary thins out", 2 <= len(verts) < on_line, on_line, len(verts))
+
+
+def mean_quality(me):
+    total = 0.0
+    for poly in me.polygons:
+        a, b, c = (me.vertices[i].co for i in poly.vertices[:3])
+        len_sq = (a - b).length_squared + (b - c).length_squared + (c - a).length_squared
+        total += 4 * 3 ** 0.5 * ((b - a).cross(c - a).length / 2) / len_sq if len_sq else 0.0
+    return total / len(me.polygons)
+
+
+bumpy = fresh("OptCompact", bpy.ops.mesh.primitive_uv_sphere_add, segments=48, ring_count=24)
+pc = bumpy.modifiers.new("ProOptimizer", 'PRO_OPTIMIZER')
+pc.vertex_percent = 20.0
+pc.use_favor_compact = False
+loose_q = mean_quality(evaluated(bumpy))
+pc.use_favor_compact = True
+compact_q = mean_quality(evaluated(bumpy))
+check("favor compact faces", compact_q > loose_q, round(loose_q, 3), round(compact_q, 3))
+
 # Save and reload: types and settings stay.
 path = os.path.join(tempfile.gettempdir(), "mx_max_mesh_native.blend")
 po.vertex_percent = 30.0

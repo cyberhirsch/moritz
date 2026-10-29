@@ -2294,6 +2294,7 @@ MX_BOOL(rna_ProOptimizerModifier_use_protect_borders, "protect_borders", true)
 MX_BOOL(rna_ProOptimizerModifier_use_keep_material_boundaries, "keep_material_boundaries", true)
 MX_BOOL(rna_ProOptimizerModifier_use_keep_uv_boundaries, "keep_uv_boundaries", true)
 MX_BOOL(rna_ProOptimizerModifier_use_keep_normals, "keep_normals", false)
+MX_BOOL(rna_ProOptimizerModifier_use_favor_compact, "favor_compact", true)
 MX_INT(rna_ProOptimizerModifier_symmetry_axis, "symmetry_axis", -1)
 
 #undef MX_BOOL
@@ -7998,6 +7999,14 @@ static void rna_def_modifier_max_mesh(BlenderRNA *brna)
   RNA_def_property_boolean_funcs(prop, "rna_ProOptimizerModifier_use_keep_normals_get", "rna_ProOptimizerModifier_use_keep_normals_set");
   RNA_def_property_boolean_default(prop, false);
   RNA_def_property_ui_text(prop, "Keep Normals", "Keep sharp edges");
+  RNA_def_property_update(prop, 0, "rna_Modifier_update");
+
+  prop = RNA_def_property(srna, "use_favor_compact", PROP_BOOLEAN, PROP_NONE);
+  RNA_def_property_boolean_funcs(
+      prop, "rna_ProOptimizerModifier_use_favor_compact_get", "rna_ProOptimizerModifier_use_favor_compact_set");
+  RNA_def_property_boolean_default(prop, true);
+  RNA_def_property_ui_text(
+      prop, "Favor Compact Faces", "Avoid long, thin triangles in the result");
   RNA_def_property_update(prop, 0, "rna_Modifier_update");
 
   prop = RNA_def_property(srna, "symmetry_axis", PROP_ENUM, PROP_NONE);
