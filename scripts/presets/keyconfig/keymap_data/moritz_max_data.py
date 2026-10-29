@@ -89,6 +89,13 @@ def apply(km, moritz=False, maya_navigation=False):
     km.remove("3D View", "view3d.rotate", _event('LEFTMOUSE', alt=True))
     km.remove("3D View", "view3d.zoom", _event('RIGHTMOUSE', alt=True))
     km.view("view3d.move", _event('MIDDLEMOUSE'))
+    # Industry Compatible copies the active tool's left-drag to the middle mouse (Maya), and tool
+    # keymaps come first: the middle mouse would move the selection instead of panning. Max always
+    # pans with it.
+    for name, items in km.items.items():
+        if name.startswith("3D View Tool:"):
+            items[:] = [it for it in items if not (it[1].get("type") == 'MIDDLEMOUSE' and not any(
+                it[1].get(mod) for mod in ("ctrl", "shift", "alt", "oskey")))]
     km.view("view3d.rotate", _event('MIDDLEMOUSE', alt=True))
     km.view("view3d.zoom", _event('MIDDLEMOUSE', ctrl=True, alt=True))
     km.view("view3d.zoom", _event('LEFT_BRACKET', repeat=True), {"delta": 1})
