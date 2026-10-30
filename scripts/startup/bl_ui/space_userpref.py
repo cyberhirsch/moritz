@@ -329,6 +329,14 @@ class USERPREF_PT_interface_editors(InterfacePanel, CenterAlignMixIn, Panel):
         col.row().prop(view, "header_align")
         col.prop(view, "factor_display_type")
 
+        # Moritz: the editing settings (Maximize's preferences, a built-in part of Moritz).
+        addon = prefs.addons.get("maximize")
+        if addon is not None and hasattr(addon.preferences, "tool_settings_style"):
+            col = layout.column()
+            col.prop(addon.preferences, "tool_settings_style")
+            col.prop(addon.preferences, "use_hover_highlight")
+            col.prop(addon.preferences, "use_startup_layout")
+
 
 class USERPREF_PT_interface_temporary_windows(InterfacePanel, CenterAlignMixIn, Panel):
     bl_label = "Temporary Editors"
@@ -965,6 +973,14 @@ class USERPREF_PT_viewport_display(ViewportPanel, CenterAlignMixIn, Panel):
         layout.separator()
         col = layout.column(heading="Fresnel")
         col.prop(view, "use_fresnel_edit")
+
+        # Moritz: the Edit Poly cage colors (Maximize's preferences).
+        addon = prefs.addons.get("maximize")
+        if addon is not None and hasattr(addon.preferences, "cage_color"):
+            layout.separator()
+            col = layout.column()
+            col.prop(addon.preferences, "cage_color")
+            col.prop(addon.preferences, "cage_selected_color")
 
 
 class USERPREF_PT_viewport_quality(ViewportPanel, CenterAlignMixIn, Panel):
@@ -2628,6 +2644,9 @@ class USERPREF_PT_addons(AddOnPanel, Panel):
 
         for mod in addon_utils.modules(refresh=False):
             module_names.add(addon_module_name := mod.__name__)
+            # Moritz: built-in parts of Moritz are not add-ons to the user.
+            if addon_utils.is_builtin(addon_module_name):
+                continue
             bl_info = addon_utils.module_bl_info(mod)
 
             is_enabled = addon_module_name in used_addon_module_name_map

@@ -29,6 +29,7 @@ space = next(a.spaces.active for s in bpy.data.screens for a in s.areas if a.typ
 space.context = 'UTILITIES'
 check("switch to utilities", space.context == 'UTILITIES', space.context)
 
+addon_utils.disable("maximize")  # a script unload: Moritz without Maximize
 check("fallback draw", getattr(bpy.types.PROPERTIES_PT_utilities, "utilities_draw", None) is None)
 addon_utils.enable("maximize", default_set=True)
 check("maximize draws it", bpy.types.PROPERTIES_PT_utilities.utilities_draw is not None)

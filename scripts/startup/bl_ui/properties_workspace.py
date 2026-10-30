@@ -60,7 +60,9 @@ class WORKSPACE_PT_addons(WorkSpaceButtonsPanel, Panel):
         WORKSPACE_PT_addons.addon_map = {
             module_name: mod for mod in addon_utils.modules()
             # These are excluded from filtering and should be ignored.
-            if (module_name := mod.__name__) not in addon_utils._addons_hidden_core
+            if (module_name := mod.__name__) not in addon_utils._addons_hidden_core and
+            # Moritz: nor are Moritz's built-in parts.
+            not addon_utils.is_builtin(module_name)
         }
         WORKSPACE_PT_addons.owner_ids = {owner_id.name for owner_id in workspace.owner_ids}
         known_addons = set()

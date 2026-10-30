@@ -5,7 +5,7 @@
 import addon_utils
 import bpy
 
-addon_utils.disable("maximize", default_set=True)
+addon_utils.disable("maximize")  # a script unload: Moritz without Maximize
 
 
 def say(*a): print("MXSUB", " ".join(str(x) for x in a), flush=True)

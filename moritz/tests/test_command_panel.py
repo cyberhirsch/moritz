@@ -26,7 +26,7 @@ check("Create filter", hasattr(bpy.types.SpaceProperties, "show_properties_creat
       "show_properties_create" in bpy.types.SpaceProperties.bl_rna.properties.keys())
 
 # Every object type of the Create tab is a valid operator call.
-addon_utils.disable("maximize", default_set=True)
+addon_utils.disable("maximize")  # a script unload: Moritz without Maximize
 check("no hook without Maximize", bpy.types.PROPERTIES_PT_create.object_type_draw is None)
 before = len(bpy.data.objects)
 bad = []
@@ -59,7 +59,7 @@ addon_utils.enable("maximize", default_set=True)
 from maximize import ui as max_ui  # noqa: E402
 check("hook with Maximize", bpy.types.PROPERTIES_PT_create.object_type_draw is max_ui.draw_object_types)
 check("sidebar Create hidden", not max_ui.MAXIMIZE_PT_create.poll(bpy.context))
-addon_utils.disable("maximize", default_set=True)
+addon_utils.disable("maximize")  # a script unload: Moritz without Maximize
 check("hook removed", bpy.types.PROPERTIES_PT_create.object_type_draw is None)
 
 # A file saved with the Create tab open. Stock Blender falls back to the Object tab for the unknown

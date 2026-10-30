@@ -6,7 +6,8 @@ takes a few minutes; tick it in `TASK.md` when it passes, or note what went wron
 
 **Release candidate** (built 2026-10-30 from `5db869f5794`, not published):
 - `G:\Code\Moritz\dist\rc-0.2\moritz-5.3-windows-x64.zip`: portable, with Maximize bundled
-  (off until you enable it)
+  (in this candidate still an add-on, off until you enable it; Maximize is built in since
+  2026-10-30, so rebuild the packages for the release)
 - `G:\Code\Moritz\dist\rc-0.2\moritz-5.3-windows-x64.msi`: per-user installer
 
 ## 1. Docking with a real mouse and two monitors (TASK.md, Phase 1)
@@ -22,7 +23,7 @@ Simulated events already pass. What simulation can't cover is real mouse timing 
 
 ## 2. The whole add-on with a real mouse (TASK.md, Phase 1)
 
-Enable Maximize (Preferences > Add-ons), Keymap: Max, Names: Max.
+In Preferences > Keymap, choose Keymap: Max and Names: Max (Maximize is built in and always on).
 1. Navigation: MMB pan, Alt+MMB orbit, Ctrl+Alt+MMB zoom, Alt+W maximize, Z zoom extents.
 2. Right-click quad menu in Object Mode and in Edit Mode: the text faces the cursor, the titles
    form a band through the middle, the current level is framed, and Convert To opens a submenu.

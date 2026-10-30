@@ -45,26 +45,26 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
   Test `test_no_max_tab.py`. Still an add-on: Maximize is listed in Preferences > Add-ons; making
   it a built-in part needs core changes.)*
   **(Seb, 2026-10-30: Maximize must not appear in Preferences > Add-ons in Moritz either.)**
-  Next core batch, needs a rebuild (ask Seb first). Plan (recommended: a mix of the two options,
-  built in for the user, still an add-on package underneath):
-  - [ ] **Ship it inside Moritz:** the build installs `G:/Code/Maximize/maximize` into
-    `scripts/addons_core/maximize` (a CMake option `MORITZ_MAXIMIZE_DIR`, as the packaging scripts
-    already do), so dev builds, the zip and the MSI all carry the same copy. A Maximize update
-    reaches Moritz with the next build. A copy in the user's add-ons folder would clash with it
-    (same module name), so Moritz ignores that one.
-  - [ ] **Always on:** Moritz enables `maximize` at startup (`addon_utils`, before the user
-    preferences load), and `addon_utils.disable` refuses it in Moritz. Splash and first-run setup
-    no longer offer "enable Maximize".
-  - [ ] **Not in the Add-ons list:** `USERPREF_PT_addons` skips it, and Install / Remove /
-    Refresh cannot see or touch it.
-  - [ ] **Its settings in Moritz's own Preferences:** the keymap switch and name scheme in Keymap
-    (next to the preset); hover highlight, tool settings style (Caddy), the new-file layout and the
-    cage colors in Interface or Viewport. They stay stored as the add-on's preferences in
-    `userpref.blend`, so nothing migrates. `wm.py` and `space_userpref.py` read them as before.
-  - [ ] **Checks:** files still open in stock Blender with or without Maximize (no change: the
-    add-on keeps writing plain Blender data); Maximize on stock Blender is unchanged (it is the same
-    folder); the full suite passes; a test that `maximize` is enabled, cannot be disabled and is
-    not in the Add-ons list.
+  Done 2026-10-30 in Moritz's Python scripts (no compile; the next build installs them, until
+  then they are copied into the build's `5.3/scripts` by hand). Built in for the user, still an
+  add-on package underneath:
+  - [x] **Shipped with Moritz:** the zip and the MSI copy Maximize into `scripts/addons_core`
+    (as before). A development build finds it in the user's add-ons, where Seb's is a link to the
+    Maximize repository, so every Maximize change reaches it at once. (A CMake install was dropped:
+    its copy would have hidden that link until the next build.)
+  - [x] **Always on:** `addon_utils.BUILTIN`; `_enable_builtin()` turns it on at startup and on
+    script reload, also with factory settings. `addon_utils.disable(..., default_set=True)` (the
+    Preferences checkbox) refuses it; a script reload still unloads and reloads it.
+  - [x] **Not in the Add-ons list:** both list implementations (`bl_pkg` and the legacy
+    `USERPREF_PT_addons`) and the workspace add-on filter skip it.
+  - [x] **Its settings in Moritz's own Preferences:** name scheme in Keymap (as before); Tool
+    Settings (Caddy), Hover Highlight and Quad View Layout for New Files in Interface > Editors; the
+    cage colors in Viewport > Display. Still stored as the add-on's preferences in
+    `userpref.blend`, so nothing migrates.
+  - [x] **Checks:** files open in stock Blender as before (the add-on still writes plain Blender
+    data, nothing in files changed); Maximize on stock Blender is unchanged (it is the same
+    folder). Test `moritz/tests/test_maximize_builtin.py`; all 61 test scripts pass (three Moritz
+    tests now unload Maximize by script to check Moritz without it).
   - Rejected: turning Maximize into a startup module (option a in its pure form). That would
     mean rewriting its `AddonPreferences`, every `get_prefs` call and the two core readers, and
     keeping two variants of the code apart, for no difference the user can see.

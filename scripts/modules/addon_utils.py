@@ -80,6 +80,30 @@ def _initialize_once():
             refresh_handled=True,
         )
 
+    _enable_builtin()
+
+
+# Moritz: add-ons that are part of Moritz: always enabled, not listed in Preferences > Add-ons,
+# and the user cannot disable them. The packages ship them in `addons_core`; a development build
+# finds them in the user's add-ons (a link to the add-on's repository).
+BUILTIN = ("maximize",)
+
+
+def is_builtin(module_name):
+    """Moritz: whether this add-on is a built-in part of Moritz (only when it is installed)."""
+    import os
+    if module_name not in BUILTIN:
+        return False
+    return any(os.path.isfile(os.path.join(path, module_name, "__init__.py")) for path in paths())
+
+
+def _enable_builtin():
+    """Moritz: the built-in parts are always on, also with factory settings. Unlike the hidden core
+    add-ons they are in the preferences' add-ons, so their settings are saved."""
+    for module_name in BUILTIN:
+        if is_builtin(module_name) and not check(module_name)[1]:
+            enable(module_name, default_set=True, refresh_handled=True)
+
 
 def paths():
     import os
@@ -587,6 +611,11 @@ def disable(module_name, *, default_set=False, refresh_handled=False, handle_err
             import traceback
             traceback.print_exc()
 
+    # Moritz: a built-in part stays on (reloading scripts still unloads it, without `default_set`).
+    if default_set and is_builtin(module_name):
+        print("addon_utils.disable:", module_name, "is part of Moritz and stays enabled")
+        return
+
     mod = sys.modules.get(module_name)
 
     # Possible this add-on is from a previous session and didn't load a
@@ -657,6 +686,8 @@ def reset_all(*, reload_scripts=False):
             elif is_loaded:
                 print("\taddon_utils.reset_all unloading", mod_name)
                 disable(mod_name)
+
+    _enable_builtin()
 
 
 def disable_all():

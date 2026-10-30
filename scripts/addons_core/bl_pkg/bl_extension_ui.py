@@ -468,6 +468,9 @@ def addons_panel_draw_items(
 
     for mod in addon_modules:
         module_names.add(module_name := mod.__name__)
+        # Moritz: built-in parts of Moritz are not add-ons to the user.
+        if addon_utils.is_builtin(module_name):
+            continue
 
         is_enabled = module_name in used_addon_module_name_map
         if enabled_only and (not is_enabled):
