@@ -26,6 +26,13 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
   go into Blender's normal menus in Moritz (Object, Edit, Select, Mesh, View …), the quad menu and
   Preferences; Max-named aliases stay findable through F3 search and the name scheme. Same rule
   for anything else that shows the add-on: in Moritz, everything Max-related reads as built in.)*
+  - [ ] *(Seb, 2026-10-30: "yes, plan it")* **Maximize out of Preferences > Add-ons in Moritz**,
+    with the next core batch (**rebuild**). Options: (a) ship Maximize's code as a built-in part
+    of Moritz (a startup module, always on, settings in Preferences under its own section, no
+    add-on entry); (b) keep it an add-on but have Moritz's add-on list hide it and refuse to
+    disable it. (a) fits "a Blender alternative, not Blender plus an add-on" best; Maximize stays a
+    separate add-on for stock Blender. Check: updates of Maximize must still reach Moritz, and
+    files saved with it must still open in stock Blender (with or without Maximize).
   *(Done 2026-10-30, Maximize: no header Max menu in Moritz. Its entries: Create/Shapes in Add,
   modifiers in Add Modifier, Chamfer/Connect in Mesh > Vertices and Edges, Delete Sub-Objects in
   Mesh > Delete, Type-In and the pivot tools in Object > Transform, Reset XForm in Object > Apply,
@@ -36,7 +43,32 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
   and "Sculpt" in Add Modifier, "Max Spline Tools" is "Spline Tools", the new-file layout no
   longer opens the sidebar on a Max tab, and its preference is "Quad View Layout for New Files".
   Test `test_no_max_tab.py`. Still an add-on: Maximize is listed in Preferences > Add-ons; making
-  it a built-in part needs core changes.)* In Moritz there is **no "Max" sidebar tab**; it stays only in Maximize on
+  it a built-in part needs core changes.)*
+  **(Seb, 2026-10-30: Maximize must not appear in Preferences > Add-ons in Moritz either.)**
+  Next core batch, needs a rebuild (ask Seb first). Plan (recommended: a mix of the two options,
+  built in for the user, still an add-on package underneath):
+  - [ ] **Ship it inside Moritz:** the build installs `G:/Code/Maximize/maximize` into
+    `scripts/addons_core/maximize` (a CMake option `MORITZ_MAXIMIZE_DIR`, as the packaging scripts
+    already do), so dev builds, the zip and the MSI all carry the same copy. A Maximize update
+    reaches Moritz with the next build. A copy in the user's add-ons folder would clash with it
+    (same module name), so Moritz ignores that one.
+  - [ ] **Always on:** Moritz enables `maximize` at startup (`addon_utils`, before the user
+    preferences load), and `addon_utils.disable` refuses it in Moritz. Splash and first-run setup
+    no longer offer "enable Maximize".
+  - [ ] **Not in the Add-ons list:** `USERPREF_PT_addons` skips it, and Install / Remove /
+    Refresh cannot see or touch it.
+  - [ ] **Its settings in Moritz's own Preferences:** the keymap switch and name scheme in Keymap
+    (next to the preset); hover highlight, tool settings style (Caddy), the new-file layout and the
+    cage colors in Interface or Viewport. They stay stored as the add-on's preferences in
+    `userpref.blend`, so nothing migrates. `wm.py` and `space_userpref.py` read them as before.
+  - [ ] **Checks:** files still open in stock Blender with or without Maximize (no change: the
+    add-on keeps writing plain Blender data); Maximize on stock Blender is unchanged (it is the same
+    folder); the full suite passes; a test that `maximize` is enabled, cannot be disabled and is
+    not in the Add-ons list.
+  - Rejected: turning Maximize into a startup module (option a in its pure form). That would
+    mean rewriting its `AddonPreferences`, every `get_prefs` call and the two core readers, and
+    keeping two variants of the code apart, for no difference the user can see.
+  In Moritz there is **no "Max" sidebar tab**; it stays only in Maximize on
   stock Blender. Its contents move to native places in Moritz (proposal):
   - Modifier Stack (Edit Poly, Collapse To / All): into the Modify tab's stack.
   - Hierarchy (Affect Pivot Only, Center to Object, Align to World, Reset XForm): ~~a Hierarchy
