@@ -908,6 +908,7 @@ if(WITH_BLENDER)
       tab_create
       tab_modify
       tab_utilities
+      mx_cr_teapot
       mx_al_make_planar
       mx_al_to_grid
       mx_al_to_view

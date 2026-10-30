@@ -26,7 +26,8 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
   go into Blender's normal menus in Moritz (Object, Edit, Select, Mesh, View …), the quad menu and
   Preferences; Max-named aliases stay findable through F3 search and the name scheme. Same rule
   for anything else that shows the add-on: in Moritz, everything Max-related reads as built in.)*
-  - [ ] *(Seb, 2026-10-30: "yes, plan it")* **Maximize out of Preferences > Add-ons in Moritz**,
+  - [x] *(Done 2026-10-30, Moritz 435a44d3c56: see the Done note below; no rebuild was needed.)*
+    *(Seb, 2026-10-30: "yes, plan it")* **Maximize out of Preferences > Add-ons in Moritz**,
     with the next core batch (**rebuild**). Options: (a) ship Maximize's code as a built-in part
     of Moritz (a startup module, always on, settings in Preferences under its own section, no
     add-on entry); (b) keep it an add-on but have Moritz's add-on list hide it and refuse to
@@ -113,6 +114,17 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
   - **Reset XForm (Seb, 2026-10-29): keep Blender's Apply**; no own Reset XForm tool. In the
     **quad menu** the entry is named "Reset XForm" and runs Blender's Apply (All Transforms).
 
+- *(Seb, 2026-10-30, screenshot of the Modify tab on an Editable Poly base object)* **Editable
+  Poly gets every option of Edit Poly.** Today the base object (no Edit Poly modifier) shows only
+  Selection and Paint Deform. As in Max, it shows the same rollouts as the Edit Poly modifier
+  (Soft Selection, Edit Geometry, the per-level Edit Vertices / Edges / Borders / Polygons /
+  Elements, Loops, Polygon: Material IDs and Smoothing Groups, Subdivision …), working directly on
+  the mesh. *(Done 2026-10-30, Maximize: the base and the modifier already drew the same rollouts
+  (one function), but in Object Mode both showed only Selection and Paint Deform. Now, as in Max:
+  Selection, Soft Selection (new: Blender's proportional editing in Max's words), Edit Geometry
+  (in Object Mode Attach, the sub-object tools greyed until a level is picked), then in Edit Mode
+  the level's Edit rollout, Loops, Material IDs and Smoothing Groups, and Paint Deform last.)*
+
 ## UX rules (Seb)
 
 - *(2026-10-29)* **Modal tools and brushes never block the UI.** While a tool or brush runs (for
@@ -150,6 +162,18 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
 - [x] About dialog: Moritz logo and version, "Based on Blender"
 - [x] Executable name `moritz.exe` and `moritz-launcher.exe`
 - [x] Check that no Blender logo or trademark text is left in the UI (menu, quit, window titles, factory settings; Blender's own links stay named as Blender's)
+- [ ] *(Seb, 2026-10-30: "there is still a lot of references to blender", "version number bottom
+  left / right")* **Second rebrand sweep; the first check missed some.** The status-bar version at
+  the bottom right shows Blender's logo and "5.3.0 b" (Seb's screenshot): use the Moritz logo and
+  "Moritz 0.1 Alpha" there instead, with Blender's
+  version only in About ("Based on Blender 5.3"). Then grep every user-visible string for "Blender"
+  (status bar, tooltips, menu labels such as "Blender Preferences", "Quit Blender", "Save Blender
+  File", operator descriptions, error and report messages, the Help menu, the File Browser, the
+  installer/MSI texts) and change them to Moritz. Keep as they are: links to Blender's own manual
+  and website (named as Blender's), "Based on Blender", the license texts, and anything internal
+  (`bpy`, `.blend`, the file header). *Warning: the `.blend` extension and the `BLENDER` file header
+  must stay so files open in stock Blender. Changing translated strings means updating the `.po`
+  files too. Core change, needs a rebuild.*
 
 ### Legal
 - [x] Keep `COPYING` and the license headers; add a Moritz `README.md` with a source link
@@ -258,7 +282,18 @@ Separate repository: [github.com/cyberhirsch/maximize](https://github.com/cyberh
   the coverage check.
 - [x] *(done 2026-10-29: Tab toggles Edit Mode in Object Non-modal; Space is `maximize.space_key` in
   Frames: maximizes over a 3D View, plays elsewhere, stops playback; Max's Selection Lock stays on
-  its Max key)* *(Seb, 2026-10-29)* **Moritz keymap only** (not the Max one):
+  its Max key)* *(Seb, 2026-10-30: **Tab toggles Object / Edit Mode in both keymaps**, Max and
+  Moritz, in both directions. Moritz keymap verified 2026-10-30, Maximize ecc6f92,
+  `test_tab_toggle.py`; in the Max keymap Tab was Search (from Industry Compatible), so Search
+  moves to X there too, as in Moritz. Done 2026-10-30, Maximize 0146472 / Moritz af16c67fd28: the
+  binding is in the shared part of the keymap; `test_tab_toggle.py` passes in both keymaps,
+  including after 1-6 and with Edit Poly.)* *(Seb, 2026-10-30: **Moritz starts with the Moritz keymap as
+  default**: factory settings, a fresh install and the Quick Setup preselect Moritz. TASK.md
+  already said "Moritz is the default", but Seb's Moritz was on Max; check whether the default
+  really applies or whether only his saved preferences hold Max. Checked 2026-10-30: factory
+  settings start with Moritz (also in a GUI start; the Quick Setup preselects the active keymap,
+  and Maximize's first-run setup activates Moritz). Seb's saved userpref.blend holds Max; switch
+  in Preferences > Keymap or the Quick Setup. Nothing to fix.)* *(Seb, 2026-10-29)* **Moritz keymap only** (not the Max one):
   - **Tab** still toggles Object / Edit Mode, in addition to the number keys 1–6.
   - **Space** maximizes the viewport, in addition to Alt+W.
   - Check what Space does now in the Moritz keymap and what it loses (in Max: Selection Lock
@@ -997,6 +1032,24 @@ Steps:
   sub-category dropdown via the core hook `PROPERTIES_PT_create_category.subcategory_draw`, AutoGrid
   and Start New Shape checkboxes, buttons in Max's order, Max names without spaces (TorusKnot001).
   Test: Maximize `tests/test_create_primitives.py`.*
+- [x] *(Done 2026-10-30, Maximize 3d65d4d / Moritz ce41a7a0e6b: all types at once, a gap between
+  the groups; the core's `subcategory_draw` hook is gone.)*
+  *(Seb, 2026-10-30: "we don't need those sections, there is enough room for all buttons
+  here")* **Drop the sub-category dropdown** (Standard Primitives / Extended Primitives /
+  Compound Objects, and the same for Shapes). The Create tab shows **all object types of a
+  category at once** in the two-column grid: Max needs the dropdown for its narrow panel, Moritz
+  has the room. Keep Max's order (standard first, then extended, then compound); at most a thin
+  separator between the groups, no headers or extra clicks.
+- [x] *(Done 2026-10-30: Suzanne is its own button after Teapot (Create tab, Add > Standard
+  Primitives), `maximize.add_suzanne`, a plain mesh dragged from the center, size baked into the
+  mesh at scale 1, test `test_suzanne.py`. Teapot's own icon `MX_CR_TEAPOT` is in Moritz's icon
+  set; it shows after the next rebuild, until then Teapot keeps the monkey.)*
+  *(Seb, 2026-10-30: "teapot has a monkey face, please add both, susanne and utah teapot")*
+  **Teapot and Suzanne as two buttons.** The Teapot button borrows Blender's monkey icon (`MONKEY`).
+  Teapot gets its own teapot icon (new, in the approved icon style). Suzanne becomes its own button
+  in Standard Primitives, right after Teapot, with the monkey icon. It adds Blender's monkey mesh
+  (`primitive_monkey_add`), drag-created like the others, name Suzanne001 in the Max name scheme.
+  *Icon is new art, add-on side; files unaffected.*
   - Standard Primitives: Box ✅, Cone ✅, Sphere ✅, GeoSphere ✅, Cylinder ✅, Tube ✅, Torus ✅,
     Pyramid ✅, Teapot ✅ (Utah patches, Body / Handle / Spout / Lid), Plane ✅, TextPlus ✅ (filled
     Blender text; Text is the outline-only one)
