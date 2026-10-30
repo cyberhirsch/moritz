@@ -135,6 +135,10 @@ def apply(km, moritz=False, maya_navigation=False):
     km.view("wm.context_toggle", _event('S'), {"data_path": "tool_settings.use_snap"})
     km.view("maximize.angle_snap", _event('A'))
     km.view("wm.search_menu", _event('X'))
+    # Tab toggles Object / Edit Mode as in Blender, beside Max's 1-6 levels (Seb, both keymaps);
+    # Industry Compatible's search on Tab moves to X, Max's own Search Actions key.
+    km.remove("3D View", "wm.search_menu", _event('TAB'))
+    km.bind("Object Non-modal", "object.mode_set", _event('TAB'), {"mode": 'EDIT', "toggle": True})
     km.view("maximize.transform_typein", _event('F12'))
     km.view("maximize.affect_pivot_only", _event('INSERT'))
     km.view("maximize.material_editor", _event('M'))
@@ -363,11 +367,8 @@ def _numpad_views(km):
 
 
 def _moritz_keys(km):
-    """Moritz: Tab toggles Object / Edit Mode as in Blender, beside Max's 1-6 levels (the search
-    stays on X), and Space maximizes the viewport beside Alt+W (play stays on Max's /, and Space
-    still plays outside the viewport)."""
-    km.remove("3D View", "wm.search_menu", _event('TAB'))
-    km.bind("Object Non-modal", "object.mode_set", _event('TAB'), {"mode": 'EDIT', "toggle": True})
+    """Moritz: Space maximizes the viewport beside Alt+W (play stays on Max's /, and Space still
+    plays outside the viewport)."""
     # In Frames, where Space plays: the 3D View keymap comes after it.
     km.bind("Frames", "maximize.space_key", _event('SPACE'))
 
