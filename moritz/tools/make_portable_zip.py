@@ -29,6 +29,17 @@ def version(release):
     raise SystemExit("no version folder in " + release)
 
 
+SOURCE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+def moritz_version():
+    """Moritz's own version (the package names), not Blender's (the version folder)."""
+    path = os.path.join(SOURCE, "source", "blender", "blenkernel", "BKE_moritz_version.h")
+    with open(path, encoding="utf-8") as f:
+        match = re.search(r'#define MORITZ_VERSION_STRING "([^"]+)"', f.read())
+    return match.group(1).replace(" ", "-").lower()
+
+
 def add_tree(zf, root, arc_root, skip_dirs=()):
     for dirpath, dirnames, filenames in os.walk(root):
         # Junctions and links are not followed; the add-on is added from its repository.
@@ -53,7 +64,7 @@ def main():
     maximize = os.path.abspath(sys.argv[2]) if len(sys.argv) > 2 else None
     out_dir = os.path.abspath(sys.argv[3]) if len(sys.argv) > 3 else os.getcwd()
     ver = version(release)
-    top = "moritz-{}-windows-x64".format(ver)
+    top = "moritz-{}-windows-x64".format(moritz_version())
     out = os.path.join(out_dir, top + ".zip")
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
         add_tree(zf, release, top, skip_dirs=(os.path.join(release, "portable"),))

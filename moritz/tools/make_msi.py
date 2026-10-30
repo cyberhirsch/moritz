@@ -16,12 +16,13 @@ registers no file types: .blend files keep opening in (and showing the icon of) 
 """
 
 import os
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
 
-from make_portable_zip import SKIP_NAMES, SKIP_SUFFIXES, _is_junction, version
+from make_portable_zip import SKIP_NAMES, SKIP_SUFFIXES, _is_junction, moritz_version, version
 
 # Fixed forever: Windows matches installed and new versions of Moritz by it.
 UPGRADE_CODE = "6F1E2C7A-3D5B-4E8F-9A21-4D0C7B5E9A13"
@@ -93,7 +94,8 @@ def main():
     maximize = os.path.abspath(sys.argv[2]) if len(sys.argv) > 2 else None
     out_dir = os.path.abspath(sys.argv[3]) if len(sys.argv) > 3 else os.getcwd()
     ver = version(release)
-    out = os.path.join(out_dir, "moritz-{}-windows-x64.msi".format(ver))
+    mver = moritz_version()
+    out = os.path.join(out_dir, "moritz-{}-windows-x64.msi".format(mver))
 
     work = tempfile.mkdtemp(prefix="moritz_msi_")
     try:
@@ -112,7 +114,9 @@ def main():
 
         wxs = os.path.join(work, "moritz.wxs")
         with open(wxs, "w", encoding="utf-8") as f:
-            f.write(WXS.format(ver=ver, msi_ver=ver + ".0", upgrade=UPGRADE_CODE,
+            # An MSI version has numbers only: "0.2.0 Beta" installs as 0.2.0.
+            msi_ver = re.match(r"[\d.]+", mver).group(0).strip(".")
+            f.write(WXS.format(ver=mver, msi_ver=msi_ver, upgrade=UPGRADE_CODE,
                                shortcut_guid=SHORTCUT_GUID, license=license_rtf,
                                icon=os.path.join(SOURCE, "release", "windows", "icons",
                                                  "winblender.ico")))
