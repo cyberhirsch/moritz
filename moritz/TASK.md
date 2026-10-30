@@ -1193,5 +1193,5 @@ No-brainers (approved by Seb, 2026-10-25):
   already shows collections).
 
 ## Upstream maintenance (recurring)
-- [ ] Merge each Blender release branch into `moritz/main` (recurring; last: 4 fixes from `blender-v5.3-release`, 2026-10-30, merge ca65c5eef82; before that 115 fixes, 2026-10-29, merge a188bb1acd8, no conflicts, Windows libraries updated for the KTX / OpenImageIO fix; merge with `GIT_LFS_SKIP_SMUDGE=1`, a plain merge dies on LFS test images)
-- [ ] Re-run the test suite and a smoke test of Maximize after each merge (recurring; last: 2026-10-30 after the 4-fix merge: all 60 test scripts pass, 14 Moritz + 46 Maximize)
+- [ ] Merge each Blender release branch into `moritz/main` (recurring; last: 1 fix from `blender-v5.3-release`, 2026-10-30, merge d1c576d7acf; before that 4 fixes, merge ca65c5eef82; before that 115 fixes, 2026-10-29, merge a188bb1acd8, no conflicts, Windows libraries updated for the KTX / OpenImageIO fix; merge with `GIT_LFS_SKIP_SMUDGE=1`, a plain merge dies on LFS test images)
+- [ ] Re-run the test suite and a smoke test of Maximize after each merge (recurring; last: 2026-10-30 after the 1-fix merge: all 64 test scripts pass; before that, after the 4-fix merge: all 60 test scripts pass, 14 Moritz + 46 Maximize)
