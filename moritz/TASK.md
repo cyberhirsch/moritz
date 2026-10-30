@@ -479,13 +479,18 @@ ribbon (Seb's screenshots) before building.
   runs it: a real Move of a preview extrusion (gizmo axis, X / Y / Z, snapping), then Smart Extrude
   along that move, one undo step; other tools keep Shift+drag. Merges with flush walls weld the
   boolean's slivers and drop its flat edges, leaving clean quads (2026-10-28))*
-  - [ ] **Bug** *(Seb, 2026-10-30: "that seems to work, but when i release it snaps back to the
+  - [x] **Bug** *(Seb, 2026-10-30: "that seems to work, but when i release it snaps back to the
     before state")*: Shift+drag of polygons shows the preview extrusion while dragging, but on
     release the mesh returns to how it was before. Release path: `_watch_drag` in `smart_extrude.py`
     restores the mesh (`ed.undo` + `before`) and then runs `maximize.smart_extrude(offset=…)`.
     Either that operator cancels or makes no change, the undo takes away more than the Move, or the
     timer never fires (for example if `window.modal_operators` still lists a transform). Reproduce
     in the GUI with the Moritz and the Max keymap, with and without the gizmo.
+    Fixed (Maximize 72c2e6b): the `ed.undo` dropped the Python references to the object and the
+    `before` mesh, so the extrude raised and never ran. Now by name with a detached BMesh copy;
+    redo when the undo left Edit Mode; the selection is restored too. GUI test
+    `tests/test_smart_extrude_drag.py` passes in both keymaps, face drag and gizmo arrow.
+    Not covered: Shift+drag on the gizmo's center ring does a plain move.
 - [x] **Set Flow** *(done 2026-10-28, Maximize `poly_tools.py`, Edge level > Loops: the selected edges'
   vertices go onto a curve through the two vertices on each side across the loop; Amount, Auto
   Loop. Skips poles and vertices without a clear crossing loop)*
