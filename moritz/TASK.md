@@ -18,7 +18,25 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
 
 - *(2026-10-29)* **Moritz is a Blender alternative, not Blender plus an add-on.** Seb: "moritz
   should not feel like a blender alternative that ships with an addon. it should just feel like a
-  blender alternative." In Moritz there is **no "Max" sidebar tab**; it stays only in Maximize on
+  blender alternative." *(Sidebar tab done 2026-10-30, Maximize 00a6b13: all 8 "Max" panels poll
+  False in Moritz, test `test_no_max_tab.py`; stack, Material IDs and Smoothing live in the Modify
+  tab, selection sets and keymap in the header Max menu, quad menu and Preferences. Open: the
+  header menu is still called "Max", which also reads like an add-on.)* **(Seb, 2026-10-30: the
+  whole header Max menu appears only in Maximize on stock Blender, never in Moritz.** Its entries
+  go into Blender's normal menus in Moritz (Object, Edit, Select, Mesh, View …), the quad menu and
+  Preferences; Max-named aliases stay findable through F3 search and the name scheme. Same rule
+  for anything else that shows the add-on: in Moritz, everything Max-related reads as built in.)*
+  *(Done 2026-10-30, Maximize: no header Max menu in Moritz. Its entries: Create/Shapes in Add,
+  modifiers in Add Modifier, Chamfer/Connect in Mesh > Vertices and Edges, Delete Sub-Objects in
+  Mesh > Delete, Type-In and the pivot tools in Object > Transform, Reset XForm in Object > Apply,
+  Align/Array/Spacing/Clone in Object, Select by Name and Named Selection Sets in Select, Maximize
+  Viewport/Camera from View in View, Render Setup/Material Editor in Render, keymap in
+  Preferences. The aliases the name scheme doesn't already give show in the menu of the operator
+  they call, with Max or Moritz names only. Also: "Freeform (Max)"/"Sculpt (Max)" are "Freeform"
+  and "Sculpt" in Add Modifier, "Max Spline Tools" is "Spline Tools", the new-file layout no
+  longer opens the sidebar on a Max tab, and its preference is "Quad View Layout for New Files".
+  Test `test_no_max_tab.py`. Still an add-on: Maximize is listed in Preferences > Add-ons; making
+  it a built-in part needs core changes.)* In Moritz there is **no "Max" sidebar tab**; it stays only in Maximize on
   stock Blender. Its contents move to native places in Moritz (proposal):
   - Modifier Stack (Edit Poly, Collapse To / All): into the Modify tab's stack.
   - Hierarchy (Affect Pivot Only, Center to Object, Align to World, Reset XForm): ~~a Hierarchy

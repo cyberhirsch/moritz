@@ -38,7 +38,7 @@ enables on first start.
 |---|---|
 | Move / Rotate / Scale | W / E / R; F5 / F6 / F7 lock X / Y / Z while transforming, F8 the plane (Blender's X/Y/Z and typed numbers work too) |
 | Transform Type-In | F12 *(Maximize)* |
-| Affect Pivot Only, Center to Object, Reset XForm | Insert; sidebar > Max > Pivot *(Maximize)* |
+| Affect Pivot Only, Center to Object, Reset XForm | Insert; Object > Transform *(Maximize)* |
 | Align | Alt+A, then pick the target *(Maximize)* |
 | Clone (Copy / Instance / Reference) | Ctrl+V, or Shift+drag (also on the gizmo) *(Maximize)*. Instances and references share the mesh and the original's whole modifier stack |
 | Make Unique | Quad menu / F3 "Make Unique" |
@@ -49,10 +49,10 @@ enables on first start.
 
 | Max | Moritz |
 |---|---|
-| Standard Primitives with parameters | Add > Standard Primitives; drag to create; parameters in the sidebar > Max > Modify *(Maximize)* |
+| Standard Primitives with parameters | Add > Standard Primitives; drag to create; parameters in the Modify tab *(Maximize)* |
 | Convert to Editable Poly | Press 1–5, or quad menu |
 | Sub-object levels 1–5, 6 back | The same; the header shows Vertex, Edge, Border, Polygon, Element |
-| Edit Poly modifier | Quad menu > Tools > Edit Poly Modifier: edit with 1–5 while the modifiers below stay live; Collapse To / Collapse All in the sidebar *(Maximize, prototype)* |
+| Edit Poly modifier | Quad menu > Tools > Edit Poly Modifier: edit with 1–5 while the modifiers below stay live; Collapse To / Collapse All in the Modify tab's stack *(Maximize, prototype)* |
 | Show End Result | Alt+` |
 | Extrude, Chamfer, Bevel, Connect, Cut, Swift Loop, Weld, Target Weld, Collapse, Bridge, Cap, Detach | Max names in the quad menu and F3 search, Max keys (Shift+E, Ctrl+Shift+C, Ctrl+Shift+B, Ctrl+Shift+E, Alt+C, Alt+1...) |
 | Smoothing groups | Sidebar > Max > Polygon: Smoothing Groups (32 buttons, Auto Smooth, Select By SG) at polygon level |
