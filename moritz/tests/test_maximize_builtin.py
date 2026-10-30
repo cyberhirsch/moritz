@@ -53,7 +53,7 @@ check("editing settings in Interface > Editors",
 check("cage colors in Viewport > Display", {"cage_color", "cage_selected_color"} <= set(viewport), viewport)
 keymap_props = [p.identifier for p in prefs.bl_rna.properties]
 check("every setting has a place", all(
-    name in editors + viewport + ["name_scheme", "first_run_done", "rna_type", "bl_idname"]
+    name in editors + viewport + ["name_scheme", "first_run_done", "moritz_keymap_done", "rna_type", "bl_idname"]
     for name in keymap_props), keymap_props)
 
 # The Add-ons list: the module loop skips built-in parts (both list implementations).
