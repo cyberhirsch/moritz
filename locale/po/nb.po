@@ -1812,7 +1812,7 @@ msgid "Current File"
 msgstr "Gjeldende fil"
 
 
-msgid "Show the assets currently available in this Blender session"
+msgid "Show the assets currently available in this Moritz session"
 msgstr "Vis de tilgjengelige eiendelene i denne Blender-økta"
 
 
@@ -1872,7 +1872,7 @@ msgid "Catalog UUID"
 msgstr "Katalog UUID"
 
 
-msgid "Identifier for the asset's catalog, used by Blender to look up the asset's catalog path. Must be a UUID according to RFC4122."
+msgid "Identifier for the asset's catalog, used by Moritz to look up the asset's catalog path. Must be a UUID according to RFC4122."
 msgstr "Identifikator for eiendelens katalog, brukes av Blender for å søke etter eiendelens katalog sti. Må være en UUID i følge RFC4122."
 
 
@@ -2533,7 +2533,7 @@ msgid "Is Internal"
 msgstr "Er intern"
 
 
-msgid "The attribute is meant for internal use by Blender"
+msgid "The attribute is meant for internal use by Moritz"
 msgstr "Egenskapen er ment for intern bruk av Blender"
 
 

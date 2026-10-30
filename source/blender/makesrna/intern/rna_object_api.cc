@@ -27,7 +27,7 @@ namespace blender {
 #define MESH_DM_INFO_STR_MAX 16384
 
 static const EnumPropertyItem space_items[] = {
-    {CONSTRAINT_SPACE_WORLD, "WORLD", 0, "World Space", "The most global space in Blender"},
+    {CONSTRAINT_SPACE_WORLD, "WORLD", 0, "World Space", "The most global space in Moritz"},
     {CONSTRAINT_SPACE_POSE,
      "POSE",
      0,

@@ -1768,7 +1768,7 @@ msgid "Project Settings"
 msgstr "Opciones del proyecto"
 
 
-msgid "Manage the current Blender project"
+msgid "Manage the current Moritz project"
 msgstr "Permite administrar el proyecto actual de Blender"
 
 
@@ -1864,7 +1864,7 @@ msgid "Is Editable"
 msgstr "Es editable"
 
 
-msgid "Assets and catalogs in this library can be edited from the current Blender instance"
+msgid "Assets and catalogs in this library can be edited from the current Moritz instance"
 msgstr "Los recursos y catálogos de esta biblioteca pueden ser editados desde la instancia actual de Blender"
 
 
@@ -1884,7 +1884,7 @@ msgid "Current File"
 msgstr "Archivo actual"
 
 
-msgid "Show the assets currently available in this Blender session"
+msgid "Show the assets currently available in this Moritz session"
 msgstr "Muestra los recursos actualmente disponibles en esta sesión de Blender"
 
 
@@ -1892,7 +1892,7 @@ msgid "Essentials"
 msgstr "Esenciales"
 
 
-msgid "Show basic building blocks and utilities coming with Blender"
+msgid "Show basic building blocks and utilities coming with Moritz"
 msgstr "Muestra los elementos y utilidades básicas que vienen con Blender"
 
 
@@ -1972,7 +1972,7 @@ msgid "Catalog UUID"
 msgstr "UUID del catálogo"
 
 
-msgid "Identifier for the asset's catalog, used by Blender to look up the asset's catalog path. Must be a UUID according to RFC4122."
+msgid "Identifier for the asset's catalog, used by Moritz to look up the asset's catalog path. Must be a UUID according to RFC4122."
 msgstr "Identificador para el catálogo de recursos, usado por Blender para consultar la ruta del catálogo de recursos. Debe ser un identificador UUID de acuerdo a la norma RFC4122."
 
 
@@ -2721,7 +2721,7 @@ msgid "Is Internal"
 msgstr "Es interno"
 
 
-msgid "The attribute is meant for internal use by Blender"
+msgid "The attribute is meant for internal use by Moritz"
 msgstr "El atributo está diseñado sólo para uso interno de Blender"
 
 
@@ -3440,7 +3440,7 @@ msgid "All Data-Blocks"
 msgstr "Todos los bloques de datos"
 
 
-msgid "Read-only list of all IDs listed in Blender data-base. Warning: Order is not guaranteed and should be considered an internal implementation detail"
+msgid "Read-only list of all IDs listed in Moritz data-base. Warning: Order is not guaranteed and should be considered an internal implementation detail"
 msgstr "Lista de sólo lectura conteniendo todos los ID en la base de datos de Blender. Advertencia: No se garantiza un orden específico, debería ser considerado más bien como un detalle de implementación interno"
 
 
@@ -3613,7 +3613,7 @@ msgid "Project"
 msgstr "Proyecto"
 
 
-msgid "The currently active Blender project, if any"
+msgid "The currently active Moritz project, if any"
 msgstr "El proyecto actualmente activo en Blender, si lo hubiera"
 
 
@@ -4318,7 +4318,7 @@ msgid "Library (blend-file) reference in a BlendImportContext data. Currently on
 msgstr "Referencia a una biblioteca (archivo .blend) en los datos de contexto de importación. Actualmente sólo expuesta como datos de sólo lectura para los manipuladores de pre/pos importación de archivos .blend"
 
 
-msgid "Blender Project"
+msgid "Moritz Project"
 msgstr "Proyecto de Blender"
 
 
@@ -9297,7 +9297,7 @@ msgid "Lin error"
 msgstr "Error Lineal"
 
 
-msgid "Amount of residual error in Blender space unit for constraints that work on position"
+msgid "Amount of residual error in world units for constraints that work on position"
 msgstr "Magnitud de error residual en unidades de espacio de Blender para las restricciones que trabajan sobre la posición"
 
 
@@ -13269,7 +13269,7 @@ msgid "Max Velocity"
 msgstr "Velocidad máx"
 
 
-msgid "Velocity considered as maximum influence (Blender units per frame)"
+msgid "Velocity considered as maximum influence (world units per frame)"
 msgstr "Velocidad considerada como influencia máxima (en unidades de Blender por fotograma)"
 
 
@@ -13647,7 +13647,7 @@ msgid "Premultiply Alpha"
 msgstr "Premultiplicar alfa"
 
 
-msgid "Multiply color by alpha (recommended for Blender input)"
+msgid "Multiply color by alpha (recommended for Moritz input)"
 msgstr "Multiplica el color por el alfa (recomendado para usar con Blender)"
 
 
@@ -16051,7 +16051,7 @@ msgid "Hide .blend files items that are not data-blocks with asset metadata"
 msgstr "Oculta los elementos de un archivo .blend que no sean bloques de datos con metadatos de recurso"
 
 
-msgid "Filter Blender Backup Files"
+msgid "Filter .blend Backup Files"
 msgstr "Filtrar respaldos de Blender"
 
 
@@ -16067,7 +16067,7 @@ msgid "Show .blend files"
 msgstr "Mostrar archivos .blend"
 
 
-msgid "Filter Blender IDs"
+msgid "Filter .blend Data"
 msgstr "Filtrar elementos de Blender"
 
 
@@ -16143,7 +16143,7 @@ msgid "Library Browser"
 msgstr "Explorador de bibliotecas"
 
 
-msgid "Whether we may browse Blender files' content or not"
+msgid "Whether we may browse .blend files' content or not"
 msgstr "Define si es posible explorar el contenido de archivos de Blender"
 
 
@@ -16603,7 +16603,7 @@ msgid "Export Mantaflow Script"
 msgstr "Exportar script de Mantaflow"
 
 
-msgid "Generate and export Mantaflow script from current domain settings during bake. This is only needed if you plan to analyze the cache (e.g. view grids, velocity vectors, particles) in Mantaflow directly (outside of Blender) after baking the simulation."
+msgid "Generate and export Mantaflow script from current domain settings during bake. This is only needed if you plan to analyze the cache (e.g. view grids, velocity vectors, particles) in Mantaflow directly (outside of Moritz) after baking the simulation."
 msgstr "Permite generar y exportar un script de Mantaflow a partir de las opciones del dominio actual, durante su captura. Esto sólo será necesario si se planea analizar el caché (p.ej: ver sus cuadrículas, vectores de velocidad, partículas, etc.) directamente en Mantaflow (aplicación externa a Blender) luego de capturar la simulación."
 
 
@@ -21900,7 +21900,7 @@ msgid "Unprojected Size"
 msgstr "Tamaño no proyectado"
 
 
-msgid "Diameter of brush in Blender units"
+msgid "Diameter of brush in world units"
 msgstr "Diámetro del pincel, en unidades de Blender"
 
 
@@ -25232,7 +25232,7 @@ msgid "Source library from which this archive of packed IDs was generated"
 msgstr "Biblioteca de origen desde la cual este archivo de ID empacadas fue generado"
 
 
-msgid "Path to the library .blend file. WARNING: Typically, this value should be considered read-only, changing this path without proper processing afterwards can leave Blender data in an invalid state"
+msgid "Path to the library .blend file. WARNING: Typically, this value should be considered read-only, changing this path without proper processing afterwards can leave Moritz data in an invalid state"
 msgstr "Ruta hasta el archivo .blend de la biblioteca. ADVERTENCIA: Normalmente este valor debería ser considerado como de sólo lectura; la modificación de esta ruta sin un tratamiento posterior apropiado podría provocar que los datos de Blender quedaran en un estado de invalidez"
 
 
@@ -31377,7 +31377,7 @@ msgid "Asset Blend Path"
 msgstr "Trayectoria archivo del recurso"
 
 
-msgid "Full path to the Blender file containing the active asset"
+msgid "Full path to the .blend file containing the active asset"
 msgstr "Ruta completa al archivo de Blender que contiene al recurso activo"
 
 
@@ -32533,7 +32533,7 @@ msgid "Custom Icon"
 msgstr "Ícono personalizado"
 
 
-msgid "True if this preview icon has been modified by py script, and is no more auto-generated by Blender"
+msgid "True if this preview icon has been modified by py script, and is no more auto-generated by Moritz"
 msgstr "Verdadero si este ícono de previsualización ha sido modificado por un script Python y por tanto Blender ya no lo está generando de forma automática"
 
 
@@ -32541,7 +32541,7 @@ msgid "Custom Image"
 msgstr "Imagen personalizada"
 
 
-msgid "True if this preview image has been modified by py script, and is no more auto-generated by Blender"
+msgid "True if this preview image has been modified by py script, and is no more auto-generated by Moritz"
 msgstr "Verdadero si esta imagen de previsualización ha sido modificada por un script Python y por tanto Blender ya no la está generando de forma automática"
 
 
@@ -56413,7 +56413,7 @@ msgid "Clear Status"
 msgstr "Limpiar estado"
 
 
-msgid "Allow Blender to access the internet. Add-ons that follow this setting will only connect to the internet if enabled. However, Blender cannot prevent third-party add-ons from violating this rule."
+msgid "Allow Moritz to access the internet. Add-ons that follow this setting will only connect to the internet if enabled. However, Moritz cannot prevent third-party add-ons from violating this rule."
 msgstr "Permite que Blender acceda a internet. Los complementos que se rijan por esta opción sólo podrán conectarse a internet cuando se encuentre activa. Sin embargo, Blender no puede evitar que complementos de terceros violen esta regla."
 
 
@@ -57626,7 +57626,7 @@ msgid "Uninstall Studio Light"
 msgstr "Desinstalar iluminación de estudio"
 
 
-msgid "Load and apply a Blender XML theme file"
+msgid "Load and apply an XML theme file"
 msgstr "Carga y aplica un archivo XML de tema de Blender"
 
 
@@ -70424,7 +70424,7 @@ msgid "Definition"
 msgstr "Definición"
 
 
-msgid "Number of pixels per inch or Blender Unit"
+msgid "Number of pixels per inch or world unit"
 msgstr "Cantidad de píxeles por pulgada o por unidad de Blender"
 
 
@@ -70448,7 +70448,7 @@ msgid "Force Reload"
 msgstr "Forzar recarga"
 
 
-msgid "Force reload the image if it is already opened elsewhere in Blender"
+msgid "Force reload the image if it is already opened elsewhere in Moritz"
 msgstr "Forzar la recarga de la imagen, en caso de que ya estuviera abierta en alguna otra parte de Blender"
 
 
@@ -70821,7 +70821,7 @@ msgid "Save the image with another name and/or settings"
 msgstr "Guarda la imagen con otro nombre y opciones"
 
 
-msgid "Create a new image file without modifying the current image in Blender"
+msgid "Create a new image file without modifying the current image in Moritz"
 msgstr "Crea un nuevo archivo de imagen sin modificar la imagen actual en Blender"
 
 
@@ -71093,7 +71093,7 @@ msgid "Make Unique"
 msgstr "Hacer único"
 
 
-msgid "Import each FBX material as a unique Blender material"
+msgid "Import each FBX material as a unique Moritz material"
 msgstr "Importar cada material FBX como un material único de Blender"
 
 
@@ -71361,7 +71361,7 @@ msgid "Update Reports Display"
 msgstr "Actualizar visualización de reportes"
 
 
-msgid "Update the display of reports in Blender UI (internal use)"
+msgid "Update the display of reports in Moritz UI (internal use)"
 msgstr "Actualiza la visualización de reportes en la interfaz de Blender (uso interno)"
 
 
@@ -83794,7 +83794,7 @@ msgid "Check for Updates on Startup"
 msgstr "Comprobar actualizaciones al inicio"
 
 
-msgid "Allow Blender to check for updates upon launch"
+msgid "Allow Moritz to check for updates upon launch"
 msgstr "Permitir que Blender compruebe si existen actualizaciones al inicio"
 
 
@@ -85339,7 +85339,7 @@ msgid "Save Screenshot"
 msgstr "Guardar captura de pantalla"
 
 
-msgid "Capture a picture of the whole Blender window"
+msgid "Capture a picture of the whole Moritz window"
 msgstr "Captura una imagen de toda la ventana de Blender"
 
 
@@ -87362,11 +87362,11 @@ msgid "Auto Detect"
 msgstr "Autodetectar"
 
 
-msgid "Add images as individual strips, unless their filenames match Blender's numbered sequence pattern, in which case they are grouped into a single image sequence"
+msgid "Add images as individual strips, unless their filenames match Moritz's numbered sequence pattern, in which case they are grouped into a single image sequence"
 msgstr "Agrega las imágenes como clips individuales, a menos que sus nombres de archivo coincidan con el patrón usado por Blender para secuencias numeradas, en cuyo caso serán agrupadas en una única secuencia de imágenes"
 
 
-msgid "Import all selected images as a single image sequence. The sequence of images does not have to match Blender's numbered sequence pattern, so placeholders cannot be inferred"
+msgid "Import all selected images as a single image sequence. The sequence of images does not have to match Moritz's numbered sequence pattern, so placeholders cannot be inferred"
 msgstr "Importa todas las imágenes seleccionadas como una única secuencia de imágenes. La secuencia de imágenes no tendrá por qué coincidir con el patrón usado por Blender para secuencias numeradas, por lo que no será posible inferir marcadores de posición"
 
 
@@ -89872,7 +89872,7 @@ msgid "Eyedropper"
 msgstr "Cuentagotas"
 
 
-msgid "Sample a color from the Blender window to store in a property"
+msgid "Sample a color from the Moritz window to store in a property"
 msgstr "Permite tomar un color desde la ventana de Blender, para almacenarlo en una propiedad"
 
 
@@ -89969,7 +89969,7 @@ msgid "Grease Pencil Eyedropper"
 msgstr "Cuentagotas de Grease Pencil"
 
 
-msgid "Sample a color from the Blender Window and create Grease Pencil material"
+msgid "Sample a color from the Moritz window and create Grease Pencil material"
 msgstr "Permite tomar una muestra de color desde la ventana de Blender y crear un material de Grease Pencil"
 
 
@@ -92675,7 +92675,7 @@ msgid "Run as Background Job"
 msgstr "Ejecutar como una tarea en segundo plano"
 
 
-msgid "Enable this to run the import in the background, disable to block Blender while importing. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
+msgid "Enable this to run the import in the background, disable to block Moritz while importing. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
 msgstr "Habilitar para procesar la importación en segundo plano, deshabilitar para mantener Blender bloqueado mientras se importa. Esta opción se ha marcado como obsoleta; EJECUTAR este operador para correrlo en primer plano; INVOCAR este operador para correrlo como una tarea en segundo plano"
 
 
@@ -92840,7 +92840,7 @@ msgid "Add cache modifiers and constraints to imported objects even if they are 
 msgstr "Agregar modificadores y restricciones de caché a los objetos importados, aun en caso de no estar animados, para que puedan ser actualizados al recargar el archivo Alembic"
 
 
-msgid "Enable this to run the export in the background, disable to block Blender while exporting. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
+msgid "Enable this to run the export in the background, disable to block Moritz while exporting. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
 msgstr "Habilitar para procesar la exportación en segundo plano, deshabilitar para mantener Blender bloqueado mientras se importa. Esta opción se ha marcado como obsoleta; EJECUTAR este operador para correrlo en primer plano; INVOCAR este operador para correrlo como una tarea en segundo plano"
 
 
@@ -93271,7 +93271,7 @@ msgid "Vertex colors in the file are in linear color space"
 msgstr "Los colores de vértices en el archivo están almacenados en espacio de color lineal"
 
 
-msgid "Import custom normals, if available (otherwise Blender will compute them)"
+msgid "Import custom normals, if available (otherwise Moritz will compute them)"
 msgstr "Permite importar normales personalizadas, si estuvieran disponibles (de otro modo Blender las calculará)"
 
 
@@ -93692,7 +93692,7 @@ msgid "Open"
 msgstr "Abrir"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "Abre un archivo de Blender"
 
 
@@ -93869,7 +93869,7 @@ msgid "Collection of file paths with common ``directory`` root"
 msgstr "Colección de rutas de archivo con una ``carpeta`` raíz en común"
 
 
-msgid "Show Blender files in the File Browser"
+msgid "Show .blend files in the File Browser"
 msgstr "Mostrar archivos de Blender en el explorador de archivos"
 
 
@@ -94389,15 +94389,15 @@ msgid "Save Blender File"
 msgstr "Guardar"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "Guarda el archivo actual de Blender"
 
 
-msgid "Exit Blender after saving"
+msgid "Exit Moritz after saving"
 msgstr "Salir de Blender después de guardar"
 
 
-msgid "Save the current Blender file with a numerically incremented name that does not overwrite any existing files"
+msgid "Save the current .blend file with a numerically incremented name that does not overwrite any existing files"
 msgstr "Guarda el archivo actual de Blender con un número incrementado al final de su nombre, y que no sobrescribirá ningún archivo existente"
 
 
@@ -94713,7 +94713,7 @@ msgid "Blender Names"
 msgstr "Nombres de Blender"
 
 
-msgid "Author USD custom attributes containing the original Blender object and object data names"
+msgid "Author USD custom attributes containing the original Moritz object and object data names"
 msgstr "Crear atributos personalizados de USD conteniendo los nombres originales del objeto y los datos de objeto de Blender"
 
 
@@ -95226,7 +95226,7 @@ msgid "Allow USD primitives to merge with their Xform parent if they are the onl
 msgstr "Permitir que las primitivas USD se fundan con la transformación de su superior, cuando sea el único elemento subordinado de la jerarquía"
 
 
-msgid "Import each USD material as a unique Blender material"
+msgid "Import each USD material as a unique Moritz material"
 msgstr "Importar cada material USD como un material único de Blender"
 
 
@@ -95262,7 +95262,7 @@ msgid "Import only the primitive at the given path and its descendants. Multiple
 msgstr "Importa sólo la primitiva en la ruta indicada y sus subordinadas. Es posible especificar múltiples rutas mediante una lista separada por comas o punto y comas"
 
 
-msgid "Behavior when importing USD attributes as Blender custom properties"
+msgid "Behavior when importing USD attributes as Moritz custom properties"
 msgstr "Comportamiento al importar atributos de USD como propiedades personalizadas de Blender"
 
 
@@ -95270,7 +95270,7 @@ msgid "Do not import USD custom attributes"
 msgstr "No importar atributos personalizados de USD"
 
 
-msgid "Import USD attributes in the 'userProperties' namespace as Blender custom properties. The namespace will be stripped from the property names"
+msgid "Import USD attributes in the 'userProperties' namespace as Moritz custom properties. The namespace will be stripped from the property names"
 msgstr "Importar atributos de USD en el espacio de nombres 'userProperties' como propiedades personalizadas de Blender. El espacio de nombres será tomado a partir de los nombres de las propiedades"
 
 
@@ -95278,7 +95278,7 @@ msgid "All Custom"
 msgstr "Todos los personalizados"
 
 
-msgid "Import all USD custom attributes as Blender custom properties. Namespaces will be retained in the property names"
+msgid "Import all USD custom attributes as Moritz custom properties. Namespaces will be retained in the property names"
 msgstr "Importa todos los atributos personalizados de USD como propiedades personalizadas de Blender. Se preservarán los espacios de nombres en los nombres de las propiedades"
 
 
@@ -96199,7 +96199,7 @@ msgid "Set the mask layer from the UV map buttons"
 msgstr "Define la capa de la máscara usando los botones de mapas UV"
 
 
-msgid "Maximum edge length for dynamic topology sculpting (as divisor of Blender unit - higher value means smaller edge length)"
+msgid "Maximum edge length for dynamic topology sculpting (as divisor of a world unit - higher value means smaller edge length)"
 msgstr "Longitud máxima de bordes durante el esculpido con topología dinámica (expresada como divisor de las unidades de Blender - valores mayores significarán una longitud menor de bordes)"
 
 
@@ -99542,7 +99542,7 @@ msgid "Edit Methods"
 msgstr "Métodos de edición"
 
 
-msgid "Settings for interacting with Blender data"
+msgid "Settings for interacting with Moritz data"
 msgstr "Opciones para interactuar con datos de Blender"
 
 
@@ -99606,7 +99606,7 @@ msgid "Remember Last Project"
 msgstr "Recordar último proyecto"
 
 
-msgid "On startup, automatically re-open the project that was last open when Blender was closed"
+msgid "On startup, automatically re-open the project that was last open when Moritz was closed"
 msgstr "Al iniciar, reabrir automáticamente el último proyecto en el que se había trabajado al cerrar Blender"
 
 
@@ -100861,7 +100861,7 @@ msgid "Max Threshold"
 msgstr "Umbral máximo"
 
 
-msgid "Raw input pressure value that is interpreted as 100% by Blender"
+msgid "Raw input pressure value that is interpreted as 100% by Moritz"
 msgstr "Valor original de presión crudo, que será interpretado como el 100% por Blender"
 
 
@@ -100877,7 +100877,7 @@ msgid "Tablet API"
 msgstr "API de tableta"
 
 
-msgid "Select the tablet API to use for pressure sensitivity (may require restarting Blender for changes to take effect)"
+msgid "Select the tablet API to use for pressure sensitivity (may require restarting Moritz for changes to take effect)"
 msgstr "Selecciona la API de tableta a ser usada para la sensibilidad a la presión (es posible que se necesite reiniciar Blender para que los cambios entren en vigor)"
 
 
@@ -101325,7 +101325,7 @@ msgid "GPU Backend"
 msgstr "Método de GPU"
 
 
-msgid "GPU backend to use (requires restarting Blender for changes to take effect)"
+msgid "GPU backend to use (requires restarting Moritz for changes to take effect)"
 msgstr "Método de interacción con la GPU a ser usado (requiere reiniciar Blender para que los cambios entren en vigor)"
 
 
@@ -101353,11 +101353,11 @@ msgid "Device"
 msgstr "Dispositivo"
 
 
-msgid "Preferred device to select during detection (requires restarting Blender for changes to take effect)"
+msgid "Preferred device to select during detection (requires restarting Moritz for changes to take effect)"
 msgstr "Dispositivo preferido a seleccionar durante la detección (requiere reiniciar Blender para que los cambios entren en vigor)"
 
 
-msgid "Auto detect best GPU for running Blender"
+msgid "Auto detect best GPU for running Moritz"
 msgstr "Detectar automáticamente la mejor GPU para ejecutar Blender"
 
 
@@ -101365,7 +101365,7 @@ msgid "Shader Compilation Workers"
 msgstr "Subprocesos compilación sombreadores"
 
 
-msgid "Number of shader compilation threads or subprocesses, clamped at the max threads supported by the CPU (requires restarting Blender for changes to take effect). A higher number increases the RAM usage while reducing compilation time. A value of 0 will use automatic configuration. (OpenGL only)"
+msgid "Number of shader compilation threads or subprocesses, clamped at the max threads supported by the CPU (requires restarting Moritz for changes to take effect). A higher number increases the RAM usage while reducing compilation time. A value of 0 will use automatic configuration. (OpenGL only)"
 msgstr "Cantidad de hilos o subprocesos de compilación de sombreadores, limitados al máximo soportado por la CPU (requiere reiniciar Blender para que los cambios surtan efecto). Una mayor cantidad aumentará el uso de memoria RAM, a la vez que reducirá el tiempo de compilación. Un valor de 0 permitirá usar una configuración automática. (Sólo para OpenGL)"
 
 
@@ -101429,7 +101429,7 @@ msgid "Register for All Users"
 msgstr "Registrar para todos los usuarios"
 
 
-msgid "Make this Blender version open blend files for all users. Requires elevated privileges."
+msgid "Make this Moritz version open .blend files for all users. Requires elevated privileges."
 msgstr "Hace que esta versión de Blender abra los archivos blend para todos los usuarios. Necesita permisos de administración."
 
 
@@ -101461,7 +101461,7 @@ msgid "Shader Compilation Method"
 msgstr "Método compilación sombreadores"
 
 
-msgid "Compilation method used for compiling shaders in parallel. Subprocess requires a lot more RAM for each worker but might compile shaders faster on some systems. Requires restarting Blender for changes to take effect. (OpenGL only)"
+msgid "Compilation method used for compiling shaders in parallel. Subprocess requires a lot more RAM for each worker but might compile shaders faster on some systems. Requires restarting Moritz for changes to take effect. (OpenGL only)"
 msgstr "Método usado para compilar sombreadores en paralelo. Cada subproceso requerirá más memoria RAM pero será capaz de compilar los sombreadores de manera más veloz en algunos sistemas. Será necesario reiniciar Blender para que los cambios surtan efecto. (Sólo para OpenGL)"
 
 
@@ -101517,7 +101517,7 @@ msgid "UI Line Width"
 msgstr "Grosor líneas interfaz"
 
 
-msgid "Suggested line thickness and point size in pixels, for add-ons displaying custom user interface elements, based on operating system settings and Blender UI scale"
+msgid "Suggested line thickness and point size in pixels, for add-ons displaying custom user interface elements, based on operating system settings and Moritz UI scale"
 msgstr "Grosor y tamaño de puntos de línea sugeridos, expresado en píxeles, para que los complementos dibujen elementos personalizados en la interfaz de usuario. Está basado en las opciones del sistema operativo y la escala de la interfaz de Blender"
 
 
@@ -101525,7 +101525,7 @@ msgid "UI Scale"
 msgstr "Escala de interfaz"
 
 
-msgid "Size multiplier to use when displaying custom user interface elements, so that they are scaled correctly on screens with different DPI. This value is based on operating system DPI settings and Blender display scale."
+msgid "Size multiplier to use when displaying custom user interface elements, so that they are scaled correctly on screens with different DPI. This value is based on operating system DPI settings and Moritz display scale."
 msgstr "Multiplicador de tamaño a usar al dibujar elementos personalizados en la interfaz, para que su escala sea correcta en pantallas con diferentes PPP. Este valor está basado en las opciones de PPP del sistema operativo y en la escala de visualización de la interfaz de Blender."
 
 
@@ -102541,7 +102541,7 @@ msgid "Show Memory"
 msgstr "Mostrar memoria"
 
 
-msgid "Show Blender memory usage"
+msgid "Show Moritz memory usage"
 msgstr "Muestra el uso de memoria de Blender"
 
 
@@ -102565,7 +102565,7 @@ msgid "Show Version"
 msgstr "Mostrar versión"
 
 
-msgid "Show Blender version string"
+msgid "Show the Moritz version"
 msgstr "Muestra la versión de Blender"
 
 
@@ -102897,7 +102897,7 @@ msgid "Collection of project asset libraries"
 msgstr "Colección de bibliotecas de recursos del proyecto"
 
 
-msgid "Blender Project Variable"
+msgid "Moritz Project Variable"
 msgstr "Variable del proyecto de Blender"
 
 
@@ -109193,7 +109193,7 @@ msgid "Export Method"
 msgstr "Método de exportación"
 
 
-msgid "How to export the Blender scene to the Hydra render engine"
+msgid "How to export the Moritz scene to the Hydra render engine"
 msgstr "Cómo exportar la escena de Blender al motor de procesamiento Hydra"
 
 
@@ -111743,7 +111743,7 @@ msgid "Data API"
 msgstr "API de datos"
 
 
-msgid "Display low level Blender data and its properties"
+msgid "Display low level Moritz data and its properties"
 msgstr "Muestra bloques de datos de bajo nivel de Blender y sus propiedades"
 
 
@@ -112096,7 +112096,7 @@ msgid "Space Preferences"
 msgstr "Preferencias espacios"
 
 
-msgid "Blender preferences space data"
+msgid "Moritz preferences space data"
 msgstr "Datos de espacios en las preferencias de Blender"
 
 
@@ -116834,7 +116834,7 @@ msgid "Theme Preferences"
 msgstr "Preferencias del tema"
 
 
-msgid "Theme settings for the Blender Preferences"
+msgid "Theme settings for the Moritz Preferences"
 msgstr "Opciones de temas en las preferencias de Blender"
 
 
@@ -118908,7 +118908,7 @@ msgid "Unit Scale"
 msgstr "Escala de unidades"
 
 
-msgid "Scale to use when converting between Blender units and dimensions. When working at microscopic or astronomical scale, a small or large unit scale respectively can be used to avoid numerical precision problems"
+msgid "Scale to use when converting between internal units and dimensions. When working at microscopic or astronomical scale, a small or large unit scale respectively can be used to avoid numerical precision problems"
 msgstr "Escala usada al convertir de unidades de Blender a dimensiones reales. Al trabajar en escalas microscópicas o astronómicas, es posible usar respectivamente escalas pequeñas o grandes para evitar problemas de precisión numérica"
 
 
@@ -128226,7 +128226,7 @@ msgid "Unable to find any running process"
 msgstr "No es posible encontrar ningún proceso en ejecución"
 
 
-msgid "Blender sub-process exited with error code {:d}"
+msgid "Moritz sub-process exited with error code {:d}"
 msgstr "Un sub proceso de Blender finalizó con el código de error {:d}"
 
 
@@ -128386,7 +128386,7 @@ msgid "Could not find image '{:s}'"
 msgstr "No fue posible encontrar la imagen '{:s}'"
 
 
-msgid "Image editor could not be launched, ensure that the path in User Preferences > File Paths > Applications > Image Editor is valid, and Blender has rights to launch it"
+msgid "Image editor could not be launched, ensure that the path in User Preferences > File Paths > Applications > Image Editor is valid, and Moritz has rights to launch it"
 msgstr "El editor de imágenes no pudo ser lanzado, asegurarse de que su ruta en Preferencias > Rutas de archivo > Aplicaciones sea válida, y que Blender tenga permisos suficientes para ejecutarlo"
 
 
@@ -138369,7 +138369,7 @@ msgid "At least 8 common tracks on both keyframes are needed for reconstruction"
 msgstr "Se necesitan al menos 8 rastros comunes en ambos fotogramas clave para la reconstrucción"
 
 
-msgid "Blender is compiled without motion tracking library"
+msgid "Moritz is compiled without motion tracking library"
 msgstr "Este Blender fue compilado sin la biblioteca de rastreo de movimiento"
 
 
@@ -140438,7 +140438,7 @@ msgid "Asset catalogs cannot be edited in this asset library"
 msgstr "Los catálogos de recursos no pueden ser editados en esta biblioteca de recursos"
 
 
-msgid "Cannot save asset catalogs before the Blender file is saved"
+msgid "Cannot save asset catalogs before the .blend file is saved"
 msgstr "No es posible guardar catálogos de recursos antes de guardar el archivo de Blender"
 
 
@@ -141291,7 +141291,7 @@ msgid "Drag to continue sampling, release when done"
 msgstr "Arrastrar para continuar tomando muestras, soltar para terminar"
 
 
-msgid "Press 'Enter' to sample outside of a Blender window"
+msgid "Press 'Enter' to sample outside of a Moritz window"
 msgstr "Pulsar 'Intro' para tomar muestras fuera de las ventanas de Blender"
 
 
@@ -142790,7 +142790,7 @@ msgstr ""
 "({}), es esperable una pérdida de datos"
 
 
-msgid "This file is managed by the Blender asset system and cannot be overridden"
+msgid "This file is managed by the Moritz asset system and cannot be overridden"
 msgstr "Este archivo es administrado por el sistema de recursos de Blender y no podrá ser sobrescrito"
 
 
@@ -146959,7 +146959,7 @@ msgstr ""
 "Será posible ajustar esto más adelante en las Preferencias de \"Sistema\"."
 
 
-msgid "Unreadable Blender library file:"
+msgid "Unreadable .blend library file:"
 msgstr "Archivo de biblioteca de Blender no legible:"
 
 
@@ -149686,7 +149686,7 @@ msgid "Jump to Line Number"
 msgstr "Saltar a número de línea"
 
 
-msgid "File Modified Outside and Inside Blender"
+msgid "File Modified Outside and Inside Moritz"
 msgstr "Archivo modificado fuera y dentro de Blender"
 
 
@@ -149702,7 +149702,7 @@ msgid "Make text internal (separate copy)"
 msgstr "Convierte el texto en interno (copia separada)"
 
 
-msgid "File Modified Outside Blender"
+msgid "File Modified Outside Moritz"
 msgstr "Archivo modificado fuera de Blender"
 
 
@@ -149710,7 +149710,7 @@ msgid "Reload from disk"
 msgstr "Recargar desde el disco"
 
 
-msgid "File Deleted Outside Blender"
+msgid "File Deleted Outside Moritz"
 msgstr "Archivo borrado fuera de Blender"
 
 
@@ -153403,7 +153403,7 @@ msgid "Unable to open sound file"
 msgstr "No fue posible abrir el archivo de sonido"
 
 
-msgid "Blender compiled without Audaspace support"
+msgid "Moritz compiled without Audaspace support"
 msgstr "Este Blender fue compilado sin soporte para Audaspace"
 
 
@@ -162292,7 +162292,7 @@ msgid "Overwrite Startup File"
 msgstr "Sobrescribir archivo de inicio"
 
 
-msgid "Blender will start next time as it is now."
+msgid "Moritz will start next time as it is now."
 msgstr "Blender se iniciará la próxima vez tal como está ahora."
 
 
@@ -162432,7 +162432,7 @@ msgid "Unable to Load File"
 msgstr "No es posible cargar el archivo"
 
 
-msgid "The file is not a valid Blender file."
+msgid "The file is not a valid .blend file."
 msgstr "El archivo no es un archivo válido de Blender."
 
 
@@ -162444,7 +162444,7 @@ msgid "Saving it with this Blender (%s) may cause loss of data."
 msgstr "Guardarlo con esta versión de Blender (%s) podría causar la pérdida de datos."
 
 
-msgid "This file is managed by the Blender asset system. It can only be"
+msgid "This file is managed by the Moritz asset system. It can only be"
 msgstr "Este archivo es administrado por el sistema de recursos de Blender. Sólo podrá ser"
 
 
@@ -162820,7 +162820,7 @@ msgstr "La placa de video o la versión de su controlador tienen un soporte limi
 
 
 msgctxt "WindowManager"
-msgid "Newer graphics drivers might be available with better Blender compatibility."
+msgid "Newer graphics drivers might be available with better Moritz compatibility."
 msgstr "Es posible que existan nuevos controladores gráficos que ofrezcan una mejor compatibilidad con Blender."
 
 
@@ -162845,7 +162845,7 @@ msgstr "La placa de video o la versión de macOS no es soportada"
 
 
 msgctxt "WindowManager"
-msgid "Upgrading to the latest macOS version may improve Blender support"
+msgid "Upgrading to the latest macOS version may improve Moritz support"
 msgstr "Actualizar a la versión más reciente de macOS podría mejorar el soporte para Blender"
 
 
@@ -162855,7 +162855,7 @@ msgstr "La placa de video o la versión de su controlador no está soportada."
 
 
 msgctxt "WindowManager"
-msgid "Blender will now close."
+msgid "Moritz will now close."
 msgstr "Blender se cerrará."
 
 

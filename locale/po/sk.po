@@ -1768,7 +1768,7 @@ msgid "Project Settings"
 msgstr "Nastavenia projektu"
 
 
-msgid "Manage the current Blender project"
+msgid "Manage the current Moritz project"
 msgstr "Správa aktuálneho projektu v Blenderi"
 
 
@@ -1864,7 +1864,7 @@ msgid "Is Editable"
 msgstr "Je upraviteľné"
 
 
-msgid "Assets and catalogs in this library can be edited from the current Blender instance"
+msgid "Assets and catalogs in this library can be edited from the current Moritz instance"
 msgstr "Aktíva a katalógy v tejto knižnici je možné upravovať v aktuálnej inštancii Blenderu"
 
 
@@ -1884,7 +1884,7 @@ msgid "Current File"
 msgstr "Aktuálny súbor"
 
 
-msgid "Show the assets currently available in this Blender session"
+msgid "Show the assets currently available in this Moritz session"
 msgstr "Zobrazí aktíva, ktoré sú aktuálne k dispozícii v tejto relácii Blenderu"
 
 
@@ -1892,7 +1892,7 @@ msgid "Essentials"
 msgstr "Základné údaje"
 
 
-msgid "Show basic building blocks and utilities coming with Blender"
+msgid "Show basic building blocks and utilities coming with Moritz"
 msgstr "Ukáže základné stavebné bloky a nástroje dodávané s Blenderom"
 
 
@@ -1972,7 +1972,7 @@ msgid "Catalog UUID"
 msgstr "Katalóg UUID"
 
 
-msgid "Identifier for the asset's catalog, used by Blender to look up the asset's catalog path. Must be a UUID according to RFC4122."
+msgid "Identifier for the asset's catalog, used by Moritz to look up the asset's catalog path. Must be a UUID according to RFC4122."
 msgstr "Identifikátor katalógu aktíva, ktorý Blender používa na vyhľadanie katalógovej cesty aktíva. Musí to byť UUID podľa RFC4122."
 
 
@@ -2721,7 +2721,7 @@ msgid "Is Internal"
 msgstr "Je interný"
 
 
-msgid "The attribute is meant for internal use by Blender"
+msgid "The attribute is meant for internal use by Moritz"
 msgstr "Tento atribút je určený na interné použitie v Blenderi"
 
 
@@ -3440,7 +3440,7 @@ msgid "All Data-Blocks"
 msgstr "Všetky bloky údajov"
 
 
-msgid "Read-only list of all IDs listed in Blender data-base. Warning: Order is not guaranteed and should be considered an internal implementation detail"
+msgid "Read-only list of all IDs listed in Moritz data-base. Warning: Order is not guaranteed and should be considered an internal implementation detail"
 msgstr "Zoznam všetkých ID uvedených v databáze Blenderu, určený len na čítanie. Upozornenie: Poradie nie je zaručené a malo by sa považovať za interný detail implementácie"
 
 
@@ -3613,7 +3613,7 @@ msgid "Project"
 msgstr "Premietnuť"
 
 
-msgid "The currently active Blender project, if any"
+msgid "The currently active Moritz project, if any"
 msgstr "Aktuálne aktívny projekt v Blenderi, ak nejaký existuje"
 
 
@@ -4318,7 +4318,7 @@ msgid "Library (blend-file) reference in a BlendImportContext data. Currently on
 msgstr "Odkaz na knižnicu (blend-súbor) v údajoch kontextu BlendImportContext. V súčasnosti je k dispozícii iba ako údaje len na čítanie pre predbežné a následné obslužné rutiny importu blend-súborov"
 
 
-msgid "Blender Project"
+msgid "Moritz Project"
 msgstr "Projekt Blenderu"
 
 
@@ -9297,7 +9297,7 @@ msgid "Lin error"
 msgstr "Chyba riadka"
 
 
-msgid "Amount of residual error in Blender space unit for constraints that work on position"
+msgid "Amount of residual error in world units for constraints that work on position"
 msgstr "Množstvo zostatkovej chyby v jednotke priestoru Blendera pre vynútenie pracujúceho na pozícii"
 
 
@@ -13269,7 +13269,7 @@ msgid "Max Velocity"
 msgstr "Maximálna rýchlosť"
 
 
-msgid "Velocity considered as maximum influence (Blender units per frame)"
+msgid "Velocity considered as maximum influence (world units per frame)"
 msgstr "Rýchlosť považovaná ako maximálny vplyv (jednotky Blendera na snímku)"
 
 
@@ -13647,7 +13647,7 @@ msgid "Premultiply Alpha"
 msgstr "Prednásobiť alfa"
 
 
-msgid "Multiply color by alpha (recommended for Blender input)"
+msgid "Multiply color by alpha (recommended for Moritz input)"
 msgstr "Vynásobí farbu alfa (odporúča sa pre vstup Blendera)"
 
 
@@ -16051,7 +16051,7 @@ msgid "Hide .blend files items that are not data-blocks with asset metadata"
 msgstr "Skryje .blend súbory, ktoré nie sú blokmi údajov, s meta údajmi aktív"
 
 
-msgid "Filter Blender Backup Files"
+msgid "Filter .blend Backup Files"
 msgstr "Filtrovať záložné súbory Blendera"
 
 
@@ -16067,7 +16067,7 @@ msgid "Show .blend files"
 msgstr "Zobrazí .blend súbory"
 
 
-msgid "Filter Blender IDs"
+msgid "Filter .blend Data"
 msgstr "Filtrovať ID Blendera"
 
 
@@ -16143,7 +16143,7 @@ msgid "Library Browser"
 msgstr "Prehliadač knižníc"
 
 
-msgid "Whether we may browse Blender files' content or not"
+msgid "Whether we may browse .blend files' content or not"
 msgstr "Určuje možnosť prehliadania obsahu súborov Blendera"
 
 
@@ -16603,7 +16603,7 @@ msgid "Export Mantaflow Script"
 msgstr "Exportovať skript Mantaflow"
 
 
-msgid "Generate and export Mantaflow script from current domain settings during bake. This is only needed if you plan to analyze the cache (e.g. view grids, velocity vectors, particles) in Mantaflow directly (outside of Blender) after baking the simulation."
+msgid "Generate and export Mantaflow script from current domain settings during bake. This is only needed if you plan to analyze the cache (e.g. view grids, velocity vectors, particles) in Mantaflow directly (outside of Moritz) after baking the simulation."
 msgstr "Vygeneruje a exportuje skript Mantaflow z aktuálneho nastavenia oblasti vplyvu počas zapečenia. Toto je potrebné iba v prípade, že plánujete analyzovať zásobník (napr. Mriežky, vektory rýchlosti, častice) v skripte Mantaflow priamo (mimo Blender) po zapečení simulácie."
 
 
@@ -21900,7 +21900,7 @@ msgid "Unprojected Size"
 msgstr "Nepremietnutá veľkosť"
 
 
-msgid "Diameter of brush in Blender units"
+msgid "Diameter of brush in world units"
 msgstr "Priemer štetca v jednotkách Blenderu"
 
 
@@ -25232,7 +25232,7 @@ msgid "Source library from which this archive of packed IDs was generated"
 msgstr "Zdrojová knižnica, z ktorej bol vytvorený tento archív zabalených identifikátorov"
 
 
-msgid "Path to the library .blend file. WARNING: Typically, this value should be considered read-only, changing this path without proper processing afterwards can leave Blender data in an invalid state"
+msgid "Path to the library .blend file. WARNING: Typically, this value should be considered read-only, changing this path without proper processing afterwards can leave Moritz data in an invalid state"
 msgstr "Cesta k .blend súboru knižnice. UPOZORNENIE: Táto hodnota by sa zvyčajne mala považovať za iba na čítanie; zmena tejto cesty bez následného riadneho spracovania môže spôsobiť, že údaje v Blenderi budú v neplatnom stave"
 
 
@@ -31377,7 +31377,7 @@ msgid "Asset Blend Path"
 msgstr "Cesta prelínania aktív"
 
 
-msgid "Full path to the Blender file containing the active asset"
+msgid "Full path to the .blend file containing the active asset"
 msgstr "Úplná cesta k súboru Blenderu obsahujúci aktívne aktívum"
 
 
@@ -32533,7 +32533,7 @@ msgid "Custom Icon"
 msgstr "Vlastná ikona"
 
 
-msgid "True if this preview icon has been modified by py script, and is no more auto-generated by Blender"
+msgid "True if this preview icon has been modified by py script, and is no more auto-generated by Moritz"
 msgstr "Pravdivé, ak tento náhľad ikony bola upravený Python skriptom a nie je viac automaticky generovaný Blenderom"
 
 
@@ -32541,7 +32541,7 @@ msgid "Custom Image"
 msgstr "Vlastný obrázok"
 
 
-msgid "True if this preview image has been modified by py script, and is no more auto-generated by Blender"
+msgid "True if this preview image has been modified by py script, and is no more auto-generated by Moritz"
 msgstr "Pravdivé, ak tento náhľad obrázku bol upravený Python skriptom a nie je viac automaticky generovaný Blenderom"
 
 
@@ -56413,7 +56413,7 @@ msgid "Clear Status"
 msgstr "Vymazať stav"
 
 
-msgid "Allow Blender to access the internet. Add-ons that follow this setting will only connect to the internet if enabled. However, Blender cannot prevent third-party add-ons from violating this rule."
+msgid "Allow Moritz to access the internet. Add-ons that follow this setting will only connect to the internet if enabled. However, Moritz cannot prevent third-party add-ons from violating this rule."
 msgstr "Povolí Blenderu prístup na internet. Doplnky, ktoré sa riadia týmto nastavením, sa budú pripájať k internetu len vtedy, ak je to povolené. Blender však nemôže zabrániť tomu, aby doplnky tretích strán toto pravidlo porušovali."
 
 
@@ -57626,7 +57626,7 @@ msgid "Uninstall Studio Light"
 msgstr "Odinštalovať štúdiové svetlo"
 
 
-msgid "Load and apply a Blender XML theme file"
+msgid "Load and apply an XML theme file"
 msgstr "Načíta a použije súbor motívu XML Blender"
 
 
@@ -70428,7 +70428,7 @@ msgid "Definition"
 msgstr "Definícia"
 
 
-msgid "Number of pixels per inch or Blender Unit"
+msgid "Number of pixels per inch or world unit"
 msgstr "Počet pixelov na palec alebo jednotka Blendera"
 
 
@@ -70452,7 +70452,7 @@ msgid "Force Reload"
 msgstr "Vynútiť opätovné načítanie"
 
 
-msgid "Force reload the image if it is already opened elsewhere in Blender"
+msgid "Force reload the image if it is already opened elsewhere in Moritz"
 msgstr "Vynúti opätovné načítanie obrázka, ak je už otvorený inde v Blenderi"
 
 
@@ -70825,7 +70825,7 @@ msgid "Save the image with another name and/or settings"
 msgstr "Uloží obrázok pod iným názvom a/alebo nastaveniami"
 
 
-msgid "Create a new image file without modifying the current image in Blender"
+msgid "Create a new image file without modifying the current image in Moritz"
 msgstr "Vytvorí nový súbor obrázka bez úpravy aktuálneho obrázka v Blenderi"
 
 
@@ -71097,7 +71097,7 @@ msgid "Make Unique"
 msgstr "Vytvoriť jedinečné"
 
 
-msgid "Import each FBX material as a unique Blender material"
+msgid "Import each FBX material as a unique Moritz material"
 msgstr "Importuje každý materiál FBX ako jedinečný materiál Blenderu"
 
 
@@ -71365,7 +71365,7 @@ msgid "Update Reports Display"
 msgstr "Obnoviť zobrazenie zostáv"
 
 
-msgid "Update the display of reports in Blender UI (internal use)"
+msgid "Update the display of reports in Moritz UI (internal use)"
 msgstr "Aktualizuje zobrazenia zostáv v rozhraní Blender (interné použitie)"
 
 
@@ -83798,7 +83798,7 @@ msgid "Check for Updates on Startup"
 msgstr "Kontrola aktualizácií pri spustení"
 
 
-msgid "Allow Blender to check for updates upon launch"
+msgid "Allow Moritz to check for updates upon launch"
 msgstr "Povolí Blenderu kontrolovať aktualizácie pri spustení"
 
 
@@ -85343,7 +85343,7 @@ msgid "Save Screenshot"
 msgstr "Uložiť snímku obrazovky"
 
 
-msgid "Capture a picture of the whole Blender window"
+msgid "Capture a picture of the whole Moritz window"
 msgstr "Zachytí obrázok celého okna Blenderu"
 
 
@@ -87366,11 +87366,11 @@ msgid "Auto Detect"
 msgstr "Automatické zisťovanie"
 
 
-msgid "Add images as individual strips, unless their filenames match Blender's numbered sequence pattern, in which case they are grouped into a single image sequence"
+msgid "Add images as individual strips, unless their filenames match Moritz's numbered sequence pattern, in which case they are grouped into a single image sequence"
 msgstr "Pridá obrázky ako jednotlivé pásy, pokiaľ ich názvy súborov nezodpovedajú číslovanému vzoru sekvencie Blenderu, v takom prípade sú zoskupené do jednej sekvencie obrázkov"
 
 
-msgid "Import all selected images as a single image sequence. The sequence of images does not have to match Blender's numbered sequence pattern, so placeholders cannot be inferred"
+msgid "Import all selected images as a single image sequence. The sequence of images does not have to match Moritz's numbered sequence pattern, so placeholders cannot be inferred"
 msgstr "Importuje všetky vybrané obrázky ako jednu sekvenciu obrázkov. Sekvencia obrázkov nemusí zodpovedať číslovanému vzoru sekvencie Blenderu, takže zástupné symboly nemožno odvodiť"
 
 
@@ -89876,7 +89876,7 @@ msgid "Eyedropper"
 msgstr "Kvapkadlo"
 
 
-msgid "Sample a color from the Blender window to store in a property"
+msgid "Sample a color from the Moritz window to store in a property"
 msgstr "Vzorka farby z okna Blendera na uloženie v objekte"
 
 
@@ -89973,7 +89973,7 @@ msgid "Grease Pencil Eyedropper"
 msgstr "Kvapkadlo Grease Pencil"
 
 
-msgid "Sample a color from the Blender Window and create Grease Pencil material"
+msgid "Sample a color from the Moritz window and create Grease Pencil material"
 msgstr "Zosníma farbu z okna Blendera a vytvorí materiál Grease Pencil"
 
 
@@ -92679,7 +92679,7 @@ msgid "Run as Background Job"
 msgstr "Spustiť ako úlohu na pozadí"
 
 
-msgid "Enable this to run the import in the background, disable to block Blender while importing. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
+msgid "Enable this to run the import in the background, disable to block Moritz while importing. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
 msgstr "Povolí spustiť import na pozadí, zakáže blokovať Blender pri importe. Táto možnosť je zastaraná; Spuste tento operátor v popredí a SPUSŤTE ho ako úlohu na pozadí"
 
 
@@ -92844,7 +92844,7 @@ msgid "Add cache modifiers and constraints to imported objects even if they are 
 msgstr "Pridá modifikátory a vynútenia do zásobníka k importovaným objektom, aj keď nie sú animované, aby sa mohli aktualizovať pri opätovnom načítaní archívu Alembic"
 
 
-msgid "Enable this to run the export in the background, disable to block Blender while exporting. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
+msgid "Enable this to run the export in the background, disable to block Moritz while exporting. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
 msgstr "Povolí spustiť export na pozadí, zakáže blokovať Blender pri exporte. Táto možnosť je zastaraná; Spuste tento operátor v popredí a SPUSŤTE ho ako úlohu na pozadí"
 
 
@@ -93275,7 +93275,7 @@ msgid "Vertex colors in the file are in linear color space"
 msgstr "Farby vrcholov v súbore sú v lineárnom farebnom priestore"
 
 
-msgid "Import custom normals, if available (otherwise Blender will compute them)"
+msgid "Import custom normals, if available (otherwise Moritz will compute them)"
 msgstr "Import vlastných normál, ak sú dostupné (inak ich Blender vypočíta)"
 
 
@@ -93696,7 +93696,7 @@ msgid "Open"
 msgstr "Otvoriť"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "Otvorí súbor Blendera"
 
 
@@ -93873,7 +93873,7 @@ msgid "Collection of file paths with common ``directory`` root"
 msgstr "Kolekcia ciest súborov so spoločným koreňovým priečinkom ``directory``"
 
 
-msgid "Show Blender files in the File Browser"
+msgid "Show .blend files in the File Browser"
 msgstr "Zobraziť súbory Blenderu v Prehliadači súborov"
 
 
@@ -94393,15 +94393,15 @@ msgid "Save Blender File"
 msgstr "Uložiť súbor Blendera"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "Uloží aktuálny .blend súbor"
 
 
-msgid "Exit Blender after saving"
+msgid "Exit Moritz after saving"
 msgstr "Ukončiť Blender po uložení"
 
 
-msgid "Save the current Blender file with a numerically incremented name that does not overwrite any existing files"
+msgid "Save the current .blend file with a numerically incremented name that does not overwrite any existing files"
 msgstr "Uloží aktuálny súbor Blenderu s číselne zvýšeným názvom, ktorý neprepíše žiadne existujúce súbory"
 
 
@@ -94717,7 +94717,7 @@ msgid "Blender Names"
 msgstr "Názvy Blendera"
 
 
-msgid "Author USD custom attributes containing the original Blender object and object data names"
+msgid "Author USD custom attributes containing the original Moritz object and object data names"
 msgstr "Vlastné atribúty autora USD obsahujúce názvy pôvodného objektu Blenderu a údajov o objekte"
 
 
@@ -95230,7 +95230,7 @@ msgid "Allow USD primitives to merge with their Xform parent if they are the onl
 msgstr "Umožní prvotným tvarom USD zlúčiť sa s ich nadradeným Xform, ak sú jediným podriadeným v hierarchii"
 
 
-msgid "Import each USD material as a unique Blender material"
+msgid "Import each USD material as a unique Moritz material"
 msgstr "Importovať každý materiál USD ako jedinečný materiál Blenderu"
 
 
@@ -95266,7 +95266,7 @@ msgid "Import only the primitive at the given path and its descendants. Multiple
 msgstr "Importuje iba prvotný tvar na zadanej ceste a jeho potomkov. Viacero ciest možno zadať v zozname ohraničenom čiarkami alebo bodkočiarkami"
 
 
-msgid "Behavior when importing USD attributes as Blender custom properties"
+msgid "Behavior when importing USD attributes as Moritz custom properties"
 msgstr "Správanie pri importovaní atribútov USD ako užívateľských vlastností Blenderu"
 
 
@@ -95274,7 +95274,7 @@ msgid "Do not import USD custom attributes"
 msgstr "Neimportovať vlastné atribúty USD"
 
 
-msgid "Import USD attributes in the 'userProperties' namespace as Blender custom properties. The namespace will be stripped from the property names"
+msgid "Import USD attributes in the 'userProperties' namespace as Moritz custom properties. The namespace will be stripped from the property names"
 msgstr "Importuje atribúty USD v priestore názvov 'userProperties' ako užívateľské vlastnosti Blenderu. Z názvov vlastností bude odstránený priestor názvov"
 
 
@@ -95282,7 +95282,7 @@ msgid "All Custom"
 msgstr "Všetky vlastné"
 
 
-msgid "Import all USD custom attributes as Blender custom properties. Namespaces will be retained in the property names"
+msgid "Import all USD custom attributes as Moritz custom properties. Namespaces will be retained in the property names"
 msgstr "Importuje všetky vlastné atribúty USD ako užívateľské vlastnosti Blenderu. V názvoch vlastností sa zachovajú priestory názvov"
 
 
@@ -96203,7 +96203,7 @@ msgid "Set the mask layer from the UV map buttons"
 msgstr "Nastaví vrstvu masky z tlačidiel UV máp"
 
 
-msgid "Maximum edge length for dynamic topology sculpting (as divisor of Blender unit - higher value means smaller edge length)"
+msgid "Maximum edge length for dynamic topology sculpting (as divisor of a world unit - higher value means smaller edge length)"
 msgstr "Maximálna dĺžka hrany pre dynamickú topológiu tvarovania (ako deliteľ Blender jednotky - vyššia hodnota znamená menšiu dĺžku hrany)"
 
 
@@ -99546,7 +99546,7 @@ msgid "Edit Methods"
 msgstr "Editačné metódy"
 
 
-msgid "Settings for interacting with Blender data"
+msgid "Settings for interacting with Moritz data"
 msgstr "Nastavenia vzájomného pôsobenia údajmi Blendera"
 
 
@@ -99610,7 +99610,7 @@ msgid "Remember Last Project"
 msgstr "Zapamätať si posledný projekt"
 
 
-msgid "On startup, automatically re-open the project that was last open when Blender was closed"
+msgid "On startup, automatically re-open the project that was last open when Moritz was closed"
 msgstr "Pri spustení automaticky opäť otvorí projekt, ktorý bol naposledy otvorený v čase ukončenia Blenderu"
 
 
@@ -100865,7 +100865,7 @@ msgid "Max Threshold"
 msgstr "Maximálny prah"
 
 
-msgid "Raw input pressure value that is interpreted as 100% by Blender"
+msgid "Raw input pressure value that is interpreted as 100% by Moritz"
 msgstr "Hodnota hrubého vstupného tlaku, ktorá sa podľa Blendera vykladá ako 100%"
 
 
@@ -100881,7 +100881,7 @@ msgid "Tablet API"
 msgstr "Tablet API"
 
 
-msgid "Select the tablet API to use for pressure sensitivity (may require restarting Blender for changes to take effect)"
+msgid "Select the tablet API to use for pressure sensitivity (may require restarting Moritz for changes to take effect)"
 msgstr "Vyberte API tabletu, ktoré chcete použiť pre citlivosť na tlak (aby sa zmeny prejavili, môže byť potrebné reštartovať Blender)"
 
 
@@ -101329,7 +101329,7 @@ msgid "GPU Backend"
 msgstr "GPU Backend"
 
 
-msgid "GPU backend to use (requires restarting Blender for changes to take effect)"
+msgid "GPU backend to use (requires restarting Moritz for changes to take effect)"
 msgstr "GPU backend na použitie. (Vyžaduje reštartovanie Blenderu, aby zmeny nadobudli účinnosť)"
 
 
@@ -101357,11 +101357,11 @@ msgid "Device"
 msgstr "Zariadenie"
 
 
-msgid "Preferred device to select during detection (requires restarting Blender for changes to take effect)"
+msgid "Preferred device to select during detection (requires restarting Moritz for changes to take effect)"
 msgstr "Preferované zariadenie na výber počas detekcie (vyžaduje reštartovanie Blenderu, aby sa zmeny prejavili)"
 
 
-msgid "Auto detect best GPU for running Blender"
+msgid "Auto detect best GPU for running Moritz"
 msgstr "Automatická detekcia najlepšieho GPU pre spustenie Blenderu"
 
 
@@ -101369,7 +101369,7 @@ msgid "Shader Compilation Workers"
 msgstr "Pracovníci kompilácie tieňovačov"
 
 
-msgid "Number of shader compilation threads or subprocesses, clamped at the max threads supported by the CPU (requires restarting Blender for changes to take effect). A higher number increases the RAM usage while reducing compilation time. A value of 0 will use automatic configuration. (OpenGL only)"
+msgid "Number of shader compilation threads or subprocesses, clamped at the max threads supported by the CPU (requires restarting Moritz for changes to take effect). A higher number increases the RAM usage while reducing compilation time. A value of 0 will use automatic configuration. (OpenGL only)"
 msgstr "Počet vlákien kompilácie tieňovačov alebo podprocesov, obmedzený na maximálny počet vlákien podporovaných procesorom (aby sa zmeny prejavili, je potrebné Blender reštartovať). Vyššie číslo zvyšuje využitie pamäte RAM a zároveň znižuje čas kompilácie. Hodnota 0 použije automatickú konfiguráciu. (iba OpenGL)"
 
 
@@ -101433,7 +101433,7 @@ msgid "Register for All Users"
 msgstr "Registrovať pre všetkých užívateľov"
 
 
-msgid "Make this Blender version open blend files for all users. Requires elevated privileges."
+msgid "Make this Moritz version open .blend files for all users. Requires elevated privileges."
 msgstr "Vytvorí túto verziu Blenderu, ktorá bude otvárať blend súbory pre všetkých užívateľov. Vyžaduje zvýšené oprávnenia."
 
 
@@ -101465,7 +101465,7 @@ msgid "Shader Compilation Method"
 msgstr "Metóda kompilácie tieňovačov"
 
 
-msgid "Compilation method used for compiling shaders in parallel. Subprocess requires a lot more RAM for each worker but might compile shaders faster on some systems. Requires restarting Blender for changes to take effect. (OpenGL only)"
+msgid "Compilation method used for compiling shaders in parallel. Subprocess requires a lot more RAM for each worker but might compile shaders faster on some systems. Requires restarting Moritz for changes to take effect. (OpenGL only)"
 msgstr "Metóda kompilácie používaná na paralelnú kompiláciu tieňovačov. Podproces vyžaduje oveľa viac pamäte RAM pre každého pracovníka, ale na niektorých systémoch môže kompilovať tieňovače rýchlejšie. Vyžaduje reštart Blenderu, aby sa zmeny prejavili. (iba OpenGL)"
 
 
@@ -101521,7 +101521,7 @@ msgid "UI Line Width"
 msgstr "Šírka čiary užívateľského rozhrania"
 
 
-msgid "Suggested line thickness and point size in pixels, for add-ons displaying custom user interface elements, based on operating system settings and Blender UI scale"
+msgid "Suggested line thickness and point size in pixels, for add-ons displaying custom user interface elements, based on operating system settings and Moritz UI scale"
 msgstr "Navrhovaná hrúbka čiary a veľkosť bodu v pixeloch, pre doplnky zobrazujúce prvky vlastného užívateľského rozhrania na základe nastavení operačného systému a mierky užívateľského rozhrania Blenderu"
 
 
@@ -101529,7 +101529,7 @@ msgid "UI Scale"
 msgstr "Mierka užívateľského rozhrania"
 
 
-msgid "Size multiplier to use when displaying custom user interface elements, so that they are scaled correctly on screens with different DPI. This value is based on operating system DPI settings and Blender display scale."
+msgid "Size multiplier to use when displaying custom user interface elements, so that they are scaled correctly on screens with different DPI. This value is based on operating system DPI settings and Moritz display scale."
 msgstr "Násobič veľkosti, ktorý sa má použiť pri vlastnom zobrazovaní prvkov užívateľského rozhrania, aby boli správne zmenšené na obrazovkách s rôznymi DPI. Táto hodnota je založená na nastaveniach DPI operačného systému a mierke zobrazenia Blenderu."
 
 
@@ -102545,7 +102545,7 @@ msgid "Show Memory"
 msgstr "Zobraziť pamäť"
 
 
-msgid "Show Blender memory usage"
+msgid "Show Moritz memory usage"
 msgstr "Zobrazí využitie pamäte aplikácie Blender"
 
 
@@ -102569,7 +102569,7 @@ msgid "Show Version"
 msgstr "Zobraziť verziu"
 
 
-msgid "Show Blender version string"
+msgid "Show the Moritz version"
 msgstr "Zobrazí reťazec verzie aplikácie Blender"
 
 
@@ -102901,7 +102901,7 @@ msgid "Collection of project asset libraries"
 msgstr "Kolekcia knižníc aktív projektu"
 
 
-msgid "Blender Project Variable"
+msgid "Moritz Project Variable"
 msgstr "Premenná projektu Blenderu"
 
 
@@ -109197,7 +109197,7 @@ msgid "Export Method"
 msgstr "Metóda exportu"
 
 
-msgid "How to export the Blender scene to the Hydra render engine"
+msgid "How to export the Moritz scene to the Hydra render engine"
 msgstr "Určuje, ako exportovať scénu Blenderu do mechanizmu prekresľovania Hydra"
 
 
@@ -111747,7 +111747,7 @@ msgid "Data API"
 msgstr "Údaje rozhrania API"
 
 
-msgid "Display low level Blender data and its properties"
+msgid "Display low level Moritz data and its properties"
 msgstr "Zobrazí údaje Blendera nízkej úrovne a ich vlastností"
 
 
@@ -112100,7 +112100,7 @@ msgid "Space Preferences"
 msgstr "Predvoľby priestoru"
 
 
-msgid "Blender preferences space data"
+msgid "Moritz preferences space data"
 msgstr "Údaje o nastaveniach Blendera"
 
 
@@ -116838,7 +116838,7 @@ msgid "Theme Preferences"
 msgstr "Motív predvolieb"
 
 
-msgid "Theme settings for the Blender Preferences"
+msgid "Theme settings for the Moritz Preferences"
 msgstr "Nastavenia motívu pre predvoľby Blendera"
 
 
@@ -118912,7 +118912,7 @@ msgid "Unit Scale"
 msgstr "Jednotka mierky"
 
 
-msgid "Scale to use when converting between Blender units and dimensions. When working at microscopic or astronomical scale, a small or large unit scale respectively can be used to avoid numerical precision problems"
+msgid "Scale to use when converting between internal units and dimensions. When working at microscopic or astronomical scale, a small or large unit scale respectively can be used to avoid numerical precision problems"
 msgstr "Mierka použitá pri konverzii medzi jednotkami a rozmermi Blendera. Pri práci na mikroskopickej alebo astronomickej stupnici sa môže použiť malá alebo veľká jednotka stupnice, aby sa predišlo problémom s číselnou presnosťou"
 
 
@@ -128230,7 +128230,7 @@ msgid "Unable to find any running process"
 msgstr "Nemožno nájsť žiadny spustený proces"
 
 
-msgid "Blender sub-process exited with error code {:d}"
+msgid "Moritz sub-process exited with error code {:d}"
 msgstr "Podproces Blenderu sa ukončil kódom chyby {:d}"
 
 
@@ -128390,7 +128390,7 @@ msgid "Could not find image '{:s}'"
 msgstr "Nepodarilo sa nájsť obrázok '{:s}'"
 
 
-msgid "Image editor could not be launched, ensure that the path in User Preferences > File Paths > Applications > Image Editor is valid, and Blender has rights to launch it"
+msgid "Image editor could not be launched, ensure that the path in User Preferences > File Paths > Applications > Image Editor is valid, and Moritz has rights to launch it"
 msgstr "Nepodarilo sa spustiť editor obrázkov. Skontrolujte, či je cesta uvedená v položke Predvoľby > Cesty k súborom > Aplikácie > Editor obrázkov platná a či má Blender oprávnenie na jeho spustenie"
 
 
@@ -138373,7 +138373,7 @@ msgid "At least 8 common tracks on both keyframes are needed for reconstruction"
 msgstr "Na rekonštrukciu je potrebných aspoň 8 bežných stôp na oboch kľúčových snímkach"
 
 
-msgid "Blender is compiled without motion tracking library"
+msgid "Moritz is compiled without motion tracking library"
 msgstr "Blender je kompilovaný bez knižnice snímania pohybu"
 
 
@@ -140442,7 +140442,7 @@ msgid "Asset catalogs cannot be edited in this asset library"
 msgstr "Katalógy aktív nemožno upravovať v tejto knižnici aktív"
 
 
-msgid "Cannot save asset catalogs before the Blender file is saved"
+msgid "Cannot save asset catalogs before the .blend file is saved"
 msgstr "Nemožno uložiť katalógy aktív pred uložením súboru Blenderu"
 
 
@@ -141295,7 +141295,7 @@ msgid "Drag to continue sampling, release when done"
 msgstr "Ťahaním pokračujte v snímaní, po dokončení ho uvoľnite"
 
 
-msgid "Press 'Enter' to sample outside of a Blender window"
+msgid "Press 'Enter' to sample outside of a Moritz window"
 msgstr "Stlačením 'Enter' snímate mimo okna Blenderu"
 
 
@@ -142794,7 +142794,7 @@ msgstr ""
 "({}), očakávajte stratu údajov"
 
 
-msgid "This file is managed by the Blender asset system and cannot be overridden"
+msgid "This file is managed by the Moritz asset system and cannot be overridden"
 msgstr "Tento súbor je spravovaný systémom aktív Blenderu a nie je možné ho prepísať"
 
 
@@ -146963,7 +146963,7 @@ msgstr ""
 "Toto nastavenie môžete neskôr upraviť v nastaveniach \"Systém\"."
 
 
-msgid "Unreadable Blender library file:"
+msgid "Unreadable .blend library file:"
 msgstr "Nečitateľný súbor knižnice Blenderu:"
 
 
@@ -149690,7 +149690,7 @@ msgid "Jump to Line Number"
 msgstr "Preskočiť na číslo riadku"
 
 
-msgid "File Modified Outside and Inside Blender"
+msgid "File Modified Outside and Inside Moritz"
 msgstr "Súbor upravený mimo a vnútri Blendera"
 
 
@@ -149706,7 +149706,7 @@ msgid "Make text internal (separate copy)"
 msgstr "Vytvoriť interný text (oddeliť kópiu)"
 
 
-msgid "File Modified Outside Blender"
+msgid "File Modified Outside Moritz"
 msgstr "Súbor upravený mimo Blender"
 
 
@@ -149714,7 +149714,7 @@ msgid "Reload from disk"
 msgstr "Znova načítať z disku"
 
 
-msgid "File Deleted Outside Blender"
+msgid "File Deleted Outside Moritz"
 msgstr "Súbor odstránený mimo Blender"
 
 
@@ -153407,7 +153407,7 @@ msgid "Unable to open sound file"
 msgstr "Zvukový súbor sa nedá otvoriť"
 
 
-msgid "Blender compiled without Audaspace support"
+msgid "Moritz compiled without Audaspace support"
 msgstr "Blender skompilovaný bez podpory Zvukového priestoru (Audaspace)"
 
 
@@ -162296,7 +162296,7 @@ msgid "Overwrite Startup File"
 msgstr "Prepísať spúšťací súbor"
 
 
-msgid "Blender will start next time as it is now."
+msgid "Moritz will start next time as it is now."
 msgstr "Blender sa nabudúce spustí tak ako teraz."
 
 
@@ -162436,7 +162436,7 @@ msgid "Unable to Load File"
 msgstr "Nie je možné načítať súbor"
 
 
-msgid "The file is not a valid Blender file."
+msgid "The file is not a valid .blend file."
 msgstr "Súbor nie je platný súbor Blenderu."
 
 
@@ -162448,7 +162448,7 @@ msgid "Saving it with this Blender (%s) may cause loss of data."
 msgstr "Uloženie touto verziou Blenderu (%s) môže spôsobiť stratu údajov."
 
 
-msgid "This file is managed by the Blender asset system. It can only be"
+msgid "This file is managed by the Moritz asset system. It can only be"
 msgstr "Tento súbor je spravovaný systémom aktív Blenderu. Môže byť iba"
 
 
@@ -162824,7 +162824,7 @@ msgstr "Vaša grafická karta alebo verzia ovládača má obmedzenú podporu. M�
 
 
 msgctxt "WindowManager"
-msgid "Newer graphics drivers might be available with better Blender compatibility."
+msgid "Newer graphics drivers might be available with better Moritz compatibility."
 msgstr "Môžu byť k dispozícii novšie grafické ovládače s lepšou kompatibilitou s Blenderom."
 
 
@@ -162849,7 +162849,7 @@ msgstr "Vaša grafická karta alebo verzia systému macOS nie je podporovaná"
 
 
 msgctxt "WindowManager"
-msgid "Upgrading to the latest macOS version may improve Blender support"
+msgid "Upgrading to the latest macOS version may improve Moritz support"
 msgstr "Aktualizácia na najnovšiu verziu systému macOS môže zlepšiť podporu Blenderu"
 
 
@@ -162859,7 +162859,7 @@ msgstr "Vaša grafická karta alebo verzia ovládača nie je podporovaná."
 
 
 msgctxt "WindowManager"
-msgid "Blender will now close."
+msgid "Moritz will now close."
 msgstr "Blender sa teraz zatvorí."
 
 

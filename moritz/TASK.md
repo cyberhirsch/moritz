@@ -162,10 +162,10 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
 - [x] About dialog: Moritz logo and version, "Based on Blender"
 - [x] Executable name `moritz.exe` and `moritz-launcher.exe`
 - [x] Check that no Blender logo or trademark text is left in the UI (menu, quit, window titles, factory settings; Blender's own links stay named as Blender's)
-- [ ] *(Seb, 2026-10-30: "there is still a lot of references to blender", "version number bottom
+- [x] *(Seb, 2026-10-30: "there is still a lot of references to blender", "version number bottom
   left / right")* **Second rebrand sweep; the first check missed some.** The status-bar version at
-  the bottom right shows Blender's logo and "5.3.0 b" (Seb's screenshot): use the Moritz logo and
-  "Moritz 0.1 Alpha" there instead, with Blender's
+  the bottom right shows "5.3.0 b" (Seb's screenshot; the icon left of it is the offline icon, not
+  a logo, and stays): show "Moritz 0.1 Alpha" there instead, with Blender's
   version only in About ("Based on Blender 5.3"). Then grep every user-visible string for "Blender"
   (status bar, tooltips, menu labels such as "Blender Preferences", "Quit Blender", "Save Blender
   File", operator descriptions, error and report messages, the Help menu, the File Browser, the
@@ -174,6 +174,10 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
   (`bpy`, `.blend`, the file header). *Warning: the `.blend` extension and the `BLENDER` file header
   must stay so files open in stock Blender. Changing translated strings means updating the `.po`
   files too. Core change, needs a rebuild.*
+  Done: status bar shows "Moritz 0.1 Alpha" (`info_stats.cc`); ~90 strings in 47 files (RNA,
+  editors, window manager, Python UI: "Save File", ".blend file", "world units", app references
+  → Moritz); the same msgids in 42 `locale/po` files; installer progress text and the Windows
+  batch messages. Built, suite 64/64.
 
 ### Legal
 - [x] Keep `COPYING` and the license headers; add a Moritz `README.md` with a source link
@@ -475,6 +479,13 @@ ribbon (Seb's screenshots) before building.
   runs it: a real Move of a preview extrusion (gizmo axis, X / Y / Z, snapping), then Smart Extrude
   along that move, one undo step; other tools keep Shift+drag. Merges with flush walls weld the
   boolean's slivers and drop its flat edges, leaving clean quads (2026-10-28))*
+  - [ ] **Bug** *(Seb, 2026-10-30: "that seems to work, but when i release it snaps back to the
+    before state")*: Shift+drag of polygons shows the preview extrusion while dragging, but on
+    release the mesh returns to how it was before. Release path: `_watch_drag` in `smart_extrude.py`
+    restores the mesh (`ed.undo` + `before`) and then runs `maximize.smart_extrude(offset=…)`.
+    Either that operator cancels or makes no change, the undo takes away more than the Move, or the
+    timer never fires (for example if `window.modal_operators` still lists a transform). Reproduce
+    in the GUI with the Moritz and the Max keymap, with and without the gizmo.
 - [x] **Set Flow** *(done 2026-10-28, Maximize `poly_tools.py`, Edge level > Loops: the selected edges'
   vertices go onto a curve through the two vertices on each side across the loop; Amount, Auto
   Loop. Skips poles and vertices without a clear crossing loop)*

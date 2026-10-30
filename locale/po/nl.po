@@ -1524,7 +1524,7 @@ msgid "Show assets from all of the listed asset libraries"
 msgstr "Toon assets van alle vermelde asset bibliotheken"
 
 
-msgid "Show the assets currently available in this Blender session"
+msgid "Show the assets currently available in this Moritz session"
 msgstr "Toon de assets momenteel beschikbaar in deze Blender sessie"
 
 
@@ -8734,7 +8734,7 @@ msgid "Save Screenshot"
 msgstr "Sla screenshot op"
 
 
-msgid "Capture a picture of the whole Blender window"
+msgid "Capture a picture of the whole Moritz window"
 msgstr "Maak een afbeelding van het hele Blender scherm"
 
 
@@ -9302,7 +9302,7 @@ msgid "Append mesh name to object name, separated by a '_'"
 msgstr "Voeg mesh-naam bij aan object-naam, gescheiden door een '_'"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "Open een Blender Bestand"
 
 
@@ -9395,7 +9395,7 @@ msgid "Save Blender File"
 msgstr "Sla Blender Bestand op"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "Sla het huidige Blender bestand op"
 
 

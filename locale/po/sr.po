@@ -18847,7 +18847,7 @@ msgid "Save Blender File"
 msgstr "Сачувај Blender датотеку"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "Уписује тренутну Blender датотеку"
 
 

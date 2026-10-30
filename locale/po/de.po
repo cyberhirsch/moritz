@@ -6290,7 +6290,7 @@ msgid "Lin error"
 msgstr "Lin-Fehler"
 
 
-msgid "Amount of residual error in Blender space unit for constraints that work on position"
+msgid "Amount of residual error in world units for constraints that work on position"
 msgstr "Menge des Restfehlers in der Blender-Raumeinheit für Abhängigkeiten, die auf dieser Position arbeiten"
 
 
@@ -10489,7 +10489,7 @@ msgid "Hide .blend files items that are not data-blocks with asset metadata"
 msgstr "Ausblenden von .blend-Dateien, die keine Datenblöcke mit Asset-Metadaten sind"
 
 
-msgid "Filter Blender Backup Files"
+msgid "Filter .blend Backup Files"
 msgstr "Filter Blender Sicherungsdateien"
 
 
@@ -10505,7 +10505,7 @@ msgid "Show .blend files"
 msgstr ".blend-Dateien anzeigen"
 
 
-msgid "Filter Blender IDs"
+msgid "Filter .blend Data"
 msgstr "Blender IDs filtern"
 
 
@@ -38570,7 +38570,7 @@ msgid "Open"
 msgstr "Öffnen"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "Eine Blender-Datei öffnen"
 
 
@@ -38858,11 +38858,11 @@ msgid "Save Blender File"
 msgstr "Blender-Datei speichern"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "Aktuelle Blender-Datei speichern"
 
 
-msgid "Exit Blender after saving"
+msgid "Exit Moritz after saving"
 msgstr "Blender nach dem Speichern beenden"
 
 
@@ -42299,7 +42299,7 @@ msgid "Show Memory"
 msgstr "Speicher anzeigen"
 
 
-msgid "Show Blender memory usage"
+msgid "Show Moritz memory usage"
 msgstr "Blender Speicherbenutzung anzeigen"
 
 
@@ -42315,7 +42315,7 @@ msgid "Show Version"
 msgstr "Version anzeigen"
 
 
-msgid "Show Blender version string"
+msgid "Show the Moritz version"
 msgstr "Blenderversionzeichenkette anzeigen"
 
 
@@ -46963,7 +46963,7 @@ msgid "Theme Preferences"
 msgstr "Themeeinstellungen"
 
 
-msgid "Theme settings for the Blender Preferences"
+msgid "Theme settings for the Moritz Preferences"
 msgstr "Themeneinstellungen für die Blendereinstellungen"
 
 
@@ -53973,7 +53973,7 @@ msgid "Plane Track"
 msgstr "Ebenenspur"
 
 
-msgid "Blender is compiled without motion tracking library"
+msgid "Moritz is compiled without motion tracking library"
 msgstr "Blender ist ohne Bewegungsverfolgungs-Bibliothek kompiliert"
 
 
@@ -58373,7 +58373,7 @@ msgstr "Deine Grafikkarte oder macOS-Version wird nicht unterstützt"
 
 
 msgctxt "WindowManager"
-msgid "Upgrading to the latest macOS version may improve Blender support"
+msgid "Upgrading to the latest macOS version may improve Moritz support"
 msgstr "Ein Upgrade auf die aktuellste macOS-Version könnte die Unterstützung von Blender verbessern"
 
 

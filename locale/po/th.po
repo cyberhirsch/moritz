@@ -1646,7 +1646,7 @@ msgid "Current File"
 msgstr "ไฟล์ปัจจุบัน"
 
 
-msgid "Show the assets currently available in this Blender session"
+msgid "Show the assets currently available in this Moritz session"
 msgstr "แสดงสินทรัพย์ที่มีอยู่ในช่วงสมัยของเบลนเดอร์นี้"
 
 
@@ -1706,7 +1706,7 @@ msgid "Catalog UUID"
 msgstr "ยูยูไอดีของสารบัญแฟ้ม"
 
 
-msgid "Identifier for the asset's catalog, used by Blender to look up the asset's catalog path. Must be a UUID according to RFC4122."
+msgid "Identifier for the asset's catalog, used by Moritz to look up the asset's catalog path. Must be a UUID according to RFC4122."
 msgstr "ตัวระบุสำหรับสารบัญแฟ้มของสินทรัพย์ ซึ่งเบลนเดอร์ใช้ในการค้นหาเส้นทางสารบัญแฟ้มของสินทรัพย์ ต้องเป็นยูยูไอดีตามมาตรฐานอาร์เอฟซี4122"
 
 
@@ -2363,7 +2363,7 @@ msgid "Is Internal"
 msgstr "เป็นการภายใน"
 
 
-msgid "The attribute is meant for internal use by Blender"
+msgid "The attribute is meant for internal use by Moritz"
 msgstr "ลักษณะประจำนี้มีไว้สำหรับใช้งานภายในของเบลนเดอร์เท่านั้น"
 
 

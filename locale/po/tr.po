@@ -1578,7 +1578,7 @@ msgid "Current File"
 msgstr "Geçerli Dosya"
 
 
-msgid "Show the assets currently available in this Blender session"
+msgid "Show the assets currently available in this Moritz session"
 msgstr "Bu Blender oturumunda şu anda mevcut olan varlıkları göster"
 
 
@@ -1646,7 +1646,7 @@ msgid "Catalog UUID"
 msgstr "Katalog UUID'si"
 
 
-msgid "Identifier for the asset's catalog, used by Blender to look up the asset's catalog path. Must be a UUID according to RFC4122."
+msgid "Identifier for the asset's catalog, used by Moritz to look up the asset's catalog path. Must be a UUID according to RFC4122."
 msgstr "Blender'ın varlığın katalog yolunu araması için kullanılan varlığın kataloğu için tanımlayıcı. RFC4122'ye göre bir UUID olmalıdır."
 
 
@@ -2279,7 +2279,7 @@ msgid "Is Internal"
 msgstr "İçsel"
 
 
-msgid "The attribute is meant for internal use by Blender"
+msgid "The attribute is meant for internal use by Moritz"
 msgstr "Bu özellik Blender'ın dahili kullanımı içindir"
 
 
@@ -9571,7 +9571,7 @@ msgid "Multiply brush intersection depth (displace, waves) by velocity ramp alph
 msgstr "Fırça kesişim derinliğini (yer değiştirme, dalgalar) hız rampası alfa ile çarpın"
 
 
-msgid "Velocity considered as maximum influence (Blender units per frame)"
+msgid "Velocity considered as maximum influence (world units per frame)"
 msgstr "Maksimum etki olarak kabul edilen hız (kare başına Blender birimi)"
 
 
@@ -9905,7 +9905,7 @@ msgid "Premultiply Alpha"
 msgstr "Alfa'yı önceden çarp"
 
 
-msgid "Multiply color by alpha (recommended for Blender input)"
+msgid "Multiply color by alpha (recommended for Moritz input)"
 msgstr "Rengi alfa ile çarp (Blender girişi için önerilir)"
 
 
@@ -12003,7 +12003,7 @@ msgid "Hide .blend files items that are not data-blocks with asset metadata"
 msgstr "Varlık üst verisi içeren veri blokları olmayan .blend dosya öğelerini gizle"
 
 
-msgid "Filter Blender Backup Files"
+msgid "Filter .blend Backup Files"
 msgstr "Blender Yedekleme Dosyalarını Filtrele"
 
 
@@ -12019,7 +12019,7 @@ msgid "Show .blend files"
 msgstr ".blend dosyalarını göster"
 
 
-msgid "Filter Blender IDs"
+msgid "Filter .blend Data"
 msgstr "Filtre Blender Kimlikleri"
 
 
@@ -12095,7 +12095,7 @@ msgid "Library Browser"
 msgstr "Kütüphane Tarayıcısı"
 
 
-msgid "Whether we may browse Blender files' content or not"
+msgid "Whether we may browse .blend files' content or not"
 msgstr "Blender dosyalarının içeriğine göz atabilir miyiz yoksa atamaz mıyız"
 
 
@@ -24231,7 +24231,7 @@ msgid "Asset Blend Path"
 msgstr "Varlık Karışımı Yolu"
 
 
-msgid "Full path to the Blender file containing the active asset"
+msgid "Full path to the .blend file containing the active asset"
 msgstr "Etkin varlığı içeren Blender dosyasının tam yolu"
 
 
@@ -44756,7 +44756,7 @@ msgid "Uninstall Studio Light"
 msgstr "Studio Light'ı kaldırın"
 
 
-msgid "Load and apply a Blender XML theme file"
+msgid "Load and apply an XML theme file"
 msgstr "Bir Blender XML tema dosyası yükleyin ve uygulayın"
 
 
@@ -54966,7 +54966,7 @@ msgid "Definition"
 msgstr "Tanım"
 
 
-msgid "Number of pixels per inch or Blender Unit"
+msgid "Number of pixels per inch or world unit"
 msgstr "İnç başına piksel sayısı veya Blender Birimi"
 
 
@@ -55311,7 +55311,7 @@ msgid "Save the image with another name and/or settings"
 msgstr "Görüntüyü başka bir ad ve/veya ayarlarla kaydedin"
 
 
-msgid "Create a new image file without modifying the current image in Blender"
+msgid "Create a new image file without modifying the current image in Moritz"
 msgstr "Blender'da geçerli görüntüyü değiştirmeden yeni bir görüntü dosyası oluşturun"
 
 
@@ -55738,7 +55738,7 @@ msgid "Update Reports Display"
 msgstr "Raporları Güncelle Ekranı"
 
 
-msgid "Update the display of reports in Blender UI (internal use)"
+msgid "Update the display of reports in Moritz UI (internal use)"
 msgstr "Blender UI'de raporların görüntüsünü güncelleyin (dahili kullanım)"
 
 
@@ -65818,7 +65818,7 @@ msgid "Check for Updates on Startup"
 msgstr "Başlangıçta Güncellemeleri Kontrol Et"
 
 
-msgid "Allow Blender to check for updates upon launch"
+msgid "Allow Moritz to check for updates upon launch"
 msgstr "Blender'ın başlatma sırasında güncellemeleri kontrol etmesine izin verin"
 
 
@@ -67007,7 +67007,7 @@ msgid "Save Screenshot"
 msgstr "Ekran Görüntüsü Kaydet"
 
 
-msgid "Capture a picture of the whole Blender window"
+msgid "Capture a picture of the whole Moritz window"
 msgstr "Blender penceresinin tamamının resmini çekin"
 
 
@@ -70450,7 +70450,7 @@ msgid "Eyedropper"
 msgstr "Damlalık"
 
 
-msgid "Sample a color from the Blender window to store in a property"
+msgid "Sample a color from the Moritz window to store in a property"
 msgstr "Blender penceresinden bir rengi örnekleyerek bir özellikte saklayın"
 
 
@@ -70543,7 +70543,7 @@ msgid "Grease Pencil Eyedropper"
 msgstr "Yağlı Kalem Damlalık"
 
 
-msgid "Sample a color from the Blender Window and create Grease Pencil material"
+msgid "Sample a color from the Moritz window and create Grease Pencil material"
 msgstr "Blender Penceresinden bir renk örneği alın ve Grease Pencil materyali oluşturun"
 
 
@@ -73024,7 +73024,7 @@ msgid "Vertex colors in the file are in linear color space"
 msgstr "Dosyadaki tepe noktası renkleri doğrusal renk uzayındadır"
 
 
-msgid "Import custom normals, if available (otherwise Blender will compute them)"
+msgid "Import custom normals, if available (otherwise Moritz will compute them)"
 msgstr "Eğer mümkünse özel normalleri içe aktarın (aksi takdirde Blender bunları hesaplayacaktır)"
 
 
@@ -73333,7 +73333,7 @@ msgid "Open"
 msgstr "Aç"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "Bir Blender dosyası aç"
 
 
@@ -73464,7 +73464,7 @@ msgid "Enable Python evaluation for selected files"
 msgstr "Seçili dosyalar için Python değerlendirmesini etkinleştir"
 
 
-msgid "Show Blender files in the File Browser"
+msgid "Show .blend files in the File Browser"
 msgstr "Blender dosyalarını Dosya Tarayıcısında göster"
 
 
@@ -73923,11 +73923,11 @@ msgid "Save Blender File"
 msgstr "Blender Dosyasını Kaydet"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "Geçerli Blender dosyasını kaydet"
 
 
-msgid "Exit Blender after saving"
+msgid "Exit Moritz after saving"
 msgstr "Kaydettikten sonra Blender'dan çıkın"
 
 
@@ -74522,7 +74522,7 @@ msgid "Scale for the intensity of imported lights"
 msgstr "İthal ışıkların yoğunluğu için ölçek"
 
 
-msgid "Import each USD material as a unique Blender material"
+msgid "Import each USD material as a unique Moritz material"
 msgstr "Her USD malzemesini benzersiz bir Blender malzemesi olarak içe aktarın"
 
 
@@ -74538,7 +74538,7 @@ msgid "Path Mask"
 msgstr "Yol Maskesi"
 
 
-msgid "Behavior when importing USD attributes as Blender custom properties"
+msgid "Behavior when importing USD attributes as Moritz custom properties"
 msgstr "USD niteliklerini Blender özel özellikleri olarak içe aktarırken davranış"
 
 
@@ -78100,7 +78100,7 @@ msgid "Edit Methods"
 msgstr "Düzenleme Metotları"
 
 
-msgid "Settings for interacting with Blender data"
+msgid "Settings for interacting with Moritz data"
 msgstr "Blender verileriyle etkileşime yönelik ayarlar"
 
 
@@ -79005,7 +79005,7 @@ msgid "Max Threshold"
 msgstr "Maksimum Eşik"
 
 
-msgid "Raw input pressure value that is interpreted as 100% by Blender"
+msgid "Raw input pressure value that is interpreted as 100% by Moritz"
 msgstr "Blender tarafından %100 olarak yorumlanan ham giriş basınç değeri"
 
 
@@ -79429,7 +79429,7 @@ msgid "Device"
 msgstr "Cihaz"
 
 
-msgid "Auto detect best GPU for running Blender"
+msgid "Auto detect best GPU for running Moritz"
 msgstr "Blender'ı çalıştırmak için en iyi GPU'yu otomatik olarak algıla"
 
 
@@ -79957,7 +79957,7 @@ msgid "Show Memory"
 msgstr "Hafızayı Göster"
 
 
-msgid "Show Blender memory usage"
+msgid "Show Moritz memory usage"
 msgstr "Blender bellek kullanımını göster"
 
 
@@ -79981,7 +79981,7 @@ msgid "Show Version"
 msgstr "Sürümü Göster"
 
 
-msgid "Show Blender version string"
+msgid "Show the Moritz version"
 msgstr "Blender sürüm dizesini göster"
 
 
@@ -84591,7 +84591,7 @@ msgid "Export Method"
 msgstr "İhracat Yöntemi"
 
 
-msgid "How to export the Blender scene to the Hydra render engine"
+msgid "How to export the Moritz scene to the Hydra render engine"
 msgstr "Blender sahnesi Hydra render motoruna nasıl aktarılır"
 
 
@@ -86808,7 +86808,7 @@ msgid "Data API"
 msgstr "Veri API'si"
 
 
-msgid "Display low level Blender data and its properties"
+msgid "Display low level Moritz data and its properties"
 msgstr "Düşük seviyeli Blender verilerini ve özelliklerini görüntüle"
 
 
@@ -87013,7 +87013,7 @@ msgid "Space Preferences"
 msgstr "Alan Tercihleri"
 
 
-msgid "Blender preferences space data"
+msgid "Moritz preferences space data"
 msgstr "Blender tercihleri alan verileri"
 
 
@@ -90807,7 +90807,7 @@ msgid "Theme Preferences"
 msgstr "Tema Tercihleri"
 
 
-msgid "Theme settings for the Blender Preferences"
+msgid "Theme settings for the Moritz Preferences"
 msgstr "Blender Tercihleri için tema ayarları"
 
 
@@ -98905,7 +98905,7 @@ msgid "Unable to find any running process"
 msgstr "Çalışan herhangi bir işlem bulunamadı"
 
 
-msgid "Blender sub-process exited with error code {:d}"
+msgid "Moritz sub-process exited with error code {:d}"
 msgstr "Blender alt işlemi {:d} hata koduyla sonlandırıldı"
 
 
@@ -106868,7 +106868,7 @@ msgid "At least 8 common tracks on both keyframes are needed for reconstruction"
 msgstr "Yeniden yapılandırma için her iki anahtar karede en az 8 ortak parçaya ihtiyaç vardır"
 
 
-msgid "Blender is compiled without motion tracking library"
+msgid "Moritz is compiled without motion tracking library"
 msgstr "Blender hareket izleme kütüphanesi olmadan derlendi"
 
 
@@ -107974,7 +107974,7 @@ msgid "Asset catalogs cannot be edited in this asset library"
 msgstr "Varlık katalogları bu varlık kütüphanesinde düzenlenemez"
 
 
-msgid "Cannot save asset catalogs before the Blender file is saved"
+msgid "Cannot save asset catalogs before the .blend file is saved"
 msgstr "Blender dosyası kaydedilmeden varlık katalogları kaydedilemez"
 
 
@@ -111980,7 +111980,7 @@ msgid "Path to asset library does not exist:"
 msgstr "Varlık kütüphanesine giden yol mevcut değil:"
 
 
-msgid "Unreadable Blender library file:"
+msgid "Unreadable .blend library file:"
 msgstr "Okunamayan Blender kütüphane dosyası:"
 
 
@@ -113249,7 +113249,7 @@ msgid "Jump to Line Number"
 msgstr "Satır Numarasına Atla"
 
 
-msgid "File Modified Outside and Inside Blender"
+msgid "File Modified Outside and Inside Moritz"
 msgstr "Blender'ın Dış ve İç Kısımlarında Değiştirilen Dosya"
 
 
@@ -113265,7 +113265,7 @@ msgid "Make text internal (separate copy)"
 msgstr "Metni dahili yap (ayrı kopya)"
 
 
-msgid "File Modified Outside Blender"
+msgid "File Modified Outside Moritz"
 msgstr "Dosya Blender Dışında Değiştirildi"
 
 
@@ -113273,7 +113273,7 @@ msgid "Reload from disk"
 msgstr "Diskten yeniden yükle"
 
 
-msgid "File Deleted Outside Blender"
+msgid "File Deleted Outside Moritz"
 msgstr "Dosya Blender Dışında Silindi"
 
 
@@ -115631,7 +115631,7 @@ msgid "Recursion detected, cannot use this strip"
 msgstr "Tekrarlama algılandı, bu şerit kullanılamaz"
 
 
-msgid "Blender compiled without Audaspace support"
+msgid "Moritz compiled without Audaspace support"
 msgstr "Audaspace desteği olmadan derlenen Blender"
 
 
@@ -119938,7 +119938,7 @@ msgstr "Grafik kartınız veya macOS sürümünüz desteklenmiyor"
 
 
 msgctxt "WindowManager"
-msgid "Upgrading to the latest macOS version may improve Blender support"
+msgid "Upgrading to the latest macOS version may improve Moritz support"
 msgstr "En son macOS sürümüne yükseltme yapmak Blender desteğini iyileştirebilir"
 
 

@@ -1768,7 +1768,7 @@ msgid "Project Settings"
 msgstr "Nastavitve projekta"
 
 
-msgid "Manage the current Blender project"
+msgid "Manage the current Moritz project"
 msgstr "Skrbi za trenutni projekt"
 
 
@@ -1864,7 +1864,7 @@ msgid "Is Editable"
 msgstr "Dovoli urejanje"
 
 
-msgid "Assets and catalogs in this library can be edited from the current Blender instance"
+msgid "Assets and catalogs in this library can be edited from the current Moritz instance"
 msgstr "Sredstva in kataloge v tej knjižnici lahko urejate znotraj trenutne instance Blenderja"
 
 
@@ -1884,7 +1884,7 @@ msgid "Current File"
 msgstr "Trenutna datoteka"
 
 
-msgid "Show the assets currently available in this Blender session"
+msgid "Show the assets currently available in this Moritz session"
 msgstr "Pokaže sredstva, ki so na voljo v trenutni seji programa"
 
 
@@ -1892,7 +1892,7 @@ msgid "Essentials"
 msgstr "Osnove"
 
 
-msgid "Show basic building blocks and utilities coming with Blender"
+msgid "Show basic building blocks and utilities coming with Moritz"
 msgstr "Pokaže osnovne gradnike in pripomočke, ki so privzeto v Blenderju"
 
 
@@ -1964,7 +1964,7 @@ msgid "Catalog UUID"
 msgstr "UUID kataloga"
 
 
-msgid "Identifier for the asset's catalog, used by Blender to look up the asset's catalog path. Must be a UUID according to RFC4122."
+msgid "Identifier for the asset's catalog, used by Moritz to look up the asset's catalog path. Must be a UUID according to RFC4122."
 msgstr "Identifikator kataloga, ki mu sredstvo pripada. Z njegovo pomočjo Blender poišče pot do kataloga sredstva. Identifikator mora biti UUID, definiran po RFC4122."
 
 
@@ -2713,7 +2713,7 @@ msgid "Is Internal"
 msgstr "Je notranji"
 
 
-msgid "The attribute is meant for internal use by Blender"
+msgid "The attribute is meant for internal use by Moritz"
 msgstr "Mišljeno je, da atribut interno uporablja Blender"
 
 
@@ -3601,7 +3601,7 @@ msgid "Project"
 msgstr "Projekt"
 
 
-msgid "The currently active Blender project, if any"
+msgid "The currently active Moritz project, if any"
 msgstr "Trenutno aktivni Blenderjev projekt, če obstaja"
 
 
@@ -4254,7 +4254,7 @@ msgid "Library (blend-file) reference in a BlendImportContext data. Currently on
 msgstr "Sklic na knjižnico (datoteke blend) znotraj BlendImportContext. Trenutno so na voljo samo za branje za določitelje pred/po uvozih datotek blend"
 
 
-msgid "Blender Project"
+msgid "Moritz Project"
 msgstr "Blender projekt"
 
 
@@ -8734,7 +8734,7 @@ msgid "Lin error"
 msgstr "Linearna napaka"
 
 
-msgid "Amount of residual error in Blender space unit for constraints that work on position"
+msgid "Amount of residual error in world units for constraints that work on position"
 msgstr "Količina presežne napake, izražene v Blenderjevi prostorski enoti, za omejevalnike, ki omejujejo položaj v prostoru"
 
 
@@ -12706,7 +12706,7 @@ msgid "Max Velocity"
 msgstr "Največja hitrost"
 
 
-msgid "Velocity considered as maximum influence (Blender units per frame)"
+msgid "Velocity considered as maximum influence (world units per frame)"
 msgstr "Hitrost, ki ima največji možni vpliv (Blenderjeve enote na okvir)"
 
 
@@ -13084,7 +13084,7 @@ msgid "Premultiply Alpha"
 msgstr "Predmnoženje alfe"
 
 
-msgid "Multiply color by alpha (recommended for Blender input)"
+msgid "Multiply color by alpha (recommended for Moritz input)"
 msgstr "Pomnoži barvo z alfo (priporočeno za vhod v Blenderju)"
 
 
@@ -15376,7 +15376,7 @@ msgid "Hide .blend files items that are not data-blocks with asset metadata"
 msgstr "Skrije elemente iz datotek .blend, ki niso podatkovni bloki z metapodatki sredstev"
 
 
-msgid "Filter Blender Backup Files"
+msgid "Filter .blend Backup Files"
 msgstr "Filter Blenderjevih varnostnih kopij"
 
 
@@ -15392,7 +15392,7 @@ msgid "Show .blend files"
 msgstr "Pokaže datoteke .blend"
 
 
-msgid "Filter Blender IDs"
+msgid "Filter .blend Data"
 msgstr "Filtriraj Blenderjeve ID-je"
 
 
@@ -15468,7 +15468,7 @@ msgid "Library Browser"
 msgstr "Knjižnični brskalnik"
 
 
-msgid "Whether we may browse Blender files' content or not"
+msgid "Whether we may browse .blend files' content or not"
 msgstr "Ali lahko brskamo po vsebini Blenderjevih datotek ali ne"
 
 
@@ -36453,7 +36453,7 @@ msgid "Clear Status"
 msgstr "Počisti status"
 
 
-msgid "Allow Blender to access the internet. Add-ons that follow this setting will only connect to the internet if enabled. However, Blender cannot prevent third-party add-ons from violating this rule."
+msgid "Allow Moritz to access the internet. Add-ons that follow this setting will only connect to the internet if enabled. However, Moritz cannot prevent third-party add-ons from violating this rule."
 msgstr "Omogoči Blenderju, da dostopa do interneta. Dodatki, ki upoštevajo to nastavitev, se bodo na internet povezali samo, če je omogočena. Žal pa Blender dodatkom tretjih oseb ne more preprečiti, da prekršijo to pravilo."
 
 
@@ -37209,7 +37209,7 @@ msgid "Uninstall Studio Light"
 msgstr "Odstrani studijsko luč"
 
 
-msgid "Load and apply a Blender XML theme file"
+msgid "Load and apply an XML theme file"
 msgstr "Naloži in uveljavi datoteko XML za videz Blenderja"
 
 
@@ -47268,7 +47268,7 @@ msgid "Check for Updates on Startup"
 msgstr "Ob zagonu preveri za posodobitve"
 
 
-msgid "Allow Blender to check for updates upon launch"
+msgid "Allow Moritz to check for updates upon launch"
 msgstr "Dovoli Blenderju da ob zagonu preveri posodobitve"
 
 
@@ -47840,7 +47840,7 @@ msgid "Save Screenshot"
 msgstr "Zajemi sliko okna"
 
 
-msgid "Capture a picture of the whole Blender window"
+msgid "Capture a picture of the whole Moritz window"
 msgstr "Zajame sliko celega Blenderjevega okna"
 
 
@@ -51256,7 +51256,7 @@ msgid "Open"
 msgstr "Odpri"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "Odpre datoteko programa Blender"
 
 
@@ -51629,15 +51629,15 @@ msgid "Save Blender File"
 msgstr "Shrani datoteko Blender"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "Shrani trenutno datoteko Blenderja"
 
 
-msgid "Exit Blender after saving"
+msgid "Exit Moritz after saving"
 msgstr "Shrani delo in nato zapre Blender"
 
 
-msgid "Save the current Blender file with a numerically incremented name that does not overwrite any existing files"
+msgid "Save the current .blend file with a numerically incremented name that does not overwrite any existing files"
 msgstr "Shrani trenutno datoteko Blenderja v novo datoteko s povečanim števcem v imenu, da ne prepiše obstoječih datotek"
 
 
@@ -55570,7 +55570,7 @@ msgid "Max Threshold"
 msgstr "Maksimalni prag"
 
 
-msgid "Raw input pressure value that is interpreted as 100% by Blender"
+msgid "Raw input pressure value that is interpreted as 100% by Moritz"
 msgstr "Neobdelana vrednost pritiska, ki jo Blender interpretira kot 100 %"
 
 
@@ -55830,7 +55830,7 @@ msgid "GPU Backend"
 msgstr "Zaledje GPE"
 
 
-msgid "GPU backend to use (requires restarting Blender for changes to take effect)"
+msgid "GPU backend to use (requires restarting Moritz for changes to take effect)"
 msgstr "Katero grafično zaledje naj se uporabi (spremembe bodo uveljavljene ob ponovnem zagonu Blenderja)"
 
 
@@ -55846,11 +55846,11 @@ msgid "Device"
 msgstr "Naprava"
 
 
-msgid "Auto detect best GPU for running Blender"
+msgid "Auto detect best GPU for running Moritz"
 msgstr "Samodejno zazna najboljši GPE za Blender"
 
 
-msgid "Number of shader compilation threads or subprocesses, clamped at the max threads supported by the CPU (requires restarting Blender for changes to take effect). A higher number increases the RAM usage while reducing compilation time. A value of 0 will use automatic configuration. (OpenGL only)"
+msgid "Number of shader compilation threads or subprocesses, clamped at the max threads supported by the CPU (requires restarting Moritz for changes to take effect). A higher number increases the RAM usage while reducing compilation time. A value of 0 will use automatic configuration. (OpenGL only)"
 msgstr "Količina niti ali podprocesov za prevajanje senčilnikov, navzgor omejena z največjim številom niti, ki ga podpira CPE (za uveljavitev sprememb je treba Blender ponovno zagnati). Večje število poveča porabo delovnega pomnilnika, a tudi skrajša čas prevajanja. Vrednost 0 pomeni, da bo število določeno samodejno. (Samo OpenGL)"
 
 
@@ -55906,7 +55906,7 @@ msgid "Texture Time Out"
 msgstr "Iztečni čas teksture"
 
 
-msgid "Suggested line thickness and point size in pixels, for add-ons displaying custom user interface elements, based on operating system settings and Blender UI scale"
+msgid "Suggested line thickness and point size in pixels, for add-ons displaying custom user interface elements, based on operating system settings and Moritz UI scale"
 msgstr "Predlagana debelina črt in velikosti točk v pikslih za dodatke, ki prikazujejo prilagojene elemente uporabniškega vmesnika. Predlagane vrednosti temeljijo na nastavitvah operacijskega sistema in velikosti Blenderjevega uporabniškega vmesnika"
 
 
@@ -56710,7 +56710,7 @@ msgid "Show Memory"
 msgstr "Pokaži spomin"
 
 
-msgid "Show Blender memory usage"
+msgid "Show Moritz memory usage"
 msgstr "Pokaže Blenderjevo porabo pomnilnika"
 
 
@@ -56730,7 +56730,7 @@ msgid "Show Version"
 msgstr "Pokaži različico"
 
 
-msgid "Show Blender version string"
+msgid "Show the Moritz version"
 msgstr "Pokaže niz z različico Blenderja"
 
 
@@ -56998,7 +56998,7 @@ msgid "Collection of project asset libraries"
 msgstr "Zbirka knjižnic projektnih sredstev"
 
 
-msgid "Blender Project Variable"
+msgid "Moritz Project Variable"
 msgstr "Blender projektna spremenljivka"
 
 
@@ -67758,7 +67758,7 @@ msgid "Go to pose mode to copy pose bone colors"
 msgstr "Preklopite v pozirni način, da kopirate pozirne kostne barve"
 
 
-msgid "Blender sub-process exited with error code {:d}"
+msgid "Moritz sub-process exited with error code {:d}"
 msgstr "Podproces Blenderja se je zaključil s kodo napake {:d}"
 
 
@@ -76499,7 +76499,7 @@ msgid "At least 8 common tracks on both keyframes are needed for reconstruction"
 msgstr "Za rekonstrukcijo potrebujem vsaj 8 obrisov, ki so skupni obema ključnima okvirjema"
 
 
-msgid "Blender is compiled without motion tracking library"
+msgid "Moritz is compiled without motion tracking library"
 msgstr "Ta izgradnja Blenderja ne vsebuje knjižnice za obrisovanje gibanja"
 
 
@@ -79120,7 +79120,7 @@ msgstr ""
 "({}), pričakujte izgubo podatkov"
 
 
-msgid "This file is managed by the Blender asset system and cannot be overridden"
+msgid "This file is managed by the Moritz asset system and cannot be overridden"
 msgstr "Za to datoteko skrbi Blenderjev sistem sredstev, zato je ni mogoče povoziti"
 
 
@@ -81939,7 +81939,7 @@ msgid "Jump to Line Number"
 msgstr "Skoči na vrstico"
 
 
-msgid "File Modified Outside and Inside Blender"
+msgid "File Modified Outside and Inside Moritz"
 msgstr "Datoteka spremenjena v Blenderju in drugje"
 
 
@@ -81955,7 +81955,7 @@ msgid "Make text internal (separate copy)"
 msgstr "Spravi besedilo v projekt (ločena kopija)"
 
 
-msgid "File Modified Outside Blender"
+msgid "File Modified Outside Moritz"
 msgstr "Datoteka spremenjena zunaj Blenderja"
 
 
@@ -81963,7 +81963,7 @@ msgid "Reload from disk"
 msgstr "Ponovno pridobi z diska"
 
 
-msgid "File Deleted Outside Blender"
+msgid "File Deleted Outside Moritz"
 msgstr "Datoteka izbrisana zunaj Blenderja"
 
 
@@ -86349,7 +86349,7 @@ msgstr "Vaša grafična kartica ali različica sistema macOS nista podprti"
 
 
 msgctxt "WindowManager"
-msgid "Upgrading to the latest macOS version may improve Blender support"
+msgid "Upgrading to the latest macOS version may improve Moritz support"
 msgstr "Posodobitev na najnovejšo različico sistema macOS bo morda nudila boljšo podporo za Blender"
 
 

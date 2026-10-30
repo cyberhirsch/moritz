@@ -1768,7 +1768,7 @@ msgid "Project Settings"
 msgstr "Настройки прокси"
 
 
-msgid "Manage the current Blender project"
+msgid "Manage the current Moritz project"
 msgstr "Управление текущим проектом Blender'а"
 
 
@@ -1864,7 +1864,7 @@ msgid "Is Editable"
 msgstr "Можно редактировать"
 
 
-msgid "Assets and catalogs in this library can be edited from the current Blender instance"
+msgid "Assets and catalogs in this library can be edited from the current Moritz instance"
 msgstr "Редактировать ассеты и каталоги в этой библиотеке можно из текущего экземпляра Blender'а"
 
 
@@ -1884,7 +1884,7 @@ msgid "Current File"
 msgstr "Текущий файл"
 
 
-msgid "Show the assets currently available in this Blender session"
+msgid "Show the assets currently available in this Moritz session"
 msgstr "Показать ассеты, доступные в текущей сессии Blender'а"
 
 
@@ -1892,7 +1892,7 @@ msgid "Essentials"
 msgstr "Основные"
 
 
-msgid "Show basic building blocks and utilities coming with Blender"
+msgid "Show basic building blocks and utilities coming with Moritz"
 msgstr "Показать базовые компоненты и утилиты, входящие в состав Blender'а"
 
 
@@ -1972,7 +1972,7 @@ msgid "Catalog UUID"
 msgstr "UUID каталога"
 
 
-msgid "Identifier for the asset's catalog, used by Blender to look up the asset's catalog path. Must be a UUID according to RFC4122."
+msgid "Identifier for the asset's catalog, used by Moritz to look up the asset's catalog path. Must be a UUID according to RFC4122."
 msgstr "Идентификатор каталога ассета, используемый Blender'ом для поиска пути к каталогу ассета. Должен быть UUID в соответствии с RFC4122."
 
 
@@ -2721,7 +2721,7 @@ msgid "Is Internal"
 msgstr "Является внутренним"
 
 
-msgid "The attribute is meant for internal use by Blender"
+msgid "The attribute is meant for internal use by Moritz"
 msgstr "Атрибут предназначен для внутреннего использования в Blender'е"
 
 
@@ -3440,7 +3440,7 @@ msgid "All Data-Blocks"
 msgstr "Все блоки данных"
 
 
-msgid "Read-only list of all IDs listed in Blender data-base. Warning: Order is not guaranteed and should be considered an internal implementation detail"
+msgid "Read-only list of all IDs listed in Moritz data-base. Warning: Order is not guaranteed and should be considered an internal implementation detail"
 msgstr "Только для чтения: список всех идентификаторов из базы данных Blender'а. Внимание: порядок не гарантируется и может измениться из-за особенностей внутреннего устройства"
 
 
@@ -3613,7 +3613,7 @@ msgid "Project"
 msgstr "Проект"
 
 
-msgid "The currently active Blender project, if any"
+msgid "The currently active Moritz project, if any"
 msgstr "Текущий активный проект Blender'а, если есть"
 
 
@@ -4318,7 +4318,7 @@ msgid "Library (blend-file) reference in a BlendImportContext data. Currently on
 msgstr "Ссылка на библиотеку (blend-файл) в данных контекста импорта BlendImportContext. В настоящее время предоставляется только как данные, доступные только для чтения для обработчиков до/после импорта blend-файла"
 
 
-msgid "Blender Project"
+msgid "Moritz Project"
 msgstr "Проект Blender'а"
 
 
@@ -9297,7 +9297,7 @@ msgid "Lin error"
 msgstr "Лин. ошибка"
 
 
-msgid "Amount of residual error in Blender space unit for constraints that work on position"
+msgid "Amount of residual error in world units for constraints that work on position"
 msgstr "Величина остаточной погрешности в единицах Blender'а для ограничителей, действующих на перемещение"
 
 
@@ -13269,7 +13269,7 @@ msgid "Max Velocity"
 msgstr "Макс. скорость"
 
 
-msgid "Velocity considered as maximum influence (Blender units per frame)"
+msgid "Velocity considered as maximum influence (world units per frame)"
 msgstr "Скорость, при которой воздействие будет максимальным (в единицах Blender'а на кадр)"
 
 
@@ -13647,7 +13647,7 @@ msgid "Premultiply Alpha"
 msgstr "Предумножение прозрачности"
 
 
-msgid "Multiply color by alpha (recommended for Blender input)"
+msgid "Multiply color by alpha (recommended for Moritz input)"
 msgstr "Умножить цвет на прозрачность (рекомендуется для входных файлов для Blender'а)"
 
 
@@ -16051,7 +16051,7 @@ msgid "Hide .blend files items that are not data-blocks with asset metadata"
 msgstr "Скрыть фрагменты .blend-файла, не являющиеся датаблоками с метаданными ассета"
 
 
-msgid "Filter Blender Backup Files"
+msgid "Filter .blend Backup Files"
 msgstr "Фильтровать файлы резервных копий Blender'а"
 
 
@@ -16067,7 +16067,7 @@ msgid "Show .blend files"
 msgstr "Отображать файлы .blend"
 
 
-msgid "Filter Blender IDs"
+msgid "Filter .blend Data"
 msgstr "Фильтровать идентификаторы Blender'а"
 
 
@@ -16143,7 +16143,7 @@ msgid "Library Browser"
 msgstr "Обозреватель библиотек"
 
 
-msgid "Whether we may browse Blender files' content or not"
+msgid "Whether we may browse .blend files' content or not"
 msgstr "Осуществлять ли обзор содержимого файлов Blender'а"
 
 
@@ -16603,7 +16603,7 @@ msgid "Export Mantaflow Script"
 msgstr "Экспортировать скрипт Mantaflow"
 
 
-msgid "Generate and export Mantaflow script from current domain settings during bake. This is only needed if you plan to analyze the cache (e.g. view grids, velocity vectors, particles) in Mantaflow directly (outside of Blender) after baking the simulation."
+msgid "Generate and export Mantaflow script from current domain settings during bake. This is only needed if you plan to analyze the cache (e.g. view grids, velocity vectors, particles) in Mantaflow directly (outside of Moritz) after baking the simulation."
 msgstr "Сгенерировать и экспортировать скрипт Mantaflow с настройками выбранного домена во время запекания. Это необходимо только если вы собираетесь анализировать кэш (например, просматривать сетки, вектора скоростей, частицы) напрямую в Mantaflow (вне Blender'а) после запекания симуляции."
 
 
@@ -21900,7 +21900,7 @@ msgid "Unprojected Size"
 msgstr "Непроецируемый размер"
 
 
-msgid "Diameter of brush in Blender units"
+msgid "Diameter of brush in world units"
 msgstr "Диаметр кисти в единицах Blender'а"
 
 
@@ -25232,7 +25232,7 @@ msgid "Source library from which this archive of packed IDs was generated"
 msgstr "Исходная библиотека, из которой был сгенерирован этот архив упакованных идентификаторов"
 
 
-msgid "Path to the library .blend file. WARNING: Typically, this value should be considered read-only, changing this path without proper processing afterwards can leave Blender data in an invalid state"
+msgid "Path to the library .blend file. WARNING: Typically, this value should be considered read-only, changing this path without proper processing afterwards can leave Moritz data in an invalid state"
 msgstr "Путь к библиотечному .blend-файлу. ВНИМАНИЕ: Обычно это значение должно считаться доступным только для чтения; изменение этого пути без последующей надлежащей обработки может привести к некорректному состоянию данных Blender'а"
 
 
@@ -31377,7 +31377,7 @@ msgid "Asset Blend Path"
 msgstr "Путь-blend ассета"
 
 
-msgid "Full path to the Blender file containing the active asset"
+msgid "Full path to the .blend file containing the active asset"
 msgstr "Полный путь к файлу Blender'а, содержащему активный ассет"
 
 
@@ -32533,7 +32533,7 @@ msgid "Custom Icon"
 msgstr "Особый значок"
 
 
-msgid "True if this preview icon has been modified by py script, and is no more auto-generated by Blender"
+msgid "True if this preview icon has been modified by py script, and is no more auto-generated by Moritz"
 msgstr "Истинно, если этот значок предварительного просмотра был изменён скриптом \"py\" и больше не генерируется автоматически Blender'ом"
 
 
@@ -32541,7 +32541,7 @@ msgid "Custom Image"
 msgstr "Особое изображение"
 
 
-msgid "True if this preview image has been modified by py script, and is no more auto-generated by Blender"
+msgid "True if this preview image has been modified by py script, and is no more auto-generated by Moritz"
 msgstr "Истинно, если это изображение предварительного просмотра было изменено скриптом py и больше не генерируется автоматически Blender'ом"
 
 
@@ -56413,7 +56413,7 @@ msgid "Clear Status"
 msgstr "Очистить состояние"
 
 
-msgid "Allow Blender to access the internet. Add-ons that follow this setting will only connect to the internet if enabled. However, Blender cannot prevent third-party add-ons from violating this rule."
+msgid "Allow Moritz to access the internet. Add-ons that follow this setting will only connect to the internet if enabled. However, Moritz cannot prevent third-party add-ons from violating this rule."
 msgstr "Разрешить Blender'у доступ к интернету. Аддоны, следующие этой настройке, будут подключаться к интернету только в том случае, если эта опция включена. Однако Blender не может помешать сторонним аддонам обходить это правило."
 
 
@@ -57626,7 +57626,7 @@ msgid "Uninstall Studio Light"
 msgstr "Деинсталлировать студийный свет"
 
 
-msgid "Load and apply a Blender XML theme file"
+msgid "Load and apply an XML theme file"
 msgstr "Загрузить и применить XML-файл темы оформления Blender"
 
 
@@ -70428,7 +70428,7 @@ msgid "Definition"
 msgstr "Чёткость"
 
 
-msgid "Number of pixels per inch or Blender Unit"
+msgid "Number of pixels per inch or world unit"
 msgstr "Количество пикселей на дюйм или на единицу Blender'а"
 
 
@@ -70452,7 +70452,7 @@ msgid "Force Reload"
 msgstr "Принудительная перезагрузка"
 
 
-msgid "Force reload the image if it is already opened elsewhere in Blender"
+msgid "Force reload the image if it is already opened elsewhere in Moritz"
 msgstr "Принудительно перезагрузить изображение, если оно уже открыто в другом месте в Blender'е"
 
 
@@ -70825,7 +70825,7 @@ msgid "Save the image with another name and/or settings"
 msgstr "Сохранить изображение с другим именем и/или параметрами"
 
 
-msgid "Create a new image file without modifying the current image in Blender"
+msgid "Create a new image file without modifying the current image in Moritz"
 msgstr "Создать новый файл изображения без изменения текущего изображения в Blender'е"
 
 
@@ -71097,7 +71097,7 @@ msgid "Make Unique"
 msgstr "Сделать уникальным"
 
 
-msgid "Import each FBX material as a unique Blender material"
+msgid "Import each FBX material as a unique Moritz material"
 msgstr "Импортировать каждый материал FBX как уникальный материал Blender'а"
 
 
@@ -71365,7 +71365,7 @@ msgid "Update Reports Display"
 msgstr "Обновить экран отчётов"
 
 
-msgid "Update the display of reports in Blender UI (internal use)"
+msgid "Update the display of reports in Moritz UI (internal use)"
 msgstr "Обновить экран отчётов в интерфейсе пользователя Blender'а (для внутреннего использования)"
 
 
@@ -83798,7 +83798,7 @@ msgid "Check for Updates on Startup"
 msgstr "Проверять наличие обновлений при запуске"
 
 
-msgid "Allow Blender to check for updates upon launch"
+msgid "Allow Moritz to check for updates upon launch"
 msgstr "Разрешить Blender'у проверять наличие обновлений при запуске"
 
 
@@ -85343,7 +85343,7 @@ msgid "Save Screenshot"
 msgstr "Сохранить снимок экрана"
 
 
-msgid "Capture a picture of the whole Blender window"
+msgid "Capture a picture of the whole Moritz window"
 msgstr "Сделать снимок всего окна Blender'а"
 
 
@@ -87366,11 +87366,11 @@ msgid "Auto Detect"
 msgstr "Автоматическое определение"
 
 
-msgid "Add images as individual strips, unless their filenames match Blender's numbered sequence pattern, in which case they are grouped into a single image sequence"
+msgid "Add images as individual strips, unless their filenames match Moritz's numbered sequence pattern, in which case they are grouped into a single image sequence"
 msgstr "Добавлять изображения в качестве отдельных дорожек, если их имена файлов не соответствуют шаблону нумерации последовательности Blender'а, либо в качестве одной секвенции изображений при соблюдении шаблона нумерации"
 
 
-msgid "Import all selected images as a single image sequence. The sequence of images does not have to match Blender's numbered sequence pattern, so placeholders cannot be inferred"
+msgid "Import all selected images as a single image sequence. The sequence of images does not have to match Moritz's numbered sequence pattern, so placeholders cannot be inferred"
 msgstr "Импортировать все выделенные изображения в качестве одной последовательности. Секвенция изображений не обязательно должна соответствовать шаблону нумерации последовательности Blender'а, поэтому плейсхолдеры добавлены быть не могут"
 
 
@@ -89876,7 +89876,7 @@ msgid "Eyedropper"
 msgstr "Пипетка"
 
 
-msgid "Sample a color from the Blender window to store in a property"
+msgid "Sample a color from the Moritz window to store in a property"
 msgstr "Взять образец цвета из окна Blender'а, чтобы сохранить его в свойстве"
 
 
@@ -89973,7 +89973,7 @@ msgid "Grease Pencil Eyedropper"
 msgstr "Пипетка для Grease Pencil"
 
 
-msgid "Sample a color from the Blender Window and create Grease Pencil material"
+msgid "Sample a color from the Moritz window and create Grease Pencil material"
 msgstr "Взять образец цвета из окна Blender'а и создать материал Grease Pencil"
 
 
@@ -92679,7 +92679,7 @@ msgid "Run as Background Job"
 msgstr "Запустить как фоновую задачу"
 
 
-msgid "Enable this to run the import in the background, disable to block Blender while importing. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
+msgid "Enable this to run the import in the background, disable to block Moritz while importing. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
 msgstr "Включите, чтобы запустить импорт в фоновом режиме (отключите, чтобы заблокировать Blender во время импорта). Данная опция устарела; используйте тип EXECUTE у оператора для запуска на переднем плане и INVOKE для выполнения в качестве фонового задания"
 
 
@@ -92844,7 +92844,7 @@ msgid "Add cache modifiers and constraints to imported objects even if they are 
 msgstr "Добавить модификаторы кэша и ограничители к импортированным объектам, даже если они не анимированы, чтобы их можно было обновить при перезагрузке архива Alembic"
 
 
-msgid "Enable this to run the export in the background, disable to block Blender while exporting. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
+msgid "Enable this to run the export in the background, disable to block Moritz while exporting. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
 msgstr "Включите, чтобы запустить экспорт в фоновом режиме (отключите для блокировки Blender'а во время экспорта). Данная опция устарела; используйте тип EXECUTE у оператора для запуска на переднем плане и INVOKE для выполнения в качестве фонового задания"
 
 
@@ -93275,7 +93275,7 @@ msgid "Vertex colors in the file are in linear color space"
 msgstr "Цвета вершин в файле находятся в линейном цветовом пространстве"
 
 
-msgid "Import custom normals, if available (otherwise Blender will compute them)"
+msgid "Import custom normals, if available (otherwise Moritz will compute them)"
 msgstr "Импортировать пользовательские нормали, если они доступны (в противном случае Blender рассчитает их сам)"
 
 
@@ -93696,7 +93696,7 @@ msgid "Open"
 msgstr "Открыть"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "Открыть файл Blender"
 
 
@@ -93873,7 +93873,7 @@ msgid "Collection of file paths with common ``directory`` root"
 msgstr "Коллекция путей к файлам с общей корневой ``папкой``"
 
 
-msgid "Show Blender files in the File Browser"
+msgid "Show .blend files in the File Browser"
 msgstr "Показать файлы Blender'а в браузере файлов"
 
 
@@ -94393,15 +94393,15 @@ msgid "Save Blender File"
 msgstr "Сохранить файл Blender"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "Сохранить текущий файл Blender"
 
 
-msgid "Exit Blender after saving"
+msgid "Exit Moritz after saving"
 msgstr "Закрыть Blender после сохранения"
 
 
-msgid "Save the current Blender file with a numerically incremented name that does not overwrite any existing files"
+msgid "Save the current .blend file with a numerically incremented name that does not overwrite any existing files"
 msgstr "Сохранить текущий файл Blender'а с численно увеличенным именем, которое не перезаписывает существующие файлы"
 
 
@@ -94717,7 +94717,7 @@ msgid "Blender Names"
 msgstr "Идентификаторы Blender'а"
 
 
-msgid "Author USD custom attributes containing the original Blender object and object data names"
+msgid "Author USD custom attributes containing the original Moritz object and object data names"
 msgstr "Авторские пользовательские атрибуты USD, содержащие исходный объект Blender'а и имена данных объекта"
 
 
@@ -95230,7 +95230,7 @@ msgid "Allow USD primitives to merge with their Xform parent if they are the onl
 msgstr "Разрешить примитивам USD объединяться с их родительским элементом Xформации, если они являются единственным дочерним элементом в иерархии"
 
 
-msgid "Import each USD material as a unique Blender material"
+msgid "Import each USD material as a unique Moritz material"
 msgstr "Импортировать каждый материал USD как уникальный материал Blender'а"
 
 
@@ -95266,7 +95266,7 @@ msgid "Import only the primitive at the given path and its descendants. Multiple
 msgstr "Импортировать только примитив по указанному пути и его потомков. Несколько путей могут быть указаны в списке, разделённом запятыми или точками с запятой"
 
 
-msgid "Behavior when importing USD attributes as Blender custom properties"
+msgid "Behavior when importing USD attributes as Moritz custom properties"
 msgstr "Поведение при импорте атрибутов USD в качестве пользовательских свойств Blender'а"
 
 
@@ -95274,7 +95274,7 @@ msgid "Do not import USD custom attributes"
 msgstr "Не импортировать пользовательские атрибуты USD"
 
 
-msgid "Import USD attributes in the 'userProperties' namespace as Blender custom properties. The namespace will be stripped from the property names"
+msgid "Import USD attributes in the 'userProperties' namespace as Moritz custom properties. The namespace will be stripped from the property names"
 msgstr "Импортировать атрибуты USD в пространство имён 'свойствПользователя' в качестве пользовательских свойства Blender'а. Пространство имён будет удалено из имён свойств"
 
 
@@ -95282,7 +95282,7 @@ msgid "All Custom"
 msgstr "Все пользовательские"
 
 
-msgid "Import all USD custom attributes as Blender custom properties. Namespaces will be retained in the property names"
+msgid "Import all USD custom attributes as Moritz custom properties. Namespaces will be retained in the property names"
 msgstr "Импортировать все настраиваемые (пользовательские) атрибуты USD в качестве пользовательских свойства Blender'а. Пространства имён будут сохранены в именах свойств"
 
 
@@ -96203,7 +96203,7 @@ msgid "Set the mask layer from the UV map buttons"
 msgstr "Установить слой маски с помощью кнопок UV-карты"
 
 
-msgid "Maximum edge length for dynamic topology sculpting (as divisor of Blender unit - higher value means smaller edge length)"
+msgid "Maximum edge length for dynamic topology sculpting (as divisor of a world unit - higher value means smaller edge length)"
 msgstr "Максимальная длина ребра для динамической топологии режима скульптинга (как делитель единицы измерения Blender — чем больше это значение, тем меньше размеры рёбер)"
 
 
@@ -99546,7 +99546,7 @@ msgid "Edit Methods"
 msgstr "Параметры редактирования"
 
 
-msgid "Settings for interacting with Blender data"
+msgid "Settings for interacting with Moritz data"
 msgstr "Параметры для взаимодействия с данными Blender'а"
 
 
@@ -99610,7 +99610,7 @@ msgid "Remember Last Project"
 msgstr "Запоминать последний проект"
 
 
-msgid "On startup, automatically re-open the project that was last open when Blender was closed"
+msgid "On startup, automatically re-open the project that was last open when Moritz was closed"
 msgstr "При запуске автоматически открывать проект, который был открыт последним перед закрытием Blender'а"
 
 
@@ -100865,7 +100865,7 @@ msgid "Max Threshold"
 msgstr "Максимальный порог"
 
 
-msgid "Raw input pressure value that is interpreted as 100% by Blender"
+msgid "Raw input pressure value that is interpreted as 100% by Moritz"
 msgstr "Сила давления, которая интерпретируется Blender'ом как 100%"
 
 
@@ -100881,7 +100881,7 @@ msgid "Tablet API"
 msgstr "API планшета"
 
 
-msgid "Select the tablet API to use for pressure sensitivity (may require restarting Blender for changes to take effect)"
+msgid "Select the tablet API to use for pressure sensitivity (may require restarting Moritz for changes to take effect)"
 msgstr "Выберите API планшета, который будет использоваться для чувствительности к нажатию (может потребоваться перезапуск Blender'а, чтобы изменения вступили в силу)"
 
 
@@ -101329,7 +101329,7 @@ msgid "GPU Backend"
 msgstr "Бэкэнд GPU"
 
 
-msgid "GPU backend to use (requires restarting Blender for changes to take effect)"
+msgid "GPU backend to use (requires restarting Moritz for changes to take effect)"
 msgstr "Используемый бэкэнд GPU (для вступления изменений в силу требуется перезапуск Blender'а)"
 
 
@@ -101357,11 +101357,11 @@ msgid "Device"
 msgstr "Устройство"
 
 
-msgid "Preferred device to select during detection (requires restarting Blender for changes to take effect)"
+msgid "Preferred device to select during detection (requires restarting Moritz for changes to take effect)"
 msgstr "Предпочтительное устройство, используемое во время обнаружения (для вступления изменений в силу требуется перезапуск Blender'а)"
 
 
-msgid "Auto detect best GPU for running Blender"
+msgid "Auto detect best GPU for running Moritz"
 msgstr "Автоматическое определение наилучшего графического процессора для запуска Blender'а"
 
 
@@ -101369,7 +101369,7 @@ msgid "Shader Compilation Workers"
 msgstr "Процессов по компиляции шейдеров"
 
 
-msgid "Number of shader compilation threads or subprocesses, clamped at the max threads supported by the CPU (requires restarting Blender for changes to take effect). A higher number increases the RAM usage while reducing compilation time. A value of 0 will use automatic configuration. (OpenGL only)"
+msgid "Number of shader compilation threads or subprocesses, clamped at the max threads supported by the CPU (requires restarting Moritz for changes to take effect). A higher number increases the RAM usage while reducing compilation time. A value of 0 will use automatic configuration. (OpenGL only)"
 msgstr "Количество потоков или подпроцессов компиляции шейдеров, ограниченное максимальным числом потоков, поддерживаемым CPU (требуется перезапуск Blender'а для вступления изменений в силу). Более высокое число увеличивает использование оперативной памяти, одновременно сокращая время компиляции. Значение \"0\" будет использовать автоматическую конфигурацию. (Только OpenGL)"
 
 
@@ -101433,7 +101433,7 @@ msgid "Register for All Users"
 msgstr "Регистрация для всех пользователей"
 
 
-msgid "Make this Blender version open blend files for all users. Requires elevated privileges."
+msgid "Make this Moritz version open .blend files for all users. Requires elevated privileges."
 msgstr "Назначить эту версию Blender'а для открытия всех blend-файлов для всех пользователей. Требуются повышенные привилегии."
 
 
@@ -101465,7 +101465,7 @@ msgid "Shader Compilation Method"
 msgstr "Метод компиляции шейдеров"
 
 
-msgid "Compilation method used for compiling shaders in parallel. Subprocess requires a lot more RAM for each worker but might compile shaders faster on some systems. Requires restarting Blender for changes to take effect. (OpenGL only)"
+msgid "Compilation method used for compiling shaders in parallel. Subprocess requires a lot more RAM for each worker but might compile shaders faster on some systems. Requires restarting Moritz for changes to take effect. (OpenGL only)"
 msgstr "Метод компиляции, используемый для параллельной компиляции шейдеров. Подпроцесс требует гораздо больше оперативной памяти для каждого рабочего процесса, но на некоторых системах может компилировать шейдеры быстрее. Требуется перезапуск Blender'а для вступления изменений в силу. (Только OpenGL)"
 
 
@@ -101521,7 +101521,7 @@ msgid "UI Line Width"
 msgstr "Толщина линий интерфейса"
 
 
-msgid "Suggested line thickness and point size in pixels, for add-ons displaying custom user interface elements, based on operating system settings and Blender UI scale"
+msgid "Suggested line thickness and point size in pixels, for add-ons displaying custom user interface elements, based on operating system settings and Moritz UI scale"
 msgstr "Рекомендуемая толщина линии и размер точки в пикселях для аддонов, отображающих пользовательские элементы интерфейса, на основе настроек операционной системы и масштаба пользовательского интерфейса Blender'а"
 
 
@@ -101529,7 +101529,7 @@ msgid "UI Scale"
 msgstr "Масштаб интерфейса"
 
 
-msgid "Size multiplier to use when displaying custom user interface elements, so that they are scaled correctly on screens with different DPI. This value is based on operating system DPI settings and Blender display scale."
+msgid "Size multiplier to use when displaying custom user interface elements, so that they are scaled correctly on screens with different DPI. This value is based on operating system DPI settings and Moritz display scale."
 msgstr "Множитель размера, используемый при отображении элементов пользовательского интерфейса, чтобы они правильно масштабировались на экранах с разным разрешением. Это значение основано на настройках DPI операционной системы и масштабе отображения Blender'а."
 
 
@@ -102545,7 +102545,7 @@ msgid "Show Memory"
 msgstr "Отображать память"
 
 
-msgid "Show Blender memory usage"
+msgid "Show Moritz memory usage"
 msgstr "Отображать использование памяти Blender'ом"
 
 
@@ -102569,7 +102569,7 @@ msgid "Show Version"
 msgstr "Отображать версию"
 
 
-msgid "Show Blender version string"
+msgid "Show the Moritz version"
 msgstr "Отображать строку версии Blender'а"
 
 
@@ -102901,7 +102901,7 @@ msgid "Collection of project asset libraries"
 msgstr "Коллекция библиотек ассетов проекта"
 
 
-msgid "Blender Project Variable"
+msgid "Moritz Project Variable"
 msgstr "Переменная проекта Blender'а"
 
 
@@ -109197,7 +109197,7 @@ msgid "Export Method"
 msgstr "Метод экспорта"
 
 
-msgid "How to export the Blender scene to the Hydra render engine"
+msgid "How to export the Moritz scene to the Hydra render engine"
 msgstr "Как экспортировать сцену Blender'а в рендер-движок Hydra"
 
 
@@ -111747,7 +111747,7 @@ msgid "Data API"
 msgstr "API данных"
 
 
-msgid "Display low level Blender data and its properties"
+msgid "Display low level Moritz data and its properties"
 msgstr "Показать низкоуровневые данные Blender'а и их свойства"
 
 
@@ -112100,7 +112100,7 @@ msgid "Space Preferences"
 msgstr "Пространство настроек"
 
 
-msgid "Blender preferences space data"
+msgid "Moritz preferences space data"
 msgstr "Данные пространства настроек Blender'а"
 
 
@@ -116838,7 +116838,7 @@ msgid "Theme Preferences"
 msgstr "Настройки темы"
 
 
-msgid "Theme settings for the Blender Preferences"
+msgid "Theme settings for the Moritz Preferences"
 msgstr "Настройки темы для настроек Blender"
 
 
@@ -118912,7 +118912,7 @@ msgid "Unit Scale"
 msgstr "Масштаб единиц"
 
 
-msgid "Scale to use when converting between Blender units and dimensions. When working at microscopic or astronomical scale, a small or large unit scale respectively can be used to avoid numerical precision problems"
+msgid "Scale to use when converting between internal units and dimensions. When working at microscopic or astronomical scale, a small or large unit scale respectively can be used to avoid numerical precision problems"
 msgstr "Масштаб, используемый при преобразовании единиц измерения в Blender'е. При работе в микроскопическом или астрономическом масштабе можно использовать малые или большие единицы измерения соответственно, чтобы избежать проблем с числовой точностью"
 
 
@@ -128230,7 +128230,7 @@ msgid "Unable to find any running process"
 msgstr "Не удалось найти ни одного запущенного процесса"
 
 
-msgid "Blender sub-process exited with error code {:d}"
+msgid "Moritz sub-process exited with error code {:d}"
 msgstr "Подпроцесс Blender'а завершился с кодом ошибки {:d}"
 
 
@@ -128390,7 +128390,7 @@ msgid "Could not find image '{:s}'"
 msgstr "Не удалось найти изображение '{:s}'"
 
 
-msgid "Image editor could not be launched, ensure that the path in User Preferences > File Paths > Applications > Image Editor is valid, and Blender has rights to launch it"
+msgid "Image editor could not be launched, ensure that the path in User Preferences > File Paths > Applications > Image Editor is valid, and Moritz has rights to launch it"
 msgstr "Не удалось запустить редактор изображений. Убедитесь, что путь в \"Настройках пользователя > Пути к файлам > Приложения > Редактор изображений\" указан верно, и у Blender'а есть права на его запуск"
 
 
@@ -138373,7 +138373,7 @@ msgid "At least 8 common tracks on both keyframes are needed for reconstruction"
 msgstr "Для реконструкции необходимо хотя бы 8 общих треков на обоих ключевых кадрах"
 
 
-msgid "Blender is compiled without motion tracking library"
+msgid "Moritz is compiled without motion tracking library"
 msgstr "Blender скомпилирован без библиотеки отслеживания движения"
 
 
@@ -140442,7 +140442,7 @@ msgid "Asset catalogs cannot be edited in this asset library"
 msgstr "Каталоги ассетов не могут быть отредактированы в этой библиотеке ассетов"
 
 
-msgid "Cannot save asset catalogs before the Blender file is saved"
+msgid "Cannot save asset catalogs before the .blend file is saved"
 msgstr "Невозможно сохранить каталоги ассетов до сохранения файла Blender'а"
 
 
@@ -141295,7 +141295,7 @@ msgid "Drag to continue sampling, release when done"
 msgstr "Перетащите, чтобы продолжить выбор, отпустите, когда закончите"
 
 
-msgid "Press 'Enter' to sample outside of a Blender window"
+msgid "Press 'Enter' to sample outside of a Moritz window"
 msgstr "Нажмите 'Enter', чтобы выполнить сэмплирование за пределами окна Blender'а"
 
 
@@ -142794,7 +142794,7 @@ msgstr ""
 "({}), возможна потеря данных"
 
 
-msgid "This file is managed by the Blender asset system and cannot be overridden"
+msgid "This file is managed by the Moritz asset system and cannot be overridden"
 msgstr "Этот файл управляется системой ассетов Blender'а и не может быть переопределён"
 
 
@@ -146963,7 +146963,7 @@ msgstr ""
 "Вы можете изменить это позже во вкладке \"Система (system)\" в настройках."
 
 
-msgid "Unreadable Blender library file:"
+msgid "Unreadable .blend library file:"
 msgstr "Нечитаемый файл библиотеки Blender'а:"
 
 
@@ -149690,7 +149690,7 @@ msgid "Jump to Line Number"
 msgstr "Перейти к номеру строки"
 
 
-msgid "File Modified Outside and Inside Blender"
+msgid "File Modified Outside and Inside Moritz"
 msgstr "Файл изменён снаружи в внутри Blender'а"
 
 
@@ -149706,7 +149706,7 @@ msgid "Make text internal (separate copy)"
 msgstr "Сделать текст внутренним (создать отдельную копию)"
 
 
-msgid "File Modified Outside Blender"
+msgid "File Modified Outside Moritz"
 msgstr "Файл изменён вне Blender'а"
 
 
@@ -149714,7 +149714,7 @@ msgid "Reload from disk"
 msgstr "Перезагрузить с диска"
 
 
-msgid "File Deleted Outside Blender"
+msgid "File Deleted Outside Moritz"
 msgstr "Файл удалён вне Blender'а"
 
 
@@ -153347,7 +153347,7 @@ msgid "Unable to open sound file"
 msgstr "Не удалось открыть звуковой файл"
 
 
-msgid "Blender compiled without Audaspace support"
+msgid "Moritz compiled without Audaspace support"
 msgstr "Blender скомпилирован без поддержки Audaspace"
 
 
@@ -162188,7 +162188,7 @@ msgid "Overwrite Startup File"
 msgstr "Перезаписать файл запуска"
 
 
-msgid "Blender will start next time as it is now."
+msgid "Moritz will start next time as it is now."
 msgstr "В следующий раз Blender запустится так же, как он есть сейчас."
 
 
@@ -162324,7 +162324,7 @@ msgid "Unable to Load File"
 msgstr "Не удалось загрузить файл"
 
 
-msgid "The file is not a valid Blender file."
+msgid "The file is not a valid .blend file."
 msgstr "Файл не является допустимым файлом Blender'а."
 
 
@@ -162336,7 +162336,7 @@ msgid "Saving it with this Blender (%s) may cause loss of data."
 msgstr "Сохранение с помощью данной версии Blender'а (%s) может привести к потере данных."
 
 
-msgid "This file is managed by the Blender asset system. It can only be"
+msgid "This file is managed by the Moritz asset system. It can only be"
 msgstr "Этим файлом управляет система ассетов Blender'а. Он может быть только"
 
 
@@ -162708,7 +162708,7 @@ msgstr "Ваша видеокарта или версия драйвера им�
 
 
 msgctxt "WindowManager"
-msgid "Newer graphics drivers might be available with better Blender compatibility."
+msgid "Newer graphics drivers might be available with better Moritz compatibility."
 msgstr "Могут быть доступны более новые графические драйверы с лучшей совместимостью с Blender'ом."
 
 
@@ -162733,7 +162733,7 @@ msgstr "Ваша видеокарта или драйвер не поддерж�
 
 
 msgctxt "WindowManager"
-msgid "Upgrading to the latest macOS version may improve Blender support"
+msgid "Upgrading to the latest macOS version may improve Moritz support"
 msgstr "Обновление до последней версии macOS может улучшить поддержку Blender'а"
 
 
@@ -162743,7 +162743,7 @@ msgstr "Ваша видеокарта или версия драйвера не 
 
 
 msgctxt "WindowManager"
-msgid "Blender will now close."
+msgid "Moritz will now close."
 msgstr "Blender сейчас закроется."
 
 

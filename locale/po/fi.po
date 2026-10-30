@@ -1371,7 +1371,7 @@ msgid "Is Internal"
 msgstr "On sisäinen"
 
 
-msgid "The attribute is meant for internal use by Blender"
+msgid "The attribute is meant for internal use by Moritz"
 msgstr "Attribuutti on tarkoitettu Blenderin sisäiseen käyttöön"
 
 
@@ -16543,7 +16543,7 @@ msgstr "Näytönohjaimesi tai macOS-vesio ei ole tuettu"
 
 
 msgctxt "WindowManager"
-msgid "Upgrading to the latest macOS version may improve Blender support"
+msgid "Upgrading to the latest macOS version may improve Moritz support"
 msgstr "Päivittäminen viimeisimpään macOS-versioon saattaa parantaa Blender-tukea"
 
 

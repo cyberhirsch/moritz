@@ -6533,7 +6533,7 @@ static void ed_screens_statusbar_menu_create(ui::Layout &layout, void * /*arg*/)
   }
   layout.prop(
       &ptr, "show_extensions_updates", UI_ITEM_NONE, IFACE_("Extensions Updates"), ICON_NONE);
-  layout.prop(&ptr, "show_statusbar_version", UI_ITEM_NONE, IFACE_("Blender Version"), ICON_NONE);
+  layout.prop(&ptr, "show_statusbar_version", UI_ITEM_NONE, IFACE_("Moritz Version"), ICON_NONE);
 }
 
 static wmOperatorStatus screen_context_menu_invoke(bContext *C,

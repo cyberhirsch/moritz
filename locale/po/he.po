@@ -3384,7 +3384,7 @@ msgid "Bricks 2"
 msgstr "2 םינבל"
 
 
-msgid "The file is not a valid Blender file."
+msgid "The file is not a valid .blend file."
 msgstr ".יקוח Blender ץבוק וניא ץבוקה"
 
 

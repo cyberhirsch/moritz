@@ -1808,7 +1808,7 @@ msgid "Current File"
 msgstr "目前檔案"
 
 
-msgid "Show the assets currently available in this Blender session"
+msgid "Show the assets currently available in this Moritz session"
 msgstr "顯示目前在此 Blender 工作階段中可用的素材"
 
 
@@ -1876,7 +1876,7 @@ msgid "Catalog UUID"
 msgstr "編目 UUID"
 
 
-msgid "Identifier for the asset's catalog, used by Blender to look up the asset's catalog path. Must be a UUID according to RFC4122."
+msgid "Identifier for the asset's catalog, used by Moritz to look up the asset's catalog path. Must be a UUID according to RFC4122."
 msgstr "此素材的編目的識別子，Blender 使用它來查找素材的編目路徑。必須視遵照 RFC4122 的 UUID。"
 
 
@@ -2553,7 +2553,7 @@ msgid "Is Internal"
 msgstr "屬於內部"
 
 
-msgid "The attribute is meant for internal use by Blender"
+msgid "The attribute is meant for internal use by Moritz"
 msgstr "此屬性供 Blender 內部使用"
 
 
@@ -7091,7 +7091,7 @@ msgid "Lin error"
 msgstr "連結錯誤"
 
 
-msgid "Amount of residual error in Blender space unit for constraints that work on position"
+msgid "Amount of residual error in world units for constraints that work on position"
 msgstr "Blender 空間單位中約束作用於位置的殘餘錯誤量"
 
 
@@ -10168,7 +10168,7 @@ msgid "Max Velocity"
 msgstr "最大速度"
 
 
-msgid "Velocity considered as maximum influence (Blender units per frame)"
+msgid "Velocity considered as maximum influence (world units per frame)"
 msgstr "速度被視為最大影響 (每幀的 Blender 單位)"
 
 
@@ -10538,7 +10538,7 @@ msgid "Premultiply Alpha"
 msgstr "預乘 Alpha"
 
 
-msgid "Multiply color by alpha (recommended for Blender input)"
+msgid "Multiply color by alpha (recommended for Moritz input)"
 msgstr "色彩乘以 alpha (建議 Blender 輸入使用)"
 
 
@@ -12553,7 +12553,7 @@ msgid "Hide .blend files items that are not data-blocks with asset metadata"
 msgstr "隱藏不是包含素材中介資料的資料組塊的 .blend 檔案項目"
 
 
-msgid "Filter Blender Backup Files"
+msgid "Filter .blend Backup Files"
 msgstr "過濾 Blender 備份檔案"
 
 
@@ -12569,7 +12569,7 @@ msgid "Show .blend files"
 msgstr "顯示 .blend 檔案"
 
 
-msgid "Filter Blender IDs"
+msgid "Filter .blend Data"
 msgstr "依 Blender ID 過濾"
 
 
@@ -38174,7 +38174,7 @@ msgid "Uninstall Studio Light"
 msgstr "解除安裝攝影棚燈光"
 
 
-msgid "Load and apply a Blender XML theme file"
+msgid "Load and apply an XML theme file"
 msgstr "載入並套用 Blender XML 主題檔案"
 
 
@@ -46225,7 +46225,7 @@ msgid "Update Reports Display"
 msgstr "更新報告顯示"
 
 
-msgid "Update the display of reports in Blender UI (internal use)"
+msgid "Update the display of reports in Moritz UI (internal use)"
 msgstr "更新 Blender UI 中 (內部使用) 報告的顯示"
 
 
@@ -59726,7 +59726,7 @@ msgid "Open"
 msgstr "開啟"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "開啟一個 Blender 檔案"
 
 
@@ -60175,11 +60175,11 @@ msgid "Save Blender File"
 msgstr "儲存 Blender 檔案"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "儲存目前的 Blender 檔案"
 
 
-msgid "Save the current Blender file with a numerically incremented name that does not overwrite any existing files"
+msgid "Save the current .blend file with a numerically incremented name that does not overwrite any existing files"
 msgstr "儲存目前的 Blender 檔案但在名稱上加上遞增數字來避免覆寫任何現存檔案"
 
 
@@ -63929,7 +63929,7 @@ msgid "Edit Methods"
 msgstr "編輯方法"
 
 
-msgid "Settings for interacting with Blender data"
+msgid "Settings for interacting with Moritz data"
 msgstr "Blender 資料的互動設定"
 
 
@@ -65025,7 +65025,7 @@ msgid "Register for All Users"
 msgstr "為所有使用者註冊"
 
 
-msgid "Make this Blender version open blend files for all users. Requires elevated privileges."
+msgid "Make this Moritz version open .blend files for all users. Requires elevated privileges."
 msgstr "讓所有使用者都使用這個 Blender 版本來開啟 blend 檔案。需要管理員權限。"
 
 
@@ -65045,7 +65045,7 @@ msgid "Shader Compilation Method"
 msgstr "著色器編譯方法"
 
 
-msgid "Compilation method used for compiling shaders in parallel. Subprocess requires a lot more RAM for each worker but might compile shaders faster on some systems. Requires restarting Blender for changes to take effect. (OpenGL only)"
+msgid "Compilation method used for compiling shaders in parallel. Subprocess requires a lot more RAM for each worker but might compile shaders faster on some systems. Requires restarting Moritz for changes to take effect. (OpenGL only)"
 msgstr "平行編譯著色器的方法。子程序需要更多記憶體，但在某些系統上可能會更快。需要重新啟動 Blender 才會生效。（僅 OpenGL）"
 
 
@@ -71007,7 +71007,7 @@ msgid "Space Preferences"
 msgstr "空間偏好設定"
 
 
-msgid "Blender preferences space data"
+msgid "Moritz preferences space data"
 msgstr "Blender 偏好設定空間資料"
 
 
@@ -74164,7 +74164,7 @@ msgid "Theme Preferences"
 msgstr "主題偏好設定"
 
 
-msgid "Theme settings for the Blender Preferences"
+msgid "Theme settings for the Moritz Preferences"
 msgstr "Blender 偏好設定中的主題設定"
 
 
@@ -86979,7 +86979,7 @@ msgid "Plane Track"
 msgstr "平面軌道"
 
 
-msgid "Blender is compiled without motion tracking library"
+msgid "Moritz is compiled without motion tracking library"
 msgstr "Blender 編譯時未開啟動態追蹤函式庫"
 
 
@@ -87774,7 +87774,7 @@ msgid "Asset catalogs cannot be edited in this asset library"
 msgstr "這個素材庫裡的素材編目不能被編輯"
 
 
-msgid "Cannot save asset catalogs before the Blender file is saved"
+msgid "Cannot save asset catalogs before the .blend file is saved"
 msgstr "無法在 Blender 檔案儲存之前儲存素材編目"
 
 
@@ -91891,7 +91891,7 @@ msgid "Data Set"
 msgstr "資料集"
 
 
-msgid "File Modified Outside and Inside Blender"
+msgid "File Modified Outside and Inside Moritz"
 msgstr "檔案已在 Blender 之外與之內修改"
 
 
@@ -91907,7 +91907,7 @@ msgid "Make text internal (separate copy)"
 msgstr "文字轉為內部 (分離副本)"
 
 
-msgid "File Modified Outside Blender"
+msgid "File Modified Outside Moritz"
 msgstr "檔案已在 Blender 之外修改"
 
 
@@ -91915,7 +91915,7 @@ msgid "Reload from disk"
 msgstr "從磁碟重新載入"
 
 
-msgid "File Deleted Outside Blender"
+msgid "File Deleted Outside Moritz"
 msgstr "檔案已在 Blender 外刪除"
 
 
@@ -93464,7 +93464,7 @@ msgid "Modifier was not found in the stack"
 msgstr "堆疊中找不到修改器"
 
 
-msgid "Blender compiled without Audaspace support"
+msgid "Moritz compiled without Audaspace support"
 msgstr "Blender 編譯時未開啟 Audaspace 支援"
 
 

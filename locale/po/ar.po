@@ -3256,7 +3256,7 @@ msgid "Lin error"
 msgstr "ﻲﻠﺧﺍﺩ ﺄﻄﺧ"
 
 
-msgid "Amount of residual error in Blender space unit for constraints that work on position"
+msgid "Amount of residual error in world units for constraints that work on position"
 msgstr "ﺭﺪﻨﻠﺑ ﺱﺎﻴﻗ ﺪﺣﻮﺑ ﻊﻗﻮﻤﻟﺍ ﻰﻠﻋ ﺔﻠﻣﺎﻌﻟﺍ ﺩﻮﻴﻘﻠﻟ ﻲﻘﺒﺘﻤﻟﺍ ﺄﻄﺨﻟﺍ ﺔﻴﻤﻛ"
 
 
@@ -5681,7 +5681,7 @@ msgid "Max Velocity"
 msgstr "ﺔﻋﺮﺳ ﻰﻠﻋﺍ"
 
 
-msgid "Velocity considered as maximum influence (Blender units per frame)"
+msgid "Velocity considered as maximum influence (world units per frame)"
 msgstr "(ﺭﺎﻃﻹ﻿ﺍ ﻲﻓ ﺭﺪﻨﻠﺑ ﺕﺍﺪﺣﻭ) ﻱﻮﺼﻗ ﺮﻴﺛﺄﺘﻛ ﺓﺮﺒﺘﻌﻤﻟﺍ ﺔﻋﺮﺴﻟﺍ"
 
 
@@ -6001,7 +6001,7 @@ msgid "Save this output layer"
 msgstr "ﻩﺬﻫ ﺝﺍﺮﺧﻹ﻿ﺍ ﺔﻘﺒﻃ ﻆﻔﺣﺇ"
 
 
-msgid "Multiply color by alpha (recommended for Blender input)"
+msgid "Multiply color by alpha (recommended for Moritz input)"
 msgstr "(ﺭﺪﻨﻠﺒﻟﺍ ﺕﻼ﻿ﺧﺪﻤﻟ ﺎﻬﺑ ﻰﺻﻮﻣ) ﺎﻔﻟﺃ ﻲﻓ ﻥﻮﻠﻟ ﺔﻴﻠﺒﻗ-ﺔﻔﻋﺎﻀﻣ"
 
 
@@ -7506,7 +7506,7 @@ msgid "Show .blend files"
 msgstr "blend. ﺕﺎﻔﻠﻣ ﺮﻬﻇﺃ"
 
 
-msgid "Filter Blender IDs"
+msgid "Filter .blend Data"
 msgstr "ﺭﺪﻨﻠﺑ ﺕﺎﻓﺮﻌﻣ ﻒّﺻ"
 
 
@@ -28928,7 +28928,7 @@ msgid "Edit Methods"
 msgstr "ﺮﻳﺮﺤﺘﻟﺍ ﻕﺮﻃ"
 
 
-msgid "Settings for interacting with Blender data"
+msgid "Settings for interacting with Moritz data"
 msgstr "ﺭﺪﻨﻠﺑ ﺕﺎﻧﺎﻴﺑ ﻊﻣ ﻞﻋﺎﻔﺘﻠﻟ ﺕﺍﺩﺍﺪﻋﺇ"
 
 

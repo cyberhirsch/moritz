@@ -2503,7 +2503,7 @@ msgid "Memory Statistics"
 msgstr "Эс статистикасы"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "Blender файлын ачуу"
 
 

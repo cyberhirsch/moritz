@@ -640,7 +640,7 @@ msgid "Current File"
 msgstr "Dabartinis failas"
 
 
-msgid "Show the assets currently available in this Blender session"
+msgid "Show the assets currently available in this Moritz session"
 msgstr "Rodyti išteklius pasiekiamus šioje Blender sesijoje"
 
 
@@ -3549,7 +3549,7 @@ msgid "Open"
 msgstr "Atidaryti"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "Atidaryti „Blender“ failą"
 
 
@@ -3576,7 +3576,7 @@ msgid "Save Blender File"
 msgstr "Išsaugoti „Blender“ failą"
 
 
-msgid "Exit Blender after saving"
+msgid "Exit Moritz after saving"
 msgstr "Išjungti „Blender“ po išsaugojimo"
 
 

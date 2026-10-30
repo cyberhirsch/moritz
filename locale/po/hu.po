@@ -9511,7 +9511,7 @@ msgid "Restore Key Map(s)"
 msgstr "Billentyű-hozzárendelések visszaállítása"
 
 
-msgid "Load and apply a Blender XML theme file"
+msgid "Load and apply an XML theme file"
 msgstr "Egy Blender XML témafájl betöltése és alkalmazása"
 
 
@@ -12573,7 +12573,7 @@ msgid "Include all scene frames"
 msgstr "Minden jelenet képkocka bevonása"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "Blender fájl megnyitása"
 
 
@@ -12679,7 +12679,7 @@ msgid "Save Blender File"
 msgstr "Blender fájl mentése"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "Az aktuális Blender fájl mentése"
 
 

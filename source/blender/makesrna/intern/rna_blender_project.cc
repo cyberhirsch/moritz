@@ -836,7 +836,7 @@ static void rna_def_project_variable(BlenderRNA *brna)
   PropertyRNA *prop;
 
   srna = RNA_def_struct(brna, "ProjectVariable", nullptr);
-  RNA_def_struct_ui_text(srna, "Blender Project Variable", "");
+  RNA_def_struct_ui_text(srna, "Moritz Project Variable", "");
   RNA_def_struct_refine_func(srna, "rna_ProjectVariable_refine");
 
   prop = RNA_def_property(srna, "type", PROP_ENUM, PROP_NONE);
@@ -973,7 +973,7 @@ static void rna_def_project_asset_library_collection(BlenderRNA *brna, PropertyR
 static void rna_def_blender_project(BlenderRNA *brna)
 {
   StructRNA *srna = RNA_def_struct(brna, "BlenderProject", nullptr);
-  RNA_def_struct_ui_text(srna, "Blender Project", "");
+  RNA_def_struct_ui_text(srna, "Moritz Project", "");
 
   PropertyRNA *prop;
   prop = RNA_def_property(srna, "is_dirty", PROP_BOOLEAN, PROP_NONE);

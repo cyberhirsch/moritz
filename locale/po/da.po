@@ -1463,7 +1463,7 @@ msgid "Current File"
 msgstr "Nuværende fil"
 
 
-msgid "Show the assets currently available in this Blender session"
+msgid "Show the assets currently available in this Moritz session"
 msgstr "Vis de aktiver, der i øjeblikket er tilgængelige i denne Blender-session"
 
 
@@ -1988,7 +1988,7 @@ msgid "Is Internal"
 msgstr "Er intern"
 
 
-msgid "The attribute is meant for internal use by Blender"
+msgid "The attribute is meant for internal use by Moritz"
 msgstr "atribut er ment til internal brug af blender"
 
 

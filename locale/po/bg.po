@@ -1946,7 +1946,7 @@ msgid "Print memory statistics to the console"
 msgstr "Принтирай статистиката на паметта в конзолата"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "Отваряне на Blender файл"
 
 
@@ -2019,7 +2019,7 @@ msgid "Save Blender File"
 msgstr "Запази Blender Файл"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "Запази текущия Blender файл"
 
 

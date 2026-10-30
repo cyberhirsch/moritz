@@ -1770,7 +1770,7 @@ msgid "Project Settings"
 msgstr "Pengaturan Proyek"
 
 
-msgid "Manage the current Blender project"
+msgid "Manage the current Moritz project"
 msgstr "Kelola proyek blender saat ini"
 
 
@@ -1866,7 +1866,7 @@ msgid "Is Editable"
 msgstr "Dapat Mengedit"
 
 
-msgid "Assets and catalogs in this library can be edited from the current Blender instance"
+msgid "Assets and catalogs in this library can be edited from the current Moritz instance"
 msgstr "Aset dan katalog di pustaka ini dapat disunting dari instansi Blender yang sedang berjalan"
 
 
@@ -1886,7 +1886,7 @@ msgid "Current File"
 msgstr "Berkas Sekarang"
 
 
-msgid "Show the assets currently available in this Blender session"
+msgid "Show the assets currently available in this Moritz session"
 msgstr "Menampilkan aset yang sekarang tersedia di sesi Blender ini"
 
 
@@ -1894,7 +1894,7 @@ msgid "Essentials"
 msgstr "Hal-hal Penting"
 
 
-msgid "Show basic building blocks and utilities coming with Blender"
+msgid "Show basic building blocks and utilities coming with Moritz"
 msgstr "Menampilkan komponen dasar dan fitur bawaan yang tersedia di Blender"
 
 
@@ -1974,7 +1974,7 @@ msgid "Catalog UUID"
 msgstr "UUID Katalog"
 
 
-msgid "Identifier for the asset's catalog, used by Blender to look up the asset's catalog path. Must be a UUID according to RFC4122."
+msgid "Identifier for the asset's catalog, used by Moritz to look up the asset's catalog path. Must be a UUID according to RFC4122."
 msgstr "Pengenal untuk katalog aset, digunakan Blender untuk melihat jalur katalog aset. Harus berupa UUID menurut RFC4122."
 
 
@@ -2723,7 +2723,7 @@ msgid "Is Internal"
 msgstr "Merupakan Internal"
 
 
-msgid "The attribute is meant for internal use by Blender"
+msgid "The attribute is meant for internal use by Moritz"
 msgstr "Atribut hanya untuk penggunaan internal oleh Blender"
 
 
@@ -3442,7 +3442,7 @@ msgid "All Data-Blocks"
 msgstr "Semua Data-Blok"
 
 
-msgid "Read-only list of all IDs listed in Blender data-base. Warning: Order is not guaranteed and should be considered an internal implementation detail"
+msgid "Read-only list of all IDs listed in Moritz data-base. Warning: Order is not guaranteed and should be considered an internal implementation detail"
 msgstr "Daftar yang hanya dapat dibaca dari semua ID yang tercantum dalam basis data Blender. Peringatan: Urutan tidak dijamin dan harus dianggap sebagai detail implementasi internal"
 
 
@@ -3615,7 +3615,7 @@ msgid "Project"
 msgstr "Proyek"
 
 
-msgid "The currently active Blender project, if any"
+msgid "The currently active Moritz project, if any"
 msgstr "Proyek Blender yang saat ini aktif, jika ada"
 
 
@@ -4320,7 +4320,7 @@ msgid "Library (blend-file) reference in a BlendImportContext data. Currently on
 msgstr "Referensi perpustakaan (blend-file) dalam data BlendImportContext. Saat ini hanya tersedia sebagai data read-only untuk penangan pra/pasca impor blend"
 
 
-msgid "Blender Project"
+msgid "Moritz Project"
 msgstr "Proyek Blender"
 
 
@@ -11994,7 +11994,7 @@ msgid "Only Assets"
 msgstr "Hanya Aset"
 
 
-msgid "Filter Blender Backup Files"
+msgid "Filter .blend Backup Files"
 msgstr "Flter Berkas Backup Blender"
 
 
@@ -12010,7 +12010,7 @@ msgid "Show .blend files"
 msgstr "Tampilkan file .blend"
 
 
-msgid "Filter Blender IDs"
+msgid "Filter .blend Data"
 msgstr "Filter ID Blender"
 
 
@@ -28344,7 +28344,7 @@ msgid "Show Memory"
 msgstr "Tampilkan Memori"
 
 
-msgid "Show Blender memory usage"
+msgid "Show Moritz memory usage"
 msgstr "Tampilkan penggunaan memori Blender"
 
 
@@ -36169,7 +36169,7 @@ msgstr "Kartu grafis anda atau versi macOS tidak didukung"
 
 
 msgctxt "WindowManager"
-msgid "Upgrading to the latest macOS version may improve Blender support"
+msgid "Upgrading to the latest macOS version may improve Moritz support"
 msgstr "Meningkatkan ke versi macOS terbaru mungkin dapat meningkatkan dukungan Blender"
 
 

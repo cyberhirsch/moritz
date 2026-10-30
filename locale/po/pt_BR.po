@@ -1553,7 +1553,7 @@ msgid "Show assets from all of the listed asset libraries"
 msgstr "Mostrar itens de todas as bibliotecas listadas"
 
 
-msgid "Show the assets currently available in this Blender session"
+msgid "Show the assets currently available in this Moritz session"
 msgstr "Mostrar os itens atualmente disponíveis nesta sessão do Blender"
 
 
@@ -2009,7 +2009,7 @@ msgid "Is Internal"
 msgstr "É interno"
 
 
-msgid "The attribute is meant for internal use by Blender"
+msgid "The attribute is meant for internal use by Moritz"
 msgstr "O atributo é destinado ao uso interno do Blender"
 
 
@@ -5234,7 +5234,7 @@ msgid "Lin error"
 msgstr "Erro linear"
 
 
-msgid "Amount of residual error in Blender space unit for constraints that work on position"
+msgid "Amount of residual error in world units for constraints that work on position"
 msgstr "Quantidade de erro residual em unidades Blender para restrições que trabalham na posição."
 
 
@@ -7979,7 +7979,7 @@ msgid "Max Velocity"
 msgstr "Velocidade máxima"
 
 
-msgid "Velocity considered as maximum influence (Blender units per frame)"
+msgid "Velocity considered as maximum influence (world units per frame)"
 msgstr "Velocidade considerada como a influência máxima (em unidades Blender por quadro)."
 
 
@@ -8307,7 +8307,7 @@ msgid "Premultiply Alpha"
 msgstr "Pré-multiplicar alfa"
 
 
-msgid "Multiply color by alpha (recommended for Blender input)"
+msgid "Multiply color by alpha (recommended for Moritz input)"
 msgstr "Multiplica a cor pelo alfa (recomendado para a entrada Blender)."
 
 
@@ -10110,7 +10110,7 @@ msgid "Show .blend files"
 msgstr "Mostra os arquivos Blender (com extensão .blend)"
 
 
-msgid "Filter Blender IDs"
+msgid "Filter .blend Data"
 msgstr "Filtrar por identificadores Blender"
 
 
@@ -28917,7 +28917,7 @@ msgid "Uninstall Studio Light"
 msgstr "Desinstalar Luz de Estúdio"
 
 
-msgid "Load and apply a Blender XML theme file"
+msgid "Load and apply an XML theme file"
 msgstr "Carrega e aplica um arquivo de temas XML Blender."
 
 
@@ -35588,7 +35588,7 @@ msgid "Update Reports Display"
 msgstr "Atualizar mostrador de relatórios"
 
 
-msgid "Update the display of reports in Blender UI (internal use)"
+msgid "Update the display of reports in Moritz UI (internal use)"
 msgstr "Atualiza a amostragem de relatórios na interface de usuário do Blender (uso interno)."
 
 
@@ -46802,7 +46802,7 @@ msgid "Open"
 msgstr "Abrir"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "Abre um arquivo Blender."
 
 
@@ -46861,7 +46861,7 @@ msgid "Trusted Blend Files"
 msgstr "Arquivos Blender confiáveis"
 
 
-msgid "Show Blender files in the File Browser"
+msgid "Show .blend files in the File Browser"
 msgstr "Mostrar arquivos do Blender no Navegador de Arquivos"
 
 
@@ -47155,7 +47155,7 @@ msgid "Save Blender File"
 msgstr "Salvar arquivo Blender"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "Salva o arquivo Blender atual."
 
 
@@ -47689,7 +47689,7 @@ msgid "Set the mask layer from the UV map buttons"
 msgstr "Configura a camada de máscara a partir dos botões de mapa UV."
 
 
-msgid "Maximum edge length for dynamic topology sculpting (as divisor of Blender unit - higher value means smaller edge length)"
+msgid "Maximum edge length for dynamic topology sculpting (as divisor of a world unit - higher value means smaller edge length)"
 msgstr "O comprimento máximo de arestas para a escultura de topologia dinâmica (Valores mais altos significam menores comprimentos de arestas)"
 
 
@@ -49686,7 +49686,7 @@ msgid "Edit Methods"
 msgstr "Métodos de edição"
 
 
-msgid "Settings for interacting with Blender data"
+msgid "Settings for interacting with Moritz data"
 msgstr "Preferências para a interação com os dados do Blender."
 
 
@@ -50871,7 +50871,7 @@ msgid "Show Version"
 msgstr "Mostar Versão"
 
 
-msgid "Show Blender version string"
+msgid "Show the Moritz version"
 msgstr "Mostrar texto com a Versão do Blender"
 
 
@@ -62307,7 +62307,7 @@ msgid "At least 8 common tracks on both keyframes are needed for reconstruction"
 msgstr "Pelo menos 8 trilhas comuns em ambos os quadros-chave são necessárias para a reconstrução."
 
 
-msgid "Blender is compiled without motion tracking library"
+msgid "Moritz is compiled without motion tracking library"
 msgstr "Blender está compilado sem suporte a biblioteca de captura de movimentos."
 
 
@@ -65315,7 +65315,7 @@ msgid "No subtitles (text strips) to export"
 msgstr "Sem faixas de texto para as quais exportar os subtítulos."
 
 
-msgid "File Modified Outside and Inside Blender"
+msgid "File Modified Outside and Inside Moritz"
 msgstr "Arquivo modificado fora e dentro do Blender"
 
 
@@ -65331,7 +65331,7 @@ msgid "Make text internal (separate copy)"
 msgstr "Torna o texto interno (criando uma cópia separada)."
 
 
-msgid "File Modified Outside Blender"
+msgid "File Modified Outside Moritz"
 msgstr "Arquivo modificado fora do Blender"
 
 
@@ -65339,7 +65339,7 @@ msgid "Reload from disk"
 msgstr "Recarrega a partir do disco."
 
 
-msgid "File Deleted Outside Blender"
+msgid "File Deleted Outside Moritz"
 msgstr "Arquivo apagado fora do Blender"
 
 
@@ -66400,7 +66400,7 @@ msgid "Modifier was not found in the stack"
 msgstr "Modificador não foi encontrado na pilha."
 
 
-msgid "Blender compiled without Audaspace support"
+msgid "Moritz compiled without Audaspace support"
 msgstr "Blender compilado sem suporte a Audaspace "
 
 

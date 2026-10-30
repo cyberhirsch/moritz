@@ -1232,7 +1232,7 @@ msgid "Preferences"
 msgstr "Προτιμήσεις"
 
 
-msgid "Manage the current Blender project"
+msgid "Manage the current Moritz project"
 msgstr "Διαχείριση του τρέχοντος έργου Blender"
 
 

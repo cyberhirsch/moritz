@@ -353,7 +353,7 @@ static wmOperatorStatus project_new_invoke(bContext *C, wmOperator *op, const wm
       std::nullopt,
       IFACE_("Create Project"),
       false,
-      RPT_("A Blender Project is a directory that provides a shared environment for related "
+      RPT_("A Moritz Project is a directory that provides a shared environment for related "
            ".blend files, textures, and other files, with project-specific settings such as "
            "Asset Libraries, custom variables, and other configuration options.\n"
            "\n"

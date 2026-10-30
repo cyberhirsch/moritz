@@ -1333,7 +1333,7 @@ msgid "Save Blender File"
 msgstr "Spremi Blender datoteku"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "Spremi otvorenu datoteku"
 
 

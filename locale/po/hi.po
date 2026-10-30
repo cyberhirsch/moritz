@@ -4286,7 +4286,7 @@ msgid "Trusted Source"
 msgstr "विश्वसनीय स्रोत"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "एक ब्लेंडर संचिका खोलें"
 
 
@@ -4365,7 +4365,7 @@ msgid "Save Blender File"
 msgstr "ब्लेंडर संचिका सहेजें"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "वर्तमान ब्लेंडर संचिका सहेजें"
 
 
@@ -6254,7 +6254,7 @@ msgid "File '%s' could not be loaded"
 msgstr "संचिका '%s'  लोड नहीं किया जा सकता है"
 
 
-msgid "File Modified Outside and Inside Blender"
+msgid "File Modified Outside and Inside Moritz"
 msgstr "ब्लेंडर के अंदर और बाहर संचिका संशोधित"
 
 
@@ -6266,7 +6266,7 @@ msgid "Save to disk (ignore outside changes)"
 msgstr "डिस्क पर सहेजें (बाहरी परिवर्तनों पर ध्यान न दें)"
 
 
-msgid "File Modified Outside Blender"
+msgid "File Modified Outside Moritz"
 msgstr "ब्लेंडर के बाहर संचिका संशोधित की"
 
 
@@ -6274,7 +6274,7 @@ msgid "Reload from disk"
 msgstr "डिस्क से फिर से लोड करें"
 
 
-msgid "File Deleted Outside Blender"
+msgid "File Deleted Outside Moritz"
 msgstr "ब्लेंडर के बाहर संचिका हटाए गए"
 
 

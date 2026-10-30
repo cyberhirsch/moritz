@@ -41,6 +41,7 @@
 #include "BKE_action.hh"
 #include "BKE_armature.hh"
 #include "BKE_blender_version.h"
+#include "BKE_moritz_version.h"
 #include "BKE_curve.hh"
 #include "BKE_curves.hh"
 #include "BKE_editmesh.hh"
@@ -823,13 +824,12 @@ const char *ED_info_statusbar_string_ex(Main *bmain,
     }
   }
 
-  /* Blender version. */
+  /* Moritz: Moritz's version; Blender's is in About ("Based on Blender"). */
   if (statusbar_flag & STATUSBAR_SHOW_VERSION) {
     if (info[0]) {
       ofs += BLI_snprintf_utf8_rlen(info + ofs, len - ofs, " | ");
     }
-    ofs += BLI_snprintf_utf8_rlen(
-        info + ofs, len - ofs, IFACE_("%s"), BKE_blender_version_string_compact());
+    ofs += BLI_snprintf_utf8_rlen(info + ofs, len - ofs, "Moritz " MORITZ_VERSION_STRING);
   }
 
   return info;

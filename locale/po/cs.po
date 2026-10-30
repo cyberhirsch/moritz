@@ -1391,7 +1391,7 @@ msgid "Current File"
 msgstr "Aktuální soubor"
 
 
-msgid "Show the assets currently available in this Blender session"
+msgid "Show the assets currently available in this Moritz session"
 msgstr "Zobrazit objekty dostupné v této relaci Blenderu"
 
 
@@ -1892,7 +1892,7 @@ msgid "Is Internal"
 msgstr "Je vnitřní"
 
 
-msgid "The attribute is meant for internal use by Blender"
+msgid "The attribute is meant for internal use by Moritz"
 msgstr "Tento atribut je určen pro vnitřní použití v Blenderu"
 
 
@@ -18183,7 +18183,7 @@ msgid "Uninstall Studio Light"
 msgstr "Odinstalovat Studiové Světlo"
 
 
-msgid "Load and apply a Blender XML theme file"
+msgid "Load and apply an XML theme file"
 msgstr "Načíst a použít soubor motivu Blender XML"
 
 
@@ -28609,7 +28609,7 @@ msgid "Eyedropper"
 msgstr "Kapátko"
 
 
-msgid "Sample a color from the Blender window to store in a property"
+msgid "Sample a color from the Moritz window to store in a property"
 msgstr "Vybrat vzorek barvy z okna Blenderu a uložit ji ve vlastnosti"
 
 
@@ -29633,7 +29633,7 @@ msgid "Open"
 msgstr "Otevřít"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "Otevře Blender soubor"
 
 
@@ -29839,11 +29839,11 @@ msgid "Save Blender File"
 msgstr "Uložit Blender soubor"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "Uloží současný soubor Blenderu"
 
 
-msgid "Exit Blender after saving"
+msgid "Exit Moritz after saving"
 msgstr "Ukončit Blender po uložení"
 
 
@@ -32495,7 +32495,7 @@ msgid "Show Memory"
 msgstr "Zobrazit Paměť"
 
 
-msgid "Show Blender memory usage"
+msgid "Show Moritz memory usage"
 msgstr "Zobrazit využití paměti"
 
 
@@ -32511,7 +32511,7 @@ msgid "Show Version"
 msgstr "Zobrazit Verzi"
 
 
-msgid "Show Blender version string"
+msgid "Show the Moritz version"
 msgstr "Zobrazit verzi Blenderu"
 
 

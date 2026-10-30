@@ -5681,7 +5681,7 @@ msgid "Lin error"
 msgstr "Лін. помилка"
 
 
-msgid "Amount of residual error in Blender space unit for constraints that work on position"
+msgid "Amount of residual error in world units for constraints that work on position"
 msgstr "Величина залишкової похибки в одиницях Blender для примусів, що працюють з позицією"
 
 
@@ -9134,7 +9134,7 @@ msgid "Max Velocity"
 msgstr "Найбільша швидкість"
 
 
-msgid "Velocity considered as maximum influence (Blender units per frame)"
+msgid "Velocity considered as maximum influence (world units per frame)"
 msgstr "Швидкість, при якій вплив буде найбільшим (одиниць Blender на кадр)"
 
 
@@ -9474,7 +9474,7 @@ msgid "Premultiply Alpha"
 msgstr "Передмноження Альфа"
 
 
-msgid "Multiply color by alpha (recommended for Blender input)"
+msgid "Multiply color by alpha (recommended for Moritz input)"
 msgstr "Помножити колір на альфа (рекомендовано для вводу Blender)"
 
 
@@ -11492,7 +11492,7 @@ msgid "Hide .blend files items that are not data-blocks with asset metadata"
 msgstr "Сховати елементів .blend файлів, що не є блоками даних з метаданими активів"
 
 
-msgid "Filter Blender Backup Files"
+msgid "Filter .blend Backup Files"
 msgstr "Фільтр Резервних Файлів Blender"
 
 
@@ -11508,7 +11508,7 @@ msgid "Show .blend files"
 msgstr "Показати .blend-файли"
 
 
-msgid "Filter Blender IDs"
+msgid "Filter .blend Data"
 msgstr "Фільтр за ID елементів"
 
 
@@ -36983,7 +36983,7 @@ msgid "Uninstall Studio Light"
 msgstr "Деінсталювати Студійний Освітлювач"
 
 
-msgid "Load and apply a Blender XML theme file"
+msgid "Load and apply an XML theme file"
 msgstr "Завантажити та застосувати XML-файл з темою Blender'а"
 
 
@@ -45001,7 +45001,7 @@ msgid "Update Reports Display"
 msgstr "Оновити екран звітів"
 
 
-msgid "Update the display of reports in Blender UI (internal use)"
+msgid "Update the display of reports in Moritz UI (internal use)"
 msgstr "Поновити показ звітів у інтерфейсі Blender (для внутрішнього використання)"
 
 
@@ -57114,7 +57114,7 @@ msgid "Eyedropper"
 msgstr "Піпетка"
 
 
-msgid "Sample a color from the Blender window to store in a property"
+msgid "Sample a color from the Moritz window to store in a property"
 msgstr "Відібрати зразок з вікна Blender для збереження у властивості"
 
 
@@ -57207,7 +57207,7 @@ msgid "Grease Pencil Eyedropper"
 msgstr "Піпетка Нарисного Олівця"
 
 
-msgid "Sample a color from the Blender Window and create Grease Pencil material"
+msgid "Sample a color from the Moritz window and create Grease Pencil material"
 msgstr "Вибірка кольору з Вікна Blender та створення матеріалу Нарисного Олівця"
 
 
@@ -58850,7 +58850,7 @@ msgid "Run as Background Job"
 msgstr "Запустити в фоновому режимі"
 
 
-msgid "Enable this to run the import in the background, disable to block Blender while importing. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
+msgid "Enable this to run the import in the background, disable to block Moritz while importing. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
 msgstr "Вмикайте це для виконання імпорту у фоні, вимикайте для блокування Blender'а при імпортуванні. Ця опція застаріла; ВИКОНУЙТЕ цей оператор для виконання на передньому плані та ВИКЛИКАЙТЕ його для виконання як фонове завдання"
 
 
@@ -58995,7 +58995,7 @@ msgid "Load an Alembic archive"
 msgstr "Завантажити архів Alembic"
 
 
-msgid "Enable this to run the export in the background, disable to block Blender while exporting. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
+msgid "Enable this to run the export in the background, disable to block Moritz while exporting. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
 msgstr "Вмикайте це для виконання експорту у фоні, вимикайте для блокування Blender'а при експортуванні. Ця опція застаріла; ВИКОНУЙТЕ цей оператор для виконання на передньому плані та ВИКЛИКАЙТЕ його для виконання як фонове завдання"
 
 
@@ -59277,7 +59277,7 @@ msgid "Open"
 msgstr "Відкриття"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "Відкрити файл Blender"
 
 
@@ -59751,11 +59751,11 @@ msgid "Save Blender File"
 msgstr "Зберегти файл Blender"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "Зберегти поточний файл Blender"
 
 
-msgid "Exit Blender after saving"
+msgid "Exit Moritz after saving"
 msgstr "Вийти з Blender'а після збереження"
 
 
@@ -62955,7 +62955,7 @@ msgid "Edit Methods"
 msgstr "Методи редагування"
 
 
-msgid "Settings for interacting with Blender data"
+msgid "Settings for interacting with Moritz data"
 msgstr "Параметри для взаємодії з даними Blender"
 
 
@@ -63671,7 +63671,7 @@ msgid "Max Threshold"
 msgstr "Макс Поріг"
 
 
-msgid "Raw input pressure value that is interpreted as 100% by Blender"
+msgid "Raw input pressure value that is interpreted as 100% by Moritz"
 msgstr "Сирцеве увідне значення натиску, що інтерпретується Blender'ом як 100%"
 
 
@@ -63679,7 +63679,7 @@ msgid "Tablet API"
 msgstr "API Планшета"
 
 
-msgid "Select the tablet API to use for pressure sensitivity (may require restarting Blender for changes to take effect)"
+msgid "Select the tablet API to use for pressure sensitivity (may require restarting Moritz for changes to take effect)"
 msgstr "Вибрати API планшета для чутливості натиску (може вимагати перезапуску Blender'а для застосування змін)"
 
 
@@ -64511,7 +64511,7 @@ msgid "Show Memory"
 msgstr "Показ пам'яті"
 
 
-msgid "Show Blender memory usage"
+msgid "Show Moritz memory usage"
 msgstr "Показувати використання пам'яті програмою Blender"
 
 
@@ -64527,7 +64527,7 @@ msgid "Show Version"
 msgstr "Показ версії"
 
 
-msgid "Show Blender version string"
+msgid "Show the Moritz version"
 msgstr "Показувати рядок з версією програми Blender"
 
 
@@ -69590,7 +69590,7 @@ msgid "Data API"
 msgstr "API Даних"
 
 
-msgid "Display low level Blender data and its properties"
+msgid "Display low level Moritz data and its properties"
 msgstr "Показувати дані нижнього рівня Blender'а та їх властивості"
 
 
@@ -69759,7 +69759,7 @@ msgid "Space Preferences"
 msgstr "Уподобання Простору"
 
 
-msgid "Blender preferences space data"
+msgid "Moritz preferences space data"
 msgstr "Уподобання Blender'а щодо даних простору"
 
 
@@ -72742,7 +72742,7 @@ msgid "Theme Preferences"
 msgstr "Тема Уподобань"
 
 
-msgid "Theme settings for the Blender Preferences"
+msgid "Theme settings for the Moritz Preferences"
 msgstr "Устави теми для Уподобань Blender'а"
 
 
@@ -81857,7 +81857,7 @@ msgid "At least 8 common tracks on both keyframes are needed for reconstruction"
 msgstr "Для реконструкції потрібно принаймні 8 спільних стежок на обох ключових кадрах"
 
 
-msgid "Blender is compiled without motion tracking library"
+msgid "Moritz is compiled without motion tracking library"
 msgstr "Blender скомпільовано без бібліотеки відстеження руху"
 
 
@@ -85865,7 +85865,7 @@ msgid "Class"
 msgstr "Клас"
 
 
-msgid "File Modified Outside and Inside Blender"
+msgid "File Modified Outside and Inside Moritz"
 msgstr "Файл змінено за межами та у Blender'і"
 
 
@@ -85881,7 +85881,7 @@ msgid "Make text internal (separate copy)"
 msgstr "Зробити текст внутрішнім (виокремити копію)"
 
 
-msgid "File Modified Outside Blender"
+msgid "File Modified Outside Moritz"
 msgstr "Файл змінено за межами Blender"
 
 
@@ -85889,7 +85889,7 @@ msgid "Reload from disk"
 msgstr "Перезавантажити з диску"
 
 
-msgid "File Deleted Outside Blender"
+msgid "File Deleted Outside Moritz"
 msgstr "Файл видалено за межами Blender"
 
 
@@ -87222,7 +87222,7 @@ msgid "Modifier was not found in the stack"
 msgstr "Модифікатор не знайдено у стосі"
 
 
-msgid "Blender compiled without Audaspace support"
+msgid "Moritz compiled without Audaspace support"
 msgstr "Blender скомпільовано без підтримки Audaspace"
 
 

@@ -1764,7 +1764,7 @@ msgid "Edit persistent configuration settings"
 msgstr "Biên soạn các cài đặt cấu hình ổn định"
 
 
-msgid "Manage the current Blender project"
+msgid "Manage the current Moritz project"
 msgstr "Quản lý dự án Blender hiện tại"
 
 
@@ -1860,7 +1860,7 @@ msgid "Is Editable"
 msgstr "Có Thể Biên Soạn"
 
 
-msgid "Assets and catalogs in this library can be edited from the current Blender instance"
+msgid "Assets and catalogs in this library can be edited from the current Moritz instance"
 msgstr "Các tài sản và danh mục trong thư viện này có thể được chỉnh sửa từ phiên bản Blender hiện tại"
 
 
@@ -1880,7 +1880,7 @@ msgid "Current File"
 msgstr "Tập tin hiện tại"
 
 
-msgid "Show the assets currently available in this Blender session"
+msgid "Show the assets currently available in this Moritz session"
 msgstr "Hiển thị các tài sản hiện có trong phiên sử dụng Blender này"
 
 
@@ -1888,7 +1888,7 @@ msgid "Essentials"
 msgstr "Cốt Yếu"
 
 
-msgid "Show basic building blocks and utilities coming with Blender"
+msgid "Show basic building blocks and utilities coming with Moritz"
 msgstr "Hiển thị các khối xây dựng cơ bản và tiện ích đi kèm với Blender"
 
 
@@ -1960,7 +1960,7 @@ msgid "Catalog UUID"
 msgstr "UUID của Danh mục"
 
 
-msgid "Identifier for the asset's catalog, used by Blender to look up the asset's catalog path. Must be a UUID according to RFC4122."
+msgid "Identifier for the asset's catalog, used by Moritz to look up the asset's catalog path. Must be a UUID according to RFC4122."
 msgstr "Mã định danh cho danh mục tài sản, được Blender sử dụng để tra cứu đường dẫn đến danh mục tài sản. Phải là UUID chiểu theo RFC4122."
 
 
@@ -2709,7 +2709,7 @@ msgid "Is Internal"
 msgstr "Là Nội Bộ"
 
 
-msgid "The attribute is meant for internal use by Blender"
+msgid "The attribute is meant for internal use by Moritz"
 msgstr "Thuộc tính chỉ dành cho Blender sử dụng nội bộ mà thôi"
 
 
@@ -3428,7 +3428,7 @@ msgid "All Data-Blocks"
 msgstr "Toàn Bộ các Khối Dữ Liệu"
 
 
-msgid "Read-only list of all IDs listed in Blender data-base. Warning: Order is not guaranteed and should be considered an internal implementation detail"
+msgid "Read-only list of all IDs listed in Moritz data-base. Warning: Order is not guaranteed and should be considered an internal implementation detail"
 msgstr "Danh sách chỉ đọc chứa tất cả các ID có trong cơ sở dữ liệu của Blender. Cảnh báo: Thứ tự không được đảm bảo và nên được xem là chi tiết thực hiện nội bộ"
 
 
@@ -3601,7 +3601,7 @@ msgid "Project"
 msgstr "Dự án"
 
 
-msgid "The currently active Blender project, if any"
+msgid "The currently active Moritz project, if any"
 msgstr "Dự án Blender đang hoạt động hiện tại (nếu có)"
 
 
@@ -4254,7 +4254,7 @@ msgid "Library (blend-file) reference in a BlendImportContext data. Currently on
 msgstr "Tham chiếu thư viện (tập tin blend) trong dữ liệu BlendImportContext. Hiện tại, chỉ được cung cấp dưới dạng dữ liệu chỉ đọc cho các trình xử lý trước và sau khi nhập tập tin blend"
 
 
-msgid "Blender Project"
+msgid "Moritz Project"
 msgstr "Dự án Blender"
 
 
@@ -8908,7 +8908,7 @@ msgid "Lin error"
 msgstr "Sai số tuyến tính"
 
 
-msgid "Amount of residual error in Blender space unit for constraints that work on position"
+msgid "Amount of residual error in world units for constraints that work on position"
 msgstr "Lượng sai số tuyến tính thặng dư trong đơn vị không gian của Blender đối với những ràng buộc tác động đến vị trí"
 
 
@@ -12880,7 +12880,7 @@ msgid "Max Velocity"
 msgstr "Vận Tốc Tối Đa"
 
 
-msgid "Velocity considered as maximum influence (Blender units per frame)"
+msgid "Velocity considered as maximum influence (world units per frame)"
 msgstr "Vận tốc gây ra ảnh hưởng tối đa (đơn vị Blender / khung hình)"
 
 
@@ -13258,7 +13258,7 @@ msgid "Premultiply Alpha"
 msgstr "Nhân Trước Alpha"
 
 
-msgid "Multiply color by alpha (recommended for Blender input)"
+msgid "Multiply color by alpha (recommended for Moritz input)"
 msgstr "Nhân màu với alpha (khuyến nghị cho đầu vào Blender)"
 
 
@@ -15662,7 +15662,7 @@ msgid "Hide .blend files items that are not data-blocks with asset metadata"
 msgstr "Ẩn Giấu các mục tập tin .blend không phải là khối dữ liệu có siêu dữ liệu chỉ định nó là tài sản"
 
 
-msgid "Filter Blender Backup Files"
+msgid "Filter .blend Backup Files"
 msgstr "Thanh Lọc các Tập Tin Dự Phòng của Blender"
 
 
@@ -15678,7 +15678,7 @@ msgid "Show .blend files"
 msgstr "Hiển thị các tập tin .blend"
 
 
-msgid "Filter Blender IDs"
+msgid "Filter .blend Data"
 msgstr "Thanh Lọc các ID của Blender"
 
 
@@ -15754,7 +15754,7 @@ msgid "Library Browser"
 msgstr "Trình Duyệt Thư Viện"
 
 
-msgid "Whether we may browse Blender files' content or not"
+msgid "Whether we may browse .blend files' content or not"
 msgstr "Chúng ta có thể duyệt thảo nội dung của tập tin .blend hay không"
 
 
@@ -16214,7 +16214,7 @@ msgid "Export Mantaflow Script"
 msgstr "Xuất Khẩu Tập Lệnh Mantaflow"
 
 
-msgid "Generate and export Mantaflow script from current domain settings during bake. This is only needed if you plan to analyze the cache (e.g. view grids, velocity vectors, particles) in Mantaflow directly (outside of Blender) after baking the simulation."
+msgid "Generate and export Mantaflow script from current domain settings during bake. This is only needed if you plan to analyze the cache (e.g. view grids, velocity vectors, particles) in Mantaflow directly (outside of Moritz) after baking the simulation."
 msgstr "Sinh tạo và xuất khẩu tập lệnh Mantaflow từ các sắp đặt của phạm vi (domain) hiện tại, trong khi đang nướng. Cái này chỉ cần thiết nếu bạn dự định phân tích bộ đệm nhớ (chẳng hạn như quan sát khung lưới đồ thị, xem các véctơ vận tốc, hoặc xem các hạt) trực tiếp trong Mantaflow, (bên ngoài Blender) sau khi nướng mô phỏng."
 
 
@@ -21511,7 +21511,7 @@ msgid "Unprojected Size"
 msgstr "Kích Thước Chưa Phóng Chiếu"
 
 
-msgid "Diameter of brush in Blender units"
+msgid "Diameter of brush in world units"
 msgstr "Đường kính đầu bút tính theo đơn vị của Blender"
 
 
@@ -30960,7 +30960,7 @@ msgid "Asset Blend Path"
 msgstr "Đường Dẫn Tài Sản Blend"
 
 
-msgid "Full path to the Blender file containing the active asset"
+msgid "Full path to the .blend file containing the active asset"
 msgstr "Đường dẫn đầy đủ đến tập tin Blender có chứa tài sản hiện đang hoạt động"
 
 
@@ -32112,7 +32112,7 @@ msgid "Custom Icon"
 msgstr "Biểu Tượng Tùy Chọn"
 
 
-msgid "True if this preview icon has been modified by py script, and is no more auto-generated by Blender"
+msgid "True if this preview icon has been modified by py script, and is no more auto-generated by Moritz"
 msgstr "Đúng nếu biểu tượng xem trước này đã được sửa đổi bởi tập lệnh py và không còn được Blender sinh tạo tự động nữa"
 
 
@@ -32120,7 +32120,7 @@ msgid "Custom Image"
 msgstr "Hình Ảnh Tùy Chọn"
 
 
-msgid "True if this preview image has been modified by py script, and is no more auto-generated by Blender"
+msgid "True if this preview image has been modified by py script, and is no more auto-generated by Moritz"
 msgstr "Đúng (True) nếu hình ảnh xem trước này đã được sửa đổi bởi tập lệnh py, và không còn được Blender tự động sinh tạo nữa"
 
 
@@ -55823,7 +55823,7 @@ msgid "Clear Status"
 msgstr "Xóa Trạng Thái"
 
 
-msgid "Allow Blender to access the internet. Add-ons that follow this setting will only connect to the internet if enabled. However, Blender cannot prevent third-party add-ons from violating this rule."
+msgid "Allow Moritz to access the internet. Add-ons that follow this setting will only connect to the internet if enabled. However, Moritz cannot prevent third-party add-ons from violating this rule."
 msgstr "Cho phép Blender truy cập internet. Các trình bổ sung tuân theo cài đặt này sẽ chỉ kết nối vào internet nếu được bật lên mà thôi. Đương nhiên, Blender không thể ngăn cản các trình bổ sung bên thứ ba vi phạm quy tắc này."
 
 
@@ -57032,7 +57032,7 @@ msgid "Uninstall Studio Light"
 msgstr "Tháo Lắp Đặt Ánh Sáng Studio"
 
 
-msgid "Load and apply a Blender XML theme file"
+msgid "Load and apply an XML theme file"
 msgstr "Nạp và áp dụng tập tin kiểu mẫu XML của Blender"
 
 
@@ -69602,7 +69602,7 @@ msgid "Definition"
 msgstr "Độ Phân Giải"
 
 
-msgid "Number of pixels per inch or Blender Unit"
+msgid "Number of pixels per inch or world unit"
 msgstr "Số lượng điểm ảnh trên một inch hoặc một Đơn Vị Blender"
 
 
@@ -69626,7 +69626,7 @@ msgid "Force Reload"
 msgstr "Buộc Nạp Lại"
 
 
-msgid "Force reload the image if it is already opened elsewhere in Blender"
+msgid "Force reload the image if it is already opened elsewhere in Moritz"
 msgstr "Buộc phải nạp lại hình ảnh nếu nó đã được mở ở nơi khác trong Blender"
 
 
@@ -69999,7 +69999,7 @@ msgid "Save the image with another name and/or settings"
 msgstr "Lưu hình ảnh với một cái tên khác và/hoặc các sắp đặt khác"
 
 
-msgid "Create a new image file without modifying the current image in Blender"
+msgid "Create a new image file without modifying the current image in Moritz"
 msgstr "Kiến tạo một tập tin hình ảnh mới mà không sửa đổi hình ảnh hiện tại trong Blender"
 
 
@@ -70271,7 +70271,7 @@ msgid "Make Unique"
 msgstr "Biến Thành Độc Nhất"
 
 
-msgid "Import each FBX material as a unique Blender material"
+msgid "Import each FBX material as a unique Moritz material"
 msgstr "Nhập khẩu từng nguyên vật liệu FBX làm nguyên vật liệu Blender độc nhất"
 
 
@@ -70531,7 +70531,7 @@ msgid "Update Reports Display"
 msgstr "Cập Nhật Hiển Thị Bản Thông Báo"
 
 
-msgid "Update the display of reports in Blender UI (internal use)"
+msgid "Update the display of reports in Moritz UI (internal use)"
 msgstr "Cập nhật hiển thị của bản thông báo trong Giao Diện Người Dùng của Blender (sử dụng nội bộ)"
 
 
@@ -82832,7 +82832,7 @@ msgid "Check for Updates on Startup"
 msgstr "Kiểm Tra Cập Nhật khi Khởi Động"
 
 
-msgid "Allow Blender to check for updates upon launch"
+msgid "Allow Moritz to check for updates upon launch"
 msgstr "Cho phép Blender kiểm tra xem có bản cập nhật mới nào không khi khởi động"
 
 
@@ -84314,7 +84314,7 @@ msgid "Save Screenshot"
 msgstr "Chụp Màn Hình"
 
 
-msgid "Capture a picture of the whole Blender window"
+msgid "Capture a picture of the whole Moritz window"
 msgstr "Chụp ảnh toàn bộ cửa sổ Blender"
 
 
@@ -86301,11 +86301,11 @@ msgid "Auto Detect"
 msgstr "Tự Động Phát Hiện"
 
 
-msgid "Add images as individual strips, unless their filenames match Blender's numbered sequence pattern, in which case they are grouped into a single image sequence"
+msgid "Add images as individual strips, unless their filenames match Moritz's numbered sequence pattern, in which case they are grouped into a single image sequence"
 msgstr "Thêm hình ảnh dưới dạng các dải riêng lẻ, trừ khi tên tập tin của chúng khớp với mẫu chuỗi đánh số của Blender; Trong hoàn cảnh đó thì chúng được nhóm thành một trình tự hình ảnh duy nhất"
 
 
-msgid "Import all selected images as a single image sequence. The sequence of images does not have to match Blender's numbered sequence pattern, so placeholders cannot be inferred"
+msgid "Import all selected images as a single image sequence. The sequence of images does not have to match Moritz's numbered sequence pattern, so placeholders cannot be inferred"
 msgstr "Nhập khẩu tất cả các hình ảnh đã chọn thành một trình tự hình ảnh duy nhất. Chuỗi hình ảnh không nhất thiết phải khớp với mẫu chuỗi đánh số của Blender, vì vậy không thể tự suy ra các phần giữ chỗ (placeholders) được"
 
 
@@ -88747,7 +88747,7 @@ msgid "Eyedropper"
 msgstr "Ống Nhỏ Mắt"
 
 
-msgid "Sample a color from the Blender window to store in a property"
+msgid "Sample a color from the Moritz window to store in a property"
 msgstr "Lấy mẫu vật màu sắc từ Cửa Sổ Blender để lưu vào một tính chất"
 
 
@@ -88844,7 +88844,7 @@ msgid "Grease Pencil Eyedropper"
 msgstr "Ống Nhỏ Mắt của Bút Chì Dầu"
 
 
-msgid "Sample a color from the Blender Window and create Grease Pencil material"
+msgid "Sample a color from the Moritz window and create Grease Pencil material"
 msgstr "Lấy mẫu một màu sắc từ Cửa Sổ Blender và kiến tạo chất liệu Bút Chì Dầu"
 
 
@@ -91550,7 +91550,7 @@ msgid "Run as Background Job"
 msgstr "Thi Hành tựa như Công Việc Ngầm ở Nền Đằng Sau"
 
 
-msgid "Enable this to run the import in the background, disable to block Blender while importing. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
+msgid "Enable this to run the import in the background, disable to block Moritz while importing. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
 msgstr "Bật cái này để thi hành quá trình nhập khẩu ngầm ở trên nền đằng sau. Tắt đi để ngăn chặn Blender trong khi nhập khẩu. Tùy chọn này đã trở thành lỗi thời; EXECUTE (thi hành) thao tác này để chạy ở nền trước, và INVOKE (kích hoạt) nó để thi hành như một công việc ngầm ở nền đằng sau"
 
 
@@ -91715,7 +91715,7 @@ msgid "Add cache modifiers and constraints to imported objects even if they are 
 msgstr "Thêm bộ điều chỉnh bộ đệm nhớ và các ràng buộc vào các đối tượng nhập khẩu, ngay cả khi chúng chưa được hoạt họa, hầu cho chúng có thể được cập nhật khi nạp lại kho lưu trữ Alembic vào"
 
 
-msgid "Enable this to run the export in the background, disable to block Blender while exporting. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
+msgid "Enable this to run the export in the background, disable to block Moritz while exporting. This option is deprecated; EXECUTE this operator to run in the foreground, and INVOKE it to run as a background job"
 msgstr "Bật cái này để thi hành quá trình xuất khẩu ngầm ở trên nền đằng sau. Tắt đi để ngăn chặn Blender trong khi xuất khẩu. Tùy chọn này đã trở thành lỗi thời; EXECUTE (thi hành) thao tác này để chạy ở nền trước, và INVOKE (kích hoạt) nó để thi hành như một công việc ngầm ở nền đằng sau"
 
 
@@ -92137,7 +92137,7 @@ msgid "Vertex colors in the file are in linear color space"
 msgstr "Màu điểm đỉnh trong tập tin là nằm trong không gian màu tuyến tính cơ mà"
 
 
-msgid "Import custom normals, if available (otherwise Blender will compute them)"
+msgid "Import custom normals, if available (otherwise Moritz will compute them)"
 msgstr "Nhập Khẩu các pháp tuyến tùy chỉnh, nếu có (nếu không, Blender sẽ tính toán chúng)"
 
 
@@ -92558,7 +92558,7 @@ msgid "Open"
 msgstr "Mở"
 
 
-msgid "Open a Blender file"
+msgid "Open a .blend file"
 msgstr "Mở một tập tin Blender"
 
 
@@ -92709,7 +92709,7 @@ msgid "Collection of file paths with common ``directory`` root"
 msgstr "Bộ sưu tập các đường dẫn tập tin có gốc ``directory`` (thư mục) chung"
 
 
-msgid "Show Blender files in the File Browser"
+msgid "Show .blend files in the File Browser"
 msgstr "Biểu hiện tập tin Blender trong Trình Duyệt Tập Tin"
 
 
@@ -93229,15 +93229,15 @@ msgid "Save Blender File"
 msgstr "Lưu Tập Tin Blender"
 
 
-msgid "Save the current Blender file"
+msgid "Save the current .blend file"
 msgstr "Lưu tập tin Blender hiện tại"
 
 
-msgid "Exit Blender after saving"
+msgid "Exit Moritz after saving"
 msgstr "Thoát Blender sau khi lưu"
 
 
-msgid "Save the current Blender file with a numerically incremented name that does not overwrite any existing files"
+msgid "Save the current .blend file with a numerically incremented name that does not overwrite any existing files"
 msgstr "Lưu tập tin Blender hiện tại với tên có số tịnh tiến để ngăn việc viết đè lên bất kỳ tập tin hiện có nào"
 
 
@@ -93544,7 +93544,7 @@ msgid "Blender Names"
 msgstr "Các Tên Blender"
 
 
-msgid "Author USD custom attributes containing the original Blender object and object data names"
+msgid "Author USD custom attributes containing the original Moritz object and object data names"
 msgstr "Tạo ra các thuộc tính tùy chỉnh USD có chứa đối tượng Blender gốc và các tên dữ liệu của đối tượng"
 
 
@@ -94057,7 +94057,7 @@ msgid "Allow USD primitives to merge with their Xform parent if they are the onl
 msgstr "Cho phép các hình cơ bản USD hợp nhất với phụ huynh Xform của chúng nếu chúng chỉ là con cái duy nhất trong hệ thống thứ bậc"
 
 
-msgid "Import each USD material as a unique Blender material"
+msgid "Import each USD material as a unique Moritz material"
 msgstr "Nhập Khẩu từng nguyên vật liệu USD làm nguyên vật liệu Blender độc nhất"
 
 
@@ -94093,7 +94093,7 @@ msgid "Import only the primitive at the given path and its descendants. Multiple
 msgstr "Duy nhập khẩu hình cơ bản tại đường dẫn đã cho và các hậu duệ của nó. Chúng ta có thể chỉ định nhiều đường dẫn trong một danh sách, phân cách chúng bằng dấu phẩy (,) hoặc dấu chấm phẩy (;) nhé"
 
 
-msgid "Behavior when importing USD attributes as Blender custom properties"
+msgid "Behavior when importing USD attributes as Moritz custom properties"
 msgstr "Hành xử khi nhập khẩu các thuộc tính USD làm các tính chất tùy chỉnh của Blender"
 
 
@@ -94101,7 +94101,7 @@ msgid "Do not import USD custom attributes"
 msgstr "Không nhập khẩu các thuộc tính tùy chỉnh USD"
 
 
-msgid "Import USD attributes in the 'userProperties' namespace as Blender custom properties. The namespace will be stripped from the property names"
+msgid "Import USD attributes in the 'userProperties' namespace as Moritz custom properties. The namespace will be stripped from the property names"
 msgstr "Nhập khẩu các thuộc tính USD vào không gian tên 'userProperties' (các tính chất người dùng) dưới dạng các tính chất tùy chỉnh của Blender. Không gian tên sẽ bị xóa khỏi các tên thuộc tính"
 
 
@@ -94109,7 +94109,7 @@ msgid "All Custom"
 msgstr "Toàn Bộ Tùy Chỉnh"
 
 
-msgid "Import all USD custom attributes as Blender custom properties. Namespaces will be retained in the property names"
+msgid "Import all USD custom attributes as Moritz custom properties. Namespaces will be retained in the property names"
 msgstr "Nhập khẩu toàn bộ các thuộc tính tùy chỉnh USD dưới dạng các tính chất tùy chỉnh Blender. Các không gian tên sẽ được giữ nguyên trong các tên tính chất"
 
 
@@ -95030,7 +95030,7 @@ msgid "Set the mask layer from the UV map buttons"
 msgstr "Đặt tầng màn chắn lọc dùng các nút về ánh xạ UV"
 
 
-msgid "Maximum edge length for dynamic topology sculpting (as divisor of Blender unit - higher value means smaller edge length)"
+msgid "Maximum edge length for dynamic topology sculpting (as divisor of a world unit - higher value means smaller edge length)"
 msgstr "Chiều dài cạnh tối đa dành cho điêu khắc liên kết cấu trúc động (làm mẫu số của đơn vị blender - giá trị càng lớn thì chiều dài cạnh càng nhỏ)"
 
 
@@ -98360,7 +98360,7 @@ msgid "Edit Methods"
 msgstr "Phương Pháp Biên Soạn"
 
 
-msgid "Settings for interacting with Blender data"
+msgid "Settings for interacting with Moritz data"
 msgstr "Sắp đặt để tương tác với dữ liệu của Blender"
 
 
@@ -99663,7 +99663,7 @@ msgid "Max Threshold"
 msgstr "Ngưỡng Tối Đa"
 
 
-msgid "Raw input pressure value that is interpreted as 100% by Blender"
+msgid "Raw input pressure value that is interpreted as 100% by Moritz"
 msgstr "Giá trị áp lực thực cung cấp được Blender phiên dịch là 100%"
 
 
@@ -99679,7 +99679,7 @@ msgid "Tablet API"
 msgstr "API cho Bảng Điện"
 
 
-msgid "Select the tablet API to use for pressure sensitivity (may require restarting Blender for changes to take effect)"
+msgid "Select the tablet API to use for pressure sensitivity (may require restarting Moritz for changes to take effect)"
 msgstr "Chọn API cho máy tính bảng, để sử dụng cho độ nhạy về áp lực (có thể đòi hỏi phải khởi động lại Blender để thay đổi có hiệu lực)"
 
 
@@ -100127,7 +100127,7 @@ msgid "GPU Backend"
 msgstr "GPU Phụ Trợ Nền"
 
 
-msgid "GPU backend to use (requires restarting Blender for changes to take effect)"
+msgid "GPU backend to use (requires restarting Moritz for changes to take effect)"
 msgstr "GPU phụ trợ nền sẽ sử dụng (đòi hỏi phải khởi động lại Blender để các thay đổi có hiệu lực)"
 
 
@@ -100155,11 +100155,11 @@ msgid "Device"
 msgstr "Thiết Bị"
 
 
-msgid "Preferred device to select during detection (requires restarting Blender for changes to take effect)"
+msgid "Preferred device to select during detection (requires restarting Moritz for changes to take effect)"
 msgstr "Thiết bị được ưu tiên chọn trong quá trình phát hiện (cần khởi động lại Blender để các thay đổi có hiệu lực)"
 
 
-msgid "Auto detect best GPU for running Blender"
+msgid "Auto detect best GPU for running Moritz"
 msgstr "Tự động phát hiện GPU tốt nhất để chạy Blender"
 
 
@@ -100167,7 +100167,7 @@ msgid "Shader Compilation Workers"
 msgstr "Số Luồng Xử Lý Biên Dịch Bộ Tô Bóng"
 
 
-msgid "Number of shader compilation threads or subprocesses, clamped at the max threads supported by the CPU (requires restarting Blender for changes to take effect). A higher number increases the RAM usage while reducing compilation time. A value of 0 will use automatic configuration. (OpenGL only)"
+msgid "Number of shader compilation threads or subprocesses, clamped at the max threads supported by the CPU (requires restarting Moritz for changes to take effect). A higher number increases the RAM usage while reducing compilation time. A value of 0 will use automatic configuration. (OpenGL only)"
 msgstr "Số luồng hoặc tiến trình con dùng để biên dịch bộ tô bóng, được giới hạn ở số luồng tối đa mà CPU hỗ trợ (cần khởi động lại Blender để thay đổi có hiệu lực). Số cao hơn sẽ tăng mức sử dụng bộ nhớ RAM song giảm thời gian biên dịch. Giá trị 0 sẽ dùng cấu hình tự động. (Duy OpenGL)"
 
 
@@ -100231,7 +100231,7 @@ msgid "Register for All Users"
 msgstr "Đăng Ký cho Toàn Bộ các Người Dùng"
 
 
-msgid "Make this Blender version open blend files for all users. Requires elevated privileges."
+msgid "Make this Moritz version open .blend files for all users. Requires elevated privileges."
 msgstr "Làm cho phiên bản Blender này mở các tập tin Blend cho toàn bộ các người dùng. Đòi hỏi quyền hạn cao cấp."
 
 
@@ -100263,7 +100263,7 @@ msgid "Shader Compilation Method"
 msgstr "Phương Thức Biên Dịch Bộ Tô Bóng"
 
 
-msgid "Compilation method used for compiling shaders in parallel. Subprocess requires a lot more RAM for each worker but might compile shaders faster on some systems. Requires restarting Blender for changes to take effect. (OpenGL only)"
+msgid "Compilation method used for compiling shaders in parallel. Subprocess requires a lot more RAM for each worker but might compile shaders faster on some systems. Requires restarting Moritz for changes to take effect. (OpenGL only)"
 msgstr "Phương thức biên dịch dùng để biên dịch bộ tô bóng song song. Tiến trình con cần nhiều bộ nhớ RAM hơn đáng kể cho mỗi luồng, song có thể biên dịch bộ tô bóng nhanh hơn trên một số hệ thống. Cần khởi động lại Blender để thay đổi có hiệu lực. (duy OpenGL)"
 
 
@@ -100319,7 +100319,7 @@ msgid "UI Line Width"
 msgstr "Chiều Rộng Đường Nét của UI"
 
 
-msgid "Suggested line thickness and point size in pixels, for add-ons displaying custom user interface elements, based on operating system settings and Blender UI scale"
+msgid "Suggested line thickness and point size in pixels, for add-ons displaying custom user interface elements, based on operating system settings and Moritz UI scale"
 msgstr "Độ dày đường nét và kích thước điểm được đề xuất, trong đơn vị số điểm ảnh, dành cho các tiện ích bổ sung (add-ons) hiển thị các phần tử Giao Diện Người Dùng tùy chỉnh. Dựa trên cài đặt của hệ điều hành và thang đo Giao Diện Người Dùng của Blender"
 
 
@@ -100327,7 +100327,7 @@ msgid "UI Scale"
 msgstr "Đổi Tỷ Lệ Giao Diện Người Dùng"
 
 
-msgid "Size multiplier to use when displaying custom user interface elements, so that they are scaled correctly on screens with different DPI. This value is based on operating system DPI settings and Blender display scale."
+msgid "Size multiplier to use when displaying custom user interface elements, so that they are scaled correctly on screens with different DPI. This value is based on operating system DPI settings and Moritz display scale."
 msgstr "Hệ số nhân kích thước để sử dụng khi hiển thị các phần tử giao diện người dùng tùy chỉnh, hòng để chúng đổi tỷ lệ chính xác trên các màn hình có độ phân giải DPI khác nhau. Giá trị này dựa trên cài đặt DPI của hệ điều hành và tỷ lệ hiển thị của Blender."
 
 
@@ -101239,7 +101239,7 @@ msgid "Show Memory"
 msgstr "Hiển Thị Bộ Nhớ"
 
 
-msgid "Show Blender memory usage"
+msgid "Show Moritz memory usage"
 msgstr "Hiển thị mức sử dụng bộ nhớ của Blender"
 
 
@@ -101263,7 +101263,7 @@ msgid "Show Version"
 msgstr "Hiển Thị Phiên Bản"
 
 
-msgid "Show Blender version string"
+msgid "Show the Moritz version"
 msgstr "Hiển thị dòng chữ về phiên bản của Blender"
 
 
@@ -101595,7 +101595,7 @@ msgid "Collection of project asset libraries"
 msgstr "Tập hợp các thư viện tài sản dự án"
 
 
-msgid "Blender Project Variable"
+msgid "Moritz Project Variable"
 msgstr "Biến dự án Blender"
 
 
@@ -107879,7 +107879,7 @@ msgid "Export Method"
 msgstr "Phương Pháp Xuất Khẩu"
 
 
-msgid "How to export the Blender scene to the Hydra render engine"
+msgid "How to export the Moritz scene to the Hydra render engine"
 msgstr "Phương pháp xuất khẩu cảnh Blender sang động cơ kết xuất Hydra"
 
 
@@ -110429,7 +110429,7 @@ msgid "Data API"
 msgstr "API Dữ Liệu"
 
 
-msgid "Display low level Blender data and its properties"
+msgid "Display low level Moritz data and its properties"
 msgstr "Hiển thị dữ liệu thâm sâu của Blender cùng các tính chất của nó"
 
 
@@ -110738,7 +110738,7 @@ msgid "Space Preferences"
 msgstr "Cài Đặt Sở Thích về Không Gian"
 
 
-msgid "Blender preferences space data"
+msgid "Moritz preferences space data"
 msgstr "Cài đặt sở thích của Blender về dữ liệu không gian"
 
 
@@ -115468,7 +115468,7 @@ msgid "Theme Preferences"
 msgstr "Cài Đặt Sở Thích về Phong Cách"
 
 
-msgid "Theme settings for the Blender Preferences"
+msgid "Theme settings for the Moritz Preferences"
 msgstr "Những sắp đặt về phong cách cho các Cài Đặt Sở Thích của Blender"
 
 
@@ -117542,7 +117542,7 @@ msgid "Unit Scale"
 msgstr "Tỷ Lệ Đơn Vị"
 
 
-msgid "Scale to use when converting between Blender units and dimensions. When working at microscopic or astronomical scale, a small or large unit scale respectively can be used to avoid numerical precision problems"
+msgid "Scale to use when converting between internal units and dimensions. When working at microscopic or astronomical scale, a small or large unit scale respectively can be used to avoid numerical precision problems"
 msgstr "Tỷ lệ sử dụng khi chuyển đổi giữa các đơn vị và kích thước Blender. Khi làm việc với tỷ lệ siêu nhỏ hoặc quy mô khổng lồ, chúng ta có thể sử dụng thang đo nhỏ, hoặc lớn, để tránh các vấn đề về độ chính xác của số"
 
 
@@ -126759,7 +126759,7 @@ msgid "Unable to find any running process"
 msgstr "Không tìm thấy bất kỳ quy trình nào hiện đang thi hành cả"
 
 
-msgid "Blender sub-process exited with error code {:d}"
+msgid "Moritz sub-process exited with error code {:d}"
 msgstr "Tiến trình phụ của Blender thoát ra với mã lỗi {:d}"
 
 
@@ -126919,7 +126919,7 @@ msgid "Could not find image '{:s}'"
 msgstr "Không tìm thấy hình ảnh '{:s}'"
 
 
-msgid "Image editor could not be launched, ensure that the path in User Preferences > File Paths > Applications > Image Editor is valid, and Blender has rights to launch it"
+msgid "Image editor could not be launched, ensure that the path in User Preferences > File Paths > Applications > Image Editor is valid, and Moritz has rights to launch it"
 msgstr "Không thể khởi chạy trình biên soạn hình ảnh. Hãy đảm bảo rằng đường dẫn trong Cài Đặt Sở Thích > Đường Dẫn Tập Tin > Trình Ứng Dụng > Trình Biên Soạn Hình Ảnh là hợp lệ và Blender có quyền khởi chạy ứng dụng này"
 
 
@@ -136773,7 +136773,7 @@ msgid "At least 8 common tracks on both keyframes are needed for reconstruction"
 msgstr "Cần ít nhất 8 dấu giám sát tương đồng trên cả hai khung khóa để phục hồi"
 
 
-msgid "Blender is compiled without motion tracking library"
+msgid "Moritz is compiled without motion tracking library"
 msgstr "Bản Blender được biên dịch này không có gắn thư viện giám sát di chuyển"
 
 
@@ -138782,7 +138782,7 @@ msgid "Asset catalogs cannot be edited in this asset library"
 msgstr "Không thể biên soạn các danh mục tài sản trong thư viện tài sản này được"
 
 
-msgid "Cannot save asset catalogs before the Blender file is saved"
+msgid "Cannot save asset catalogs before the .blend file is saved"
 msgstr "Không thể lưu các danh mục tài sản lại trước khi lưu tập tin Blender được"
 
 
@@ -139591,7 +139591,7 @@ msgid "Drag to continue sampling, release when done"
 msgstr "Kéo rê để tiếp tục lấy mẫu, thả ra khi đã hoàn tất"
 
 
-msgid "Press 'Enter' to sample outside of a Blender window"
+msgid "Press 'Enter' to sample outside of a Moritz window"
 msgstr "Nhấn phím 'Enter' để lấy mẫu bên ngoài cửa sổ Blender"
 
 
@@ -141051,7 +141051,7 @@ msgstr ""
 "({}), kỳ vọng sẽ mất mát dữ liệu"
 
 
-msgid "This file is managed by the Blender asset system and cannot be overridden"
+msgid "This file is managed by the Moritz asset system and cannot be overridden"
 msgstr "Tập tin này được quản lý bởi hệ thống tài sản Blender và không thể viết đè lên được"
 
 
@@ -145148,7 +145148,7 @@ msgstr ""
 "Bạn có thể điều chỉnh cài đặt, sau này, trong phần \"Hệ thống\" của cài đặt sở thích."
 
 
-msgid "Unreadable Blender library file:"
+msgid "Unreadable .blend library file:"
 msgstr "Tập tin thư viện Blender không thể đọc được:"
 
 
@@ -147783,7 +147783,7 @@ msgid "Jump to Line Number"
 msgstr "Nhảy đến Dòng Số"
 
 
-msgid "File Modified Outside and Inside Blender"
+msgid "File Modified Outside and Inside Moritz"
 msgstr "Tập Tin bị Thay Đổi cả ở Bên Ngoài và Bên Trong Blender"
 
 
@@ -147799,7 +147799,7 @@ msgid "Make text internal (separate copy)"
 msgstr "Lưu văn bản nội bộ (tạo bản sao riêng)"
 
 
-msgid "File Modified Outside Blender"
+msgid "File Modified Outside Moritz"
 msgstr "Tập Tin Bị Đổi Bên Ngoài Blender"
 
 
@@ -147807,7 +147807,7 @@ msgid "Reload from disk"
 msgstr "Nạp lại từ đĩa"
 
 
-msgid "File Deleted Outside Blender"
+msgid "File Deleted Outside Moritz"
 msgstr "Tập Tin Bị Xóa Bên Ngoài Blender"
 
 
@@ -151292,7 +151292,7 @@ msgid "Unable to open sound file"
 msgstr "Không thể mở tập tin âm thanh"
 
 
-msgid "Blender compiled without Audaspace support"
+msgid "Moritz compiled without Audaspace support"
 msgstr "Bản Blender này vốn được biên dịch không có sự hỗ trợ Audaspace"
 
 
@@ -160012,7 +160012,7 @@ msgid "Overwrite Startup File"
 msgstr "Viết Đè Lên Tập Tin Khởi Động"
 
 
-msgid "Blender will start next time as it is now."
+msgid "Moritz will start next time as it is now."
 msgstr "Lần sau Blender sẽ khởi động với trạng thái như hiện tại."
 
 
@@ -160136,7 +160136,7 @@ msgid "Unable to Load File"
 msgstr "Không Thể Nạp Tập Tin"
 
 
-msgid "The file is not a valid Blender file."
+msgid "The file is not a valid .blend file."
 msgstr "Tập tin này không phải là một tập tin Blender hợp lệ."
 
 
@@ -160148,7 +160148,7 @@ msgid "Saving it with this Blender (%s) may cause loss of data."
 msgstr "Việc lưu nó bằng Blender này (%s) có thể gây ra mất mát dữ liệu đấy nhé."
 
 
-msgid "This file is managed by the Blender asset system. It can only be"
+msgid "This file is managed by the Moritz asset system. It can only be"
 msgstr "Tập tin này được quản lý bởi hệ thống tài sản Blender. Nó chỉ có thể được"
 
 
@@ -160516,7 +160516,7 @@ msgstr "Sự hỗ trợ cho thẻ đồ họa hoặc trình điều vận của 
 
 
 msgctxt "WindowManager"
-msgid "Newer graphics drivers might be available with better Blender compatibility."
+msgid "Newer graphics drivers might be available with better Moritz compatibility."
 msgstr "Có thể đã có các trình điều vận đồ họa mới hơn với khả năng tương thích tốt hơn với Blender."
 
 
@@ -160541,7 +160541,7 @@ msgstr "Thẻ đồ họa hoặc phiên bản macOS của bạn không được 
 
 
 msgctxt "WindowManager"
-msgid "Upgrading to the latest macOS version may improve Blender support"
+msgid "Upgrading to the latest macOS version may improve Moritz support"
 msgstr "Nâng cấp lên phiên bản macOS mới nhất có thể cải thiện khả năng hỗ trợ Blender"
 
 
@@ -160551,7 +160551,7 @@ msgstr "Không hỗ trợ thẻ đồ họa hoặc trình điều vận của b�
 
 
 msgctxt "WindowManager"
-msgid "Blender will now close."
+msgid "Moritz will now close."
 msgstr "Blender sẽ đóng lại ngay bây giờ."
 
 
