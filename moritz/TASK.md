@@ -780,7 +780,14 @@ tyFlow isn't installed there. Status per group, to go through with Seb:
     Test: `test_max_mesh_native.py`, boundary 21 → 12 vertices at 0.0 offset, mean triangle
     quality 0.794 → 0.813)* **ProOptimizer:** Max's algorithm is better; try to match it
     (Decimate underneath isn't enough).
-  - [ ] **ProOptimizer instant slider:** record the full collapse order once (progressive mesh),
+  - [x] *(Done 2026-10-30: over 20000 faces, the collapse order is recorded once down to 1%,
+    keyed by object and modifier and invalidated by a hash of the input mesh and the settings;
+    each Vertex % replays a prefix (`BM_mesh_decimate_collapse_record` / `_replay` in
+    `bmesh_decimate_collapse.cc`). A change of % takes 0.08–0.11 s on 24576 faces; the result
+    matches a direct run (`MORITZ_PRO_OPTIMIZER_NO_CACHE`) in face count and surface error.
+    Blender's decimation itself is not bit-reproducible: stock Decimate flips between two results a
+    face apart, even within one process. Test `moritz/tests/test_pro_optimizer_replay.py`.)*
+    **ProOptimizer instant slider:** record the full collapse order once (progressive mesh),
     keyed by the input, and replay a prefix for each Vertex %, attributes included. Only worth
     it for meshes over ~100k triangles; deterministic, unlike reusing the last result. *(2026-10-29: phase 1 done, native in Moritz, `modifiers/intern/MOD_max_mesh.cc`; stock Blender keeps it as a disabled "None" modifier and Moritz revives it with its settings. Test: `moritz/tests/test_max_mesh_native.py`, with a round trip through stock Blender 5.2: Vertex %, Protect Borders, Keep
     Material / UV Boundaries, Keep Normals, Symmetry. The Max match is phase 2 in

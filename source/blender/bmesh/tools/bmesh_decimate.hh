@@ -12,6 +12,9 @@
 
 #include "bmesh_class.hh"
 
+#include "BLI_span.hh"
+#include "BLI_vector.hh"
+
 namespace blender {
 
 /**
@@ -52,6 +55,45 @@ void BM_mesh_decimate_collapse_ex(BMesh *bm,
                                   float symmetry_eps,
                                   bool use_feature_edges,
                                   float compact_weight);
+
+/**
+ * Moritz: one edge collapse of a decimation, by vertex index (the indices `bm` had when the
+ * decimation started).
+ */
+struct BMDecimateStep {
+  int v_other;
+  int v_clear;
+  float co[3];
+  float customdata_fac;
+  /** Collapses in the same iteration of the decimation loop (a symmetric pair) belong together. */
+  int iteration;
+  int faces_after;
+};
+
+/**
+ * #BM_mesh_decimate_collapse_ex that also records every collapse in `r_steps`. The decimation is
+ * greedy, so the run to a smaller `factor` passes through exactly the result of any larger one:
+ * #BM_mesh_decimate_collapse_replay gives that result from the steps, without the costs.
+ */
+void BM_mesh_decimate_collapse_record(BMesh *bm,
+                                      float factor,
+                                      float *vweights,
+                                      float vweight_factor,
+                                      bool do_triangulate,
+                                      int symmetry_axis,
+                                      float symmetry_eps,
+                                      bool use_feature_edges,
+                                      float compact_weight,
+                                      Vector<BMDecimateStep> &r_steps);
+
+/**
+ * Replay recorded steps on `bm` (built the same way as for the recording, with the same vertex
+ * indices) until the face count of `factor` is reached.
+ */
+void BM_mesh_decimate_collapse_replay(BMesh *bm,
+                                      Span<BMDecimateStep> steps,
+                                      float factor,
+                                      bool do_triangulate);
 
 /**
  * \param tag_only: so we can call this from an operator.

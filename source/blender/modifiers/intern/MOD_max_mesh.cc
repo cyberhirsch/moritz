@@ -25,6 +25,10 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
+#include <mutex>
+#include <unordered_map>
+#include <vector>
 
 #include "MEM_guardedalloc.h"
 
@@ -32,6 +36,7 @@
 #include "BLI_kdopbvh.hh"
 #include "BLI_bounds_types.hh"
 #include "BLI_color.hh"
+#include "BLI_generic_virtual_array.hh"
 #include "BLI_listbase_iterator.hh"
 #include "BLI_math_base_c.hh"
 #include "BLI_math_vector_c.hh"
@@ -44,6 +49,7 @@
 
 #include "DNA_mesh_types.h"
 #include "DNA_modifier_types.h"
+#include "DNA_object_types.h"
 #include "DNA_screen_types.h"
 
 #include "BKE_attribute.hh"
@@ -689,63 +695,166 @@ static bool uv_seam_edge(const BMEdge *e, const int cd_uv)
                       BM_ELEM_CD_GET_FLOAT_P(l_b_other, cd_uv));
 }
 
-static Mesh *pro_optimizer_modify(ModifierData *md,
-                                  const ModifierEvalContext * /*ctx*/,
-                                  Mesh *mesh)
+struct ProOptimizerSettings {
+  bool borders, materials, uvs, normals, compact;
+  int symmetry;
+};
+
+/** Tag what the settings keep: vertex weights for Protect Borders, feature edges for the rest. */
+static void pro_optimizer_prepare(BMesh *bm,
+                                  const ProOptimizerSettings &settings,
+                                  Array<float> &r_weights,
+                                  bool &r_any_kept,
+                                  bool &r_any_feature)
 {
-  const float percent = MOD_max_mesh_float(*md, "vertex_percent", 50.0f);
-  if (percent >= 100.0f || mesh->faces_num == 0) {
-    return mesh;
-  }
-  const bool borders = flag(*md, "protect_borders", true);
-  const bool materials = flag(*md, "keep_material_boundaries", true);
-  const bool uvs = flag(*md, "keep_uv_boundaries", true);
-  const bool normals = flag(*md, "keep_normals", false);
-  const bool compact = flag(*md, "favor_compact", true);
-  const int symmetry = MOD_max_mesh_int(*md, "symmetry_axis", -1);
-
-  BMesh *bm = to_bmesh(mesh);
   const int cd_uv = CustomData_get_offset(&bm->ldata, CD_PROP_FLOAT2);
-
   /* Protect Borders: the border vertices stay (a weight of 0 never collapses). */
-  Array<float> weights(bm->totvert, 1.0f);
-  bool any_kept = false;
+  r_weights.reinitialize(bm->totvert);
+  r_weights.fill(1.0f);
+  r_any_kept = false;
   BMIter iter;
   BMVert *v;
   int i;
   BM_ITER_MESH_INDEX (v, &iter, bm, BM_VERTS_OF_MESH, i) {
     BM_elem_index_set(v, i);
-    if (borders && BM_vert_is_boundary(v)) {
-      weights[i] = 0.0f;
-      any_kept = true;
+    if (settings.borders && BM_vert_is_boundary(v)) {
+      r_weights[i] = 0.0f;
+      r_any_kept = true;
     }
   }
   bm->elem_index_dirty &= ~BM_VERT;
 
   /* Material and UV boundaries and hard edges stay in place but can still lose vertices along
    * their length, as in Max (the decimation holds them like open borders). */
-  bool any_feature = false;
+  r_any_feature = false;
   BMEdge *e;
   BM_ITER_MESH (e, &iter, bm, BM_EDGES_OF_MESH) {
     bool feature = false;
     if (e->l && e->l->radial_next != e->l) {
-      feature = (materials && e->l->f->mat_nr != e->l->radial_next->f->mat_nr) ||
-                (uvs && uv_seam_edge(e, cd_uv)) ||
-                (normals && !BM_elem_flag_test(e, BM_ELEM_SMOOTH));
+      feature = (settings.materials && e->l->f->mat_nr != e->l->radial_next->f->mat_nr) ||
+                (settings.uvs && uv_seam_edge(e, cd_uv)) ||
+                (settings.normals && !BM_elem_flag_test(e, BM_ELEM_SMOOTH));
     }
     BM_elem_flag_set(e, BM_ELEM_TAG_ALT, feature);
-    any_feature |= feature;
+    r_any_feature |= feature;
   }
+}
 
-  BM_mesh_decimate_collapse_ex(bm,
-                               std::clamp(percent / 100.0f, 0.0f, 1.0f),
-                               any_kept ? weights.data() : nullptr,
-                               1.0f,
-                               true,
-                               std::clamp(symmetry, -1, 2),
-                               0.00002f,
-                               any_feature,
-                               compact ? 1.0f : 0.0f);
+static uint64_t hash_bytes(uint64_t hash, const void *data, const size_t size)
+{
+  /* FNV-1a. */
+  const uchar *bytes = static_cast<const uchar *>(data);
+  for (size_t i = 0; i < size; i++) {
+    hash = (hash ^ bytes[i]) * 1099511628211ull;
+  }
+  return hash;
+}
+
+/** The input mesh (every attribute and the faces) and the settings except Vertex %. */
+static uint64_t pro_optimizer_input_hash(const Mesh &mesh, const ProOptimizerSettings &settings)
+{
+  uint64_t hash = 14695981039346656037ull;
+  hash = hash_bytes(hash, &settings, sizeof(settings));
+  const Span<int> offsets = mesh.face_offsets();
+  hash = hash_bytes(hash, offsets.data(), offsets.size_in_bytes());
+  mesh.attributes().foreach_attribute([&](const bke::AttributeIter &iter) {
+    hash = hash_bytes(hash, iter.name.data(), iter.name.size());
+    const GVArraySpan data = *iter.get();
+    hash = hash_bytes(hash, data.data(), data.size_in_bytes());
+  });
+  return hash;
+}
+
+/**
+ * Max's Calculate: the collapse order of each ProOptimizer's input, recorded once down to 1%, so a
+ * new Vertex % only replays a part of it. Only for larger meshes, where the costs take seconds.
+ */
+struct ProOptimizerCache {
+  uint64_t input_hash = 0;
+  /* Standard containers: the cache lives until the program ends, after Blender's allocator has
+   * reported leaks and shut down. */
+  std::vector<BMDecimateStep> steps;
+};
+static std::mutex pro_optimizer_cache_mutex;
+static std::unordered_map<uint64_t, ProOptimizerCache> pro_optimizer_caches;
+static constexpr int PRO_OPTIMIZER_CACHE_FACES = 20000;
+static constexpr float PRO_OPTIMIZER_RECORD_FACTOR = 0.01f;
+
+static Mesh *pro_optimizer_modify(ModifierData *md, const ModifierEvalContext *ctx, Mesh *mesh)
+{
+  const float percent = MOD_max_mesh_float(*md, "vertex_percent", 50.0f);
+  if (percent >= 100.0f || mesh->faces_num == 0) {
+    return mesh;
+  }
+  ProOptimizerSettings settings;
+  settings.borders = flag(*md, "protect_borders", true);
+  settings.materials = flag(*md, "keep_material_boundaries", true);
+  settings.uvs = flag(*md, "keep_uv_boundaries", true);
+  settings.normals = flag(*md, "keep_normals", false);
+  settings.compact = flag(*md, "favor_compact", true);
+  settings.symmetry = std::clamp(MOD_max_mesh_int(*md, "symmetry_axis", -1), -1, 2);
+  const float factor = std::clamp(percent / 100.0f, 0.0f, 1.0f);
+
+  Array<float> weights;
+  bool any_kept;
+  bool any_feature;
+  auto decimate = [&](BMesh *bm, const float decimate_factor, Vector<BMDecimateStep> *r_steps) {
+    pro_optimizer_prepare(bm, settings, weights, any_kept, any_feature);
+    float *vweights = any_kept ? weights.data() : nullptr;
+    const float compact = settings.compact ? 1.0f : 0.0f;
+    if (r_steps) {
+      BM_mesh_decimate_collapse_record(bm,
+                                       decimate_factor,
+                                       vweights,
+                                       1.0f,
+                                       true,
+                                       settings.symmetry,
+                                       0.00002f,
+                                       any_feature,
+                                       compact,
+                                       *r_steps);
+    }
+    else {
+      BM_mesh_decimate_collapse_ex(bm,
+                                   decimate_factor,
+                                   vweights,
+                                   1.0f,
+                                   true,
+                                   settings.symmetry,
+                                   0.00002f,
+                                   any_feature,
+                                   compact);
+    }
+  };
+
+  BMesh *bm = to_bmesh(mesh);
+  /* The switch lets tests compare the replay with a direct decimation. */
+  static const bool no_cache = std::getenv("MORITZ_PRO_OPTIMIZER_NO_CACHE") != nullptr;
+  if (mesh->faces_num > PRO_OPTIMIZER_CACHE_FACES && ctx->object != nullptr && !no_cache) {
+    const uint64_t key = (uint64_t(ctx->object->id.session_uid) << 32) |
+                         uint32_t(md->persistent_uid);
+    const uint64_t input_hash = pro_optimizer_input_hash(*mesh, settings);
+    std::lock_guard lock(pro_optimizer_cache_mutex);
+    if (pro_optimizer_caches.size() > 32 && !pro_optimizer_caches.count(key)) {
+      pro_optimizer_caches.clear();
+    }
+    ProOptimizerCache &cache = pro_optimizer_caches[key];
+    if (cache.input_hash != input_hash || cache.steps.empty()) {
+      BMesh *bm_record = to_bmesh(mesh);
+      Vector<BMDecimateStep> steps;
+      decimate(bm_record, PRO_OPTIMIZER_RECORD_FACTOR, &steps);
+      cache.steps.assign(steps.begin(), steps.end());
+      BM_mesh_free(bm_record);
+      cache.input_hash = input_hash;
+    }
+    /* The replay needs the same vertex indices as the recording. */
+    pro_optimizer_prepare(bm, settings, weights, any_kept, any_feature);
+    BM_mesh_decimate_collapse_replay(
+        bm, Span<BMDecimateStep>(cache.steps.data(), cache.steps.size()), factor, true);
+  }
+  else {
+    decimate(bm, factor, nullptr);
+  }
   BM_mesh_elem_hflag_disable_all(bm, BM_EDGE, BM_ELEM_TAG_ALT, false);
   return from_bmesh(bm, mesh);
 }

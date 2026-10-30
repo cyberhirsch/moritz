@@ -64,6 +64,9 @@ namespace blender {
  * (they are read deep in the edge cost code). */
 static thread_local bool g_use_feature_edges = false;
 static thread_local float g_compact_weight = 0.0f;
+/* Moritz: where #BM_mesh_decimate_collapse_record collects the collapses, and the loop count. */
+static thread_local Vector<BMDecimateStep> *g_record = nullptr;
+static thread_local int g_iteration = 0;
 #define COST_INVALID FLT_MAX
 
 enum CD_UseFlag {
@@ -1288,6 +1291,16 @@ static bool bm_decim_edge_collapse(BMesh *bm,
     e = nullptr;
 
     copy_v3_v3(v_other->co, optimize_co);
+    if (g_record) {
+      BMDecimateStep step;
+      step.v_other = v_other_index;
+      step.v_clear = v_clear_index;
+      copy_v3_v3(step.co, optimize_co);
+      step.customdata_fac = customdata_fac;
+      step.iteration = g_iteration;
+      step.faces_after = bm->totface;
+      g_record->append(step);
+    }
 
     /* remove eheap */
     for (i = 0; i < 2; i++) {
@@ -1379,6 +1392,117 @@ void BM_mesh_decimate_collapse_ex(BMesh *bm,
   g_compact_weight = 0.0f;
 }
 
+void BM_mesh_decimate_collapse_record(BMesh *bm,
+                                      const float factor,
+                                      float *vweights,
+                                      const float vweight_factor,
+                                      const bool do_triangulate,
+                                      const int symmetry_axis,
+                                      const float symmetry_eps,
+                                      const bool use_feature_edges,
+                                      const float compact_weight,
+                                      Vector<BMDecimateStep> &r_steps)
+{
+  r_steps.clear();
+  g_record = &r_steps;
+  g_iteration = 0;
+  BM_mesh_decimate_collapse_ex(bm,
+                               factor,
+                               vweights,
+                               vweight_factor,
+                               do_triangulate,
+                               symmetry_axis,
+                               symmetry_eps,
+                               use_feature_edges,
+                               compact_weight);
+  g_record = nullptr;
+}
+
+void BM_mesh_decimate_collapse_replay(BMesh *bm,
+                                      const Span<BMDecimateStep> steps,
+                                      const float factor,
+                                      const bool do_triangulate)
+{
+  Array<BMVert *> verts(bm->totvert);
+  {
+    BMIter iter;
+    BMVert *v;
+    BM_ITER_MESH (v, &iter, bm, BM_VERTS_OF_MESH) {
+      verts[BM_elem_index_get(v)] = v;
+    }
+  }
+#ifdef USE_TRIANGULATE
+  int edges_tri_tot = 0;
+  const bool use_triangulate = bm_decim_triangulate_begin(bm, &edges_tri_tot);
+#endif
+  BM_mesh_elem_index_ensure(bm, BM_EDGE);
+  /* The same target as #BM_mesh_decimate_collapse computes. */
+  const int face_tot_target = bm->totface * factor;
+
+  CD_UseFlag customdata_flag = CD_UseFlag(0);
+#ifdef USE_CUSTOMDATA
+  if (CustomData_has_interp(&bm->vdata)) {
+    customdata_flag |= CD_DO_VERT;
+  }
+  if (CustomData_has_interp(&bm->edata)) {
+    customdata_flag |= CD_DO_EDGE;
+  }
+  if (CustomData_has_math(&bm->ldata)) {
+    customdata_flag |= CD_DO_LOOP;
+  }
+#endif
+
+  /* The decimation stops after the loop iteration that reaches the target. */
+  int end = steps.size();
+  for (const int i : steps.index_range()) {
+    if (steps[i].faces_after <= face_tot_target) {
+      end = i + 1;
+      while (end < steps.size() && steps[end].iteration == steps[i].iteration) {
+        end++;
+      }
+      break;
+    }
+  }
+  bm->elem_index_dirty |= BM_ALL;
+  for (const BMDecimateStep &step : steps.take_front(end)) {
+    BMVert *v_other = verts[step.v_other];
+    BMVert *v_clear = verts[step.v_clear];
+    BMEdge *e = BM_edge_exists(v_other, v_clear);
+    if (e == nullptr) {
+      continue;
+    }
+    int e_clear_other[2];
+#ifdef USE_VERT_NORMAL_INTERP
+    float v_clear_no[3];
+    copy_v3_v3(v_clear_no, v_clear->no);
+#endif
+    if (bm_edge_collapse(bm,
+                         e,
+                         v_clear,
+                         e_clear_other,
+#ifdef USE_SYMMETRY
+                         nullptr,
+#endif
+                         customdata_flag,
+                         step.customdata_fac))
+    {
+      copy_v3_v3(v_other->co, step.co);
+#ifdef USE_VERT_NORMAL_INTERP
+      interp_v3_v3v3(v_other->no, v_other->no, v_clear_no, step.customdata_fac);
+      normalize_v3(v_other->no);
+#endif
+    }
+  }
+
+#ifdef USE_TRIANGULATE
+  if (do_triangulate == false && use_triangulate) {
+    bm_decim_triangulate_end(bm, edges_tri_tot);
+  }
+#else
+  UNUSED_VARS(do_triangulate);
+#endif
+}
+
 void BM_mesh_decimate_collapse(BMesh *bm,
                                const float factor,
                                float *vweights,
@@ -1461,6 +1585,7 @@ void BM_mesh_decimate_collapse(BMesh *bm,
            (BLI_heap_top_value(eheap) != COST_INVALID))
     {
       // const float value = BLI_heap_node_value(BLI_heap_top(eheap));
+      g_iteration++;
       BMEdge *e = static_cast<BMEdge *>(BLI_heap_pop_min(eheap));
       float optimize_co[3];
       /* handy to detect corruptions elsewhere */
@@ -1496,6 +1621,7 @@ void BM_mesh_decimate_collapse(BMesh *bm,
        * - edges sharing a vertex are ignored, so the pivot vertex isn't moved to one side.
        */
 
+      g_iteration++;
       BMEdge *e = static_cast<BMEdge *>(BLI_heap_pop_min(eheap));
       const int e_index = BM_elem_index_get(e);
       const int e_index_mirr = edge_symmetry_map[e_index];
