@@ -779,7 +779,7 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 - [x] Windows installer: `moritz/tools/make_msi.py` (WiX 5, Program Files\Moritz, Start Menu shortcut, own upgrade code, no file associations)
 - [x] Docs: "Moritz for Max users" cheat sheet (Max term → Moritz location): [docs/max_users.md](docs/max_users.md)
 - [x] CI for Maximize: background tests on Blender 5.3 (GitHub Actions)
-- [ ] 0.2 release (Seb, 2026-10-25: the first release is Moritz 0.2, on Blender 5.3). *Prepared 2026-10-30: release candidate in `G:/Code/Moritz/dist/rc-0.2` (zip and msi, smoke-tested); steps and hand tests in `moritz/docs/release_0.2_checklist.md`.*
+- [x] 0.2 release (Seb, 2026-10-25: the first release is Moritz 0.2, on Blender 5.3). *Released 2026-10-30 as 0.2.0 (Seb: "build a 0.2.0 and release on github"): tag `v0.2.0` on c680148f01b (Maximize tag `v0.2.0` on 3419ab0), private GitHub pre-release https://github.com/cyberhirsch/moritz/releases/tag/v0.2.0 with the zip and msi (also in `G:/Code/Moritz/dist/0.2.0`); suite 65/65, both packages smoke-tested. The hand tests in `moritz/docs/release_0.2_checklist.md` were not done before the release.*
 
 ## Phase 6 — Command Panel (plan, 2026-10-25)
 
