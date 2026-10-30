@@ -485,12 +485,23 @@ ribbon (Seb's screenshots) before building.
     restores the mesh (`ed.undo` + `before`) and then runs `maximize.smart_extrude(offset=…)`.
     Either that operator cancels or makes no change, the undo takes away more than the Move, or the
     timer never fires (for example if `window.modal_operators` still lists a transform). Reproduce
-    in the GUI with the Moritz and the Max keymap, with and without the gizmo.
-    Fixed (Maximize 72c2e6b): the `ed.undo` dropped the Python references to the object and the
-    `before` mesh, so the extrude raised and never ran. Now by name with a detached BMesh copy;
-    redo when the undo left Edit Mode; the selection is restored too. GUI test
-    `tests/test_smart_extrude_drag.py` passes in both keymaps, face drag and gizmo arrow.
-    Not covered: Shift+drag on the gizmo's center ring does a plain move.
+    in the GUI with the Moritz and the Max keymap, with and without the gizmo. *Fixed 2026-10-30,
+    Maximize 72c2e6b, test `test_smart_extrude_drag.py`.*
+  - [x] *(Seb, 2026-10-30: "yes ring too, and when using the arrows it should extrude in that
+    direction")* **The gizmo's center ring extrudes too:** Shift+drag on the free-move ring
+    ("Generic Gizmo" PRESS keymap) runs Smart Extrude like a drag on the polygon. **On an arrow, it
+    extrudes along that arrow's axis** in the current Transform Orientation (Normal, Local,
+    Global …), not along the polygon normal. Check that the arrow constraint survives the switch
+    from the preview Move to Smart Extrude (`offset` is already the move vector; the walls should
+    follow it).
+    *Done 2026-10-30:* the ring already ran Smart Extrude (the earlier "not covered" came from a
+    test that lost Shift). On an arrow, Blender's gizmo turns Shift into a move in the plane across
+    the arrow (`transform_gizmo_3d.cc`), so the extrusion went sideways: `gizmo_arrow_move`
+    (`transform.py`, Maximize 3419ab0) now starts the Move along the grabbed arrow itself; Clone with Shift+drag on
+    an arrow gets the same. A plain Smart Extrude now leaves only the cap selected, as in Max, not
+    the new walls. Test: tilted cube, Global, arrow off the normal: the extrusion goes along the
+    arrow (dir · axis 1.0, dir · normal 0.94); face drag, ring and arrow pass in both keymaps;
+    `test_clone_gizmo_arrow.py`: the clone goes along the X arrow.
 - [x] **Set Flow** *(done 2026-10-28, Maximize `poly_tools.py`, Edge level > Loops: the selected edges'
   vertices go onto a curve through the two vertices on each side across the loop; Amount, Auto
   Loop. Skips poles and vertices without a clear crossing loop)*
