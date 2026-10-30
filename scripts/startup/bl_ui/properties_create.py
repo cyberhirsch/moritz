@@ -83,20 +83,11 @@ class PROPERTIES_PT_create_category(CreateButtonsPanel, Panel):
     bl_label = "Category"
     bl_options = {'HIDE_HEADER'}
 
-    # Moritz: `subcategory_draw(layout, context, category) -> bool`, set by an add-on to draw a
-    # sub-category choice under the icons (Maximize: Standard / Extended Primitives); False falls
-    # back to the category's name.
-    subcategory_draw = None
-
     def draw(self, context):
         # Max's row of category icons above the object types.
         row = self.layout.row(align=True)
         row.scale_y = 1.4
-        category = context.window_manager.moritz_create_category
         row.prop(context.window_manager, "moritz_create_category", icon_only=True, expand=True)
-        subcategory_draw = PROPERTIES_PT_create_category.subcategory_draw
-        if subcategory_draw is not None and subcategory_draw(self.layout, context, category):
-            return
         self.layout.label(text=context.window_manager.bl_rna.properties["moritz_create_category"].enum_items[
             context.window_manager.moritz_create_category].name)
 
