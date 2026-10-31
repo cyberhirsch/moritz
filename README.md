@@ -19,6 +19,8 @@ Modify and Utilities, Editable Poly with sub-object levels 1–5, and a modifier
 - Download: [Releases](https://github.com/cyberhirsch/moritz/releases) (Windows 10/11, 64-bit)
 - Community: [Discord](https://discord.gg/cA9x2yprmG)
 - Roadmap, tasks and the list of core changes: [`moritz/`](moritz/)
+- AI assistants and scripts: Moritz MCP (an MCP server, [`moritz/mcp/`](moritz/mcp/)) and `moritz-cli`,
+  turned on in Preferences > System > Moritz MCP
 
 License
 -------

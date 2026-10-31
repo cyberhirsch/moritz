@@ -363,6 +363,14 @@ else()
     # Moritz: the programs are moritz.exe and moritz-launcher.exe (CMake targets keep their names).
     set_target_properties(blender PROPERTIES OUTPUT_NAME moritz)
     set_target_properties(blender-launcher PROPERTIES OUTPUT_NAME moritz-launcher)
+
+    # Moritz: moritz-cli.exe, a console program that runs scripts/modules/moritz_cli.py with
+    # Moritz's Python.
+    add_executable(moritz-cli moritz_cli_win32.c)
+    target_compile_definitions(moritz-cli PRIVATE
+      -D_UNICODE -DUNICODE -DMORITZ_VERSION_DIR=L"${BLENDER_VERSION}"
+    )
+    target_link_libraries(moritz-cli Pathcch.lib)
   endif()
 endif()
 
@@ -2230,7 +2238,7 @@ endif()
 if(WIN32 AND NOT WITH_PYTHON_MODULE)
   set(BLENDER_BIN "moritz.exe")
   install(
-    TARGETS blender blender-launcher
+    TARGETS blender blender-launcher moritz-cli
     COMPONENT Blender
     DESTINATION "."
   )
