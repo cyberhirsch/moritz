@@ -13,8 +13,6 @@ Blender.
 
 - Source: [github.com/cyberhirsch/moritz](https://github.com/cyberhirsch/moritz)
 - Roadmap, tasks and the list of changes to Blender: [`moritz/`](moritz/)
-- The Max workflow (keymap, quad menu, Max tools) is the separate add-on
-  [Maximize](https://github.com/cyberhirsch/maximize); Moritz runs without it.
 
 Moritz is not made or endorsed by the Blender Foundation. The rest of this file is Blender's own
 read-me.
