@@ -10863,7 +10863,7 @@ static const char *ghost_wl_app_id = (
 #ifdef WITH_GHOST_WAYLAND_APP_ID
     STRINGIFY(WITH_GHOST_WAYLAND_APP_ID)
 #else
-    "blender"
+    "moritz" /* Moritz: matches moritz.desktop. */
 #endif
 );
 

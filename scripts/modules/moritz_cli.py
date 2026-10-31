@@ -44,7 +44,11 @@ def moritz_exe():
         return path
     here = os.path.dirname(os.path.abspath(__file__))
     folder = os.path.dirname(os.path.dirname(os.path.dirname(here)))
-    exe = os.path.join(folder, "moritz.exe" if os.name == "nt" else "moritz")
+    if sys.platform == "darwin":
+        # Moritz.app/Contents/Resources/<version>/...: the program is Contents/MacOS/Moritz.
+        exe = os.path.join(os.path.dirname(folder), "MacOS", "Moritz")
+    else:
+        exe = os.path.join(folder, "moritz.exe" if os.name == "nt" else "moritz")
     if not os.path.isfile(exe):
         raise CLIError("moritz.exe not found next to moritz-cli; set MORITZ_PATH")
     return exe

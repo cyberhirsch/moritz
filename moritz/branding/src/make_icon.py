@@ -1,6 +1,7 @@
 """Build Moritz's app icon from the "m" artwork (moritz/branding/src/icon_m.png, 512 px).
 
-Writes moritz/branding/moritz_icon.png and the app icon (release/windows/icons/winblender.ico);
+Writes moritz/branding/moritz_icon.png and the app icons (release/windows/icons/winblender.ico,
+release/darwin/Blender.app/Contents/Resources/moritz_icon.icns for Moritz.app);
 .blend files keep Blender's icon. The menu icon
 (release/datafiles/icons_svg/blender.svg) is the same shape as a vector, written by hand.
 Run from the repository root: python moritz/branding/src/make_icon.py
@@ -15,4 +16,5 @@ img = Image.open(SRC).convert("RGBA")
 img.save("moritz/branding/moritz_icon.png")
 sizes = [16, 24, 32, 48, 64, 128, 256]
 img.save("release/windows/icons/winblender.ico", sizes=[(s, s) for s in sizes])
-print("wrote moritz_icon.png and winblender.ico")
+img.save("release/darwin/Blender.app/Contents/Resources/moritz_icon.icns")
+print("wrote moritz_icon.png, winblender.ico and moritz_icon.icns")

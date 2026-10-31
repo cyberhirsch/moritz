@@ -118,3 +118,4 @@ moritz/**/*.png binary
 release/datafiles/splash.png !filter !diff !merge binary
 release/windows/icons/winblender.ico !filter !diff !merge binary
 release/datafiles/moritz_logo.png !filter !diff !merge binary
+release/darwin/Blender.app/Contents/Resources/moritz_icon.icns !filter !diff !merge binary

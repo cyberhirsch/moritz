@@ -1,0 +1,18 @@
+#!/bin/sh
+# Moritz command line: runs <version>/scripts/modules/moritz_cli.py with Moritz's own Python.
+# Linux: next to the moritz program. macOS: in Moritz.app/Contents/MacOS (the files are in Resources).
+here=$(dirname "$(readlink -f "$0" 2>/dev/null || echo "$0")")
+if [ -d "$here/../Resources" ]; then
+	base="$here/../Resources"
+else
+	base="$here"
+fi
+for ver in "$base"/[0-9]*.[0-9]*; do
+	[ -d "$ver/scripts/modules" ] || continue
+	for py in "$ver"/python/bin/python3*; do
+		[ -x "$py" ] || continue
+		exec "$py" -I "$ver/scripts/modules/moritz_cli.py" "$@"
+	done
+done
+echo "moritz-cli: Moritz's Python not found next to $0" >&2
+exit 1

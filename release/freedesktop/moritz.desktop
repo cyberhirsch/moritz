@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Moritz
+GenericName=3D modeler
+Comment=3D modeling, animation and rendering, based on Blender
+Keywords=3d;cg;modeling;animation;rendering;3ds max;max;blender;
+Exec=moritz %f
+Icon=moritz
+Terminal=false
+Type=Application
+PrefersNonDefaultGPU=true
+Categories=Graphics;3DGraphics;
+MimeType=application/x-blender;
+StartupWMClass=Moritz

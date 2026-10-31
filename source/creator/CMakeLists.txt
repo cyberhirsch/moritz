@@ -451,9 +451,10 @@ elseif(APPLE)
       set(TARGETDIR_LIB ${PYTHON_SITE_PACKAGES}/bpy/lib)
     endif()
   else()
-    set(TARGETDIR_VER "Blender.app/Contents/Resources/${BLENDER_VERSION}")
-    set(TARGETDIR_LIB "Blender.app/Contents/Resources/lib")
-    set(TARGETDIR_TEXT "Blender.app/Contents/Resources/text")
+    # Moritz: the app bundle is Moritz.app.
+    set(TARGETDIR_VER "Moritz.app/Contents/Resources/${BLENDER_VERSION}")
+    set(TARGETDIR_LIB "Moritz.app/Contents/Resources/lib")
+    set(TARGETDIR_TEXT "Moritz.app/Contents/Resources/text")
   endif()
   set(TARGETDIR_SITE_PACKAGES "${TARGETDIR_VER}/python/lib/python${PYTHON_VERSION}/site-packages")
   # Skip re-linking on CPACK / install.
@@ -834,6 +835,11 @@ endfunction()
 
 if(UNIX AND NOT APPLE)
 
+  if(NOT WITH_PYTHON_MODULE)
+    # Moritz: the program is moritz (the CMake target keeps its name).
+    set_target_properties(blender PROPERTIES OUTPUT_NAME moritz)
+  endif()
+
   if(PLATFORM_BUNDLED_LIBRARIES AND TARGETDIR_LIB)
     install(
       FILES ${PLATFORM_BUNDLED_LIBRARIES}
@@ -857,7 +863,7 @@ if(UNIX AND NOT APPLE)
 
     # none of the other files are needed currently
   elseif(WITH_INSTALL_PORTABLE)
-    set(BLENDER_BIN "blender")
+    set(BLENDER_BIN "moritz")
     install(
       TARGETS blender
       DESTINATION "."
@@ -872,9 +878,13 @@ if(UNIX AND NOT APPLE)
 
     install(
       FILES
-        ${CMAKE_SOURCE_DIR}/release/freedesktop/blender.desktop
-        ${CMAKE_SOURCE_DIR}/release/freedesktop/icons/scalable/apps/blender.svg
-        ${CMAKE_SOURCE_DIR}/release/freedesktop/icons/symbolic/apps/blender-symbolic.svg
+        ${CMAKE_SOURCE_DIR}/release/freedesktop/moritz.desktop
+        ${CMAKE_SOURCE_DIR}/release/freedesktop/icons/scalable/apps/moritz.svg
+        ${CMAKE_SOURCE_DIR}/release/freedesktop/icons/symbolic/apps/moritz-symbolic.svg
+      DESTINATION "."
+    )
+    install(
+      PROGRAMS ${CMAKE_SOURCE_DIR}/release/bin/moritz-cli
       DESTINATION "."
     )
 
@@ -893,18 +903,19 @@ if(UNIX AND NOT APPLE)
         PROGRAMS
         ${CMAKE_SOURCE_DIR}/release/bin/blender-launcher
         DESTINATION "."
+        RENAME moritz-launcher
       )
     endif()
   else()
     # main blender binary
-    set(BLENDER_BIN "bin/blender")
+    set(BLENDER_BIN "bin/moritz")
     install(
       TARGETS blender
       DESTINATION "./bin"
     )
     # Misc files.
     install(
-      FILES ${CMAKE_SOURCE_DIR}/release/freedesktop/blender.desktop
+      FILES ${CMAKE_SOURCE_DIR}/release/freedesktop/moritz.desktop
       DESTINATION "./share/applications"
     )
     install(
@@ -912,11 +923,11 @@ if(UNIX AND NOT APPLE)
       DESTINATION "./share/metainfo"
     )
     install(
-      FILES ${CMAKE_SOURCE_DIR}/release/freedesktop/icons/scalable/apps/blender.svg
+      FILES ${CMAKE_SOURCE_DIR}/release/freedesktop/icons/scalable/apps/moritz.svg
       DESTINATION "./share/icons/hicolor/scalable/apps"
     )
     install(
-      FILES ${CMAKE_SOURCE_DIR}/release/freedesktop/icons/symbolic/apps/blender-symbolic.svg
+      FILES ${CMAKE_SOURCE_DIR}/release/freedesktop/icons/symbolic/apps/moritz-symbolic.svg
       DESTINATION "./share/icons/hicolor/symbolic/apps"
     )
     if(WITH_BLENDER_THUMBNAILER)
@@ -1841,8 +1852,8 @@ elseif(WIN32)
   endif()
 elseif(APPLE)
   if(NOT WITH_PYTHON_MODULE)
-    # Uppercase name for app bundle.
-    set_target_properties(blender PROPERTIES OUTPUT_NAME Blender)
+    # Uppercase name for app bundle (Moritz.app, program Contents/MacOS/Moritz).
+    set_target_properties(blender PROPERTIES OUTPUT_NAME Moritz)
   endif()
 
   set(OSX_APP_SOURCEDIR ${CMAKE_SOURCE_DIR}/release/darwin/Blender.app)
@@ -1886,11 +1897,11 @@ elseif(APPLE)
   # Give the bundle actual creation/modification date.
   #
   # Note that the directory might not yet exist, which happens when CMAKE is first run.
-  if(NOT EXISTS ${EXECUTABLE_OUTPUT_PATH}/Blender.app)
-    file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/Blender.app)
+  if(NOT EXISTS ${EXECUTABLE_OUTPUT_PATH}/Moritz.app)
+    file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/Moritz.app)
   endif()
   execute_process(
-    COMMAND SetFile -d ${SETFILE_DATE} -m ${SETFILE_DATE} ${EXECUTABLE_OUTPUT_PATH}/Blender.app
+    COMMAND SetFile -d ${SETFILE_DATE} -m ${SETFILE_DATE} ${EXECUTABLE_OUTPUT_PATH}/Moritz.app
   )
 
   set(BLENDER_BIN "bin/blender")
@@ -1901,18 +1912,18 @@ elseif(APPLE)
 
   install(
     FILES ${OSX_APP_SOURCEDIR}/Contents/PkgInfo
-    DESTINATION "Blender.app/Contents"
+    DESTINATION "Moritz.app/Contents"
   )
 
   install_dir(
     ${OSX_APP_SOURCEDIR}/Contents/Resources
-    "Blender.app/Contents"
+    "Moritz.app/Contents"
   )
 
   if(WITH_BLENDER_THUMBNAILER)
     install(
       TARGETS blender-thumbnailer
-      DESTINATION "./Blender.app/Contents/PlugIns"
+      DESTINATION "./Moritz.app/Contents/PlugIns"
     )
   endif()
 
@@ -1971,7 +1982,12 @@ elseif(APPLE)
     unset(PYTHON_EXECUTABLE_NAME_ONLY)
     install(
       PROGRAMS ${CMAKE_BINARY_DIR}/release/darwin/scripts/blender-system-info.sh
-      DESTINATION "Blender.app/Contents/Resources"
+      DESTINATION "Moritz.app/Contents/Resources"
+    )
+    # Moritz: moritz-cli next to the program.
+    install(
+      PROGRAMS ${CMAKE_SOURCE_DIR}/release/bin/moritz-cli
+      DESTINATION "Moritz.app/Contents/MacOS"
     )
   endif()
 

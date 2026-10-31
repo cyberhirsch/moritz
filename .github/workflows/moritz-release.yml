@@ -1,0 +1,200 @@
+# Moritz: release build for Windows, Linux and macOS, with the tests and the packages.
+#
+# Started by hand only (Actions > Moritz Release > Run workflow): every run is a CI run that needs
+# Seb's go. The repositories are public, so GitHub's hosted runners cost nothing (macOS too).
+# Limits per job: 6 hours, 4 cores (macOS arm64: 3), about 14 GB free disk; a compiler cache
+# (ccache on Linux and macOS) keeps reruns well inside them.
+#
+# Packages:
+#   Windows  moritz-<ver>-windows-x64.zip and .msi (per user)
+#   Linux    moritz-<ver>-linux-x64.tar.xz (built in Rocky Linux 8, like Blender, for old glibc)
+#   macOS    moritz-<ver>-macos-arm64.dmg (Apple Silicon: Blender 5.3 has no Intel Mac libraries;
+#            signed ad hoc, not notarized)
+#   MCP      moritz-mcp-<ver>.mcpb
+# With "release" ticked, a draft GitHub release with all of them is made; Seb publishes it.
+# GPU kernels (CUDA, HIP, oneAPI) are not built on hosted runners: Cycles renders on the CPU, or
+# compiles kernels on the user's machine where it can.
+name: Moritz Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: Platforms to build
+        type: choice
+        options: [all, windows, linux, macos]
+        default: all
+      release:
+        description: Make a draft GitHub release with the packages
+        type: boolean
+        default: false
+
+env:
+  # The fork's own LFS objects are not on GitHub; Blender's come from projects.blender.org.
+  GIT_LFS_SKIP_SMUDGE: "1"
+  CMAKE_GPU_OFF: >-
+    -DWITH_CYCLES_CUDA_BINARIES=OFF -DWITH_CYCLES_HIP_BINARIES=OFF
+    -DWITH_CYCLES_ONEAPI_BINARIES=OFF -DWITH_CYCLES_DEVICE_OPTIX=OFF
+
+jobs:
+  windows:
+    if: inputs.platforms == 'all' || inputs.platforms == 'windows'
+    runs-on: windows-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1, path: blender }
+      - uses: actions/checkout@v4
+        with: { repository: cyberhirsch/maximize, path: Maximize, fetch-depth: 1 }
+      - name: LFS files and precompiled libraries
+        shell: powershell
+        working-directory: blender
+        run: |
+          git lfs pull
+          if ($LASTEXITCODE -ne 0) { Write-Warning "some LFS files are missing" }
+          git -c submodule."lib/windows_x64".update=checkout submodule update --init --depth 1 lib/windows_x64
+          git -C lib/windows_x64 lfs pull
+      - name: Configure
+        shell: powershell
+        run: cmake -S blender -B build -G "Visual Studio 17 2022" -A x64 -C blender/build_files/cmake/config/blender_release.cmake $env:CMAKE_GPU_OFF.Split(" ")
+      - name: Build
+        shell: powershell
+        run: cmake --build build --config Release --target install -- /m /nologo /v:m
+      - name: Add Maximize
+        shell: powershell
+        run: |
+          $ver = (Get-ChildItem build/bin/Release -Directory | Where-Object Name -match '^\d+\.\d+$').Name
+          Copy-Item -Recurse Maximize/maximize "build/bin/Release/$ver/scripts/addons_core/maximize"
+      - name: Tests
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Continue"
+          python blender/moritz/tools/run_headless_tests.py build/bin/Release/moritz.exe blender Maximize
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+      - name: Packages
+        shell: powershell
+        run: |
+          dotnet tool install --global wix
+          wix extension add --global WixToolset.UI.wixext
+          mkdir dist
+          python blender/moritz/tools/make_portable_zip.py build/bin/Release Maximize dist
+          python blender/moritz/tools/make_msi.py build/bin/Release Maximize dist
+          python blender/moritz/tools/make_mcpb.py dist
+          Remove-Item dist/*.wixpdb -ErrorAction SilentlyContinue
+      - uses: actions/upload-artifact@v4
+        with: { name: moritz-windows, path: dist/*, retention-days: 14 }
+
+  linux:
+    if: inputs.platforms == 'all' || inputs.platforms == 'linux'
+    runs-on: ubuntu-latest
+    # Rocky Linux 8 (glibc 2.28), as Blender's own Linux builds, so the program runs on older systems.
+    container: rockylinux:8
+    timeout-minutes: 360
+    steps:
+      - name: Build tools
+        run: |
+          dnf -y install 'dnf-command(config-manager)' epel-release
+          dnf config-manager --set-enabled powertools
+          dnf -y install gcc-toolset-14 git git-lfs make ninja-build ccache wget python3.11 patchelf \
+            mesa-libEGL-devel mesa-libGL-devel libxkbcommon-devel libX11-devel libXcursor-devel \
+            libXi-devel libXinerama-devel libXrandr-devel libXt-devel libXxf86vm-devel \
+            alsa-lib-devel pulseaudio-libs-devel jack-audio-connection-kit-devel libdrm-devel \
+            systemd-devel xz
+          wget -q https://github.com/Kitware/CMake/releases/download/v3.31.12/cmake-3.31.12-linux-x86_64.sh
+          sh cmake-3.31.12-linux-x86_64.sh --prefix=/usr/local --skip-license
+          # Hosted runners have ~14 GB free; the container's own tools are small.
+          df -h .
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1, path: blender }
+      - uses: actions/checkout@v4
+        with: { repository: cyberhirsch/maximize, path: Maximize, fetch-depth: 1 }
+      - name: LFS files and precompiled libraries
+        working-directory: blender
+        run: |
+          git config --global --add safe.directory '*'
+          git lfs pull || echo "some LFS files are missing"
+          git -c submodule."lib/linux_x64".update=checkout submodule update --init --depth 1 lib/linux_x64
+          git -C lib/linux_x64 lfs pull
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ccache
+          key: ccache-linux-${{ github.sha }}
+          restore-keys: ccache-linux-
+      - name: Configure
+        run: |
+          source /opt/rh/gcc-toolset-14/enable
+          cmake -S blender -B build -G Ninja -C blender/build_files/cmake/config/blender_release.cmake \
+            -DWITH_COMPILER_CCACHE=ON $CMAKE_GPU_OFF
+      - name: Build
+        env: { CCACHE_DIR: ~/.cache/ccache, CCACHE_MAXSIZE: 4G }
+        run: |
+          source /opt/rh/gcc-toolset-14/enable
+          cmake --build build --target install -j 4
+          ccache -s
+      - name: Tests
+        run: python3.11 blender/moritz/tools/run_headless_tests.py build/bin/moritz blender Maximize
+      - name: Package
+        run: |
+          mkdir dist
+          python3.11 blender/moritz/tools/make_unix_package.py build/bin Maximize dist
+      - uses: actions/upload-artifact@v4
+        with: { name: moritz-linux, path: dist/*, retention-days: 14 }
+
+  macos:
+    if: inputs.platforms == 'all' || inputs.platforms == 'macos'
+    runs-on: macos-14
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1, path: blender }
+      - uses: actions/checkout@v4
+        with: { repository: cyberhirsch/maximize, path: Maximize, fetch-depth: 1 }
+      - name: Build tools
+        run: brew install ninja ccache git-lfs || true
+      - name: LFS files and precompiled libraries
+        working-directory: blender
+        run: |
+          git lfs pull || echo "some LFS files are missing"
+          git -c submodule."lib/macos_arm64".update=checkout submodule update --init --depth 1 lib/macos_arm64
+          git -C lib/macos_arm64 lfs pull
+      - uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/ccache
+          key: ccache-macos-${{ github.sha }}
+          restore-keys: ccache-macos-
+      - name: Configure
+        run: |
+          cmake -S blender -B build -G Ninja -C blender/build_files/cmake/config/blender_release.cmake \
+            -DWITH_COMPILER_CCACHE=ON $CMAKE_GPU_OFF
+      - name: Build
+        env: { CCACHE_MAXSIZE: 4G }
+        run: |
+          cmake --build build --target install -j 3
+          ccache -s
+      - name: Tests
+        run: python3 blender/moritz/tools/run_headless_tests.py build/bin/Moritz.app/Contents/MacOS/Moritz blender Maximize
+      - name: Package
+        run: |
+          mkdir dist
+          python3 blender/moritz/tools/make_unix_package.py build/bin Maximize dist
+      - uses: actions/upload-artifact@v4
+        with: { name: moritz-macos, path: dist/*, retention-days: 14 }
+
+  release:
+    needs: [windows, linux, macos]
+    if: inputs.release && inputs.platforms == 'all'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 1, sparse-checkout: source/blender/blenkernel/BKE_moritz_version.h }
+      - uses: actions/download-artifact@v4
+        with: { path: dist, merge-multiple: true }
+      - name: Draft release
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          ver=$(sed -n 's/.*MORITZ_VERSION_STRING "\(.*\)".*/\1/p' source/blender/blenkernel/BKE_moritz_version.h)
+          ls -la dist
+          gh release create "v$ver" dist/* --draft --prerelease --title "Moritz $ver" \
+            --notes "Draft: notes to be written. macOS: the app is not notarized; on first start right-click > Open, or run xattr -cr /Applications/Moritz.app."
