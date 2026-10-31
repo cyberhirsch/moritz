@@ -81,12 +81,13 @@ def _initialize_once():
         )
 
     _enable_builtin()
+    _enable_defaults()
 
 
 # Moritz: add-ons that are part of Moritz: always enabled, not listed in Preferences > Add-ons,
 # and the user cannot disable them. The packages ship them in `addons_core`; a development build
 # finds them in the user's add-ons (a link to the add-on's repository).
-BUILTIN = ("maximize",)
+BUILTIN = ("maximize", "moritz_mcp")
 
 
 def is_builtin(module_name):
@@ -103,6 +104,46 @@ def _enable_builtin():
     for module_name in BUILTIN:
         if is_builtin(module_name) and not check(module_name)[1]:
             enable(module_name, default_set=True, refresh_handled=True)
+
+
+# Moritz: add-ons that are on by default (factory settings list them in `blendfile.cc`).
+# Preferences saved before one of them was added get it once; after that, turning it off is the
+# user's choice. The ones handed out are listed in the config folder.
+DEFAULT_ON = ("bl_ext.system.io_scene_max",)
+
+
+def _enable_defaults():
+    import os
+    if _bpy.app.factory_startup:
+        return
+    prefs = _preferences
+    path = os.path.join(_bpy.utils.user_resource('CONFIG'), "moritz_default_addons.txt")
+    try:
+        with open(path, encoding="utf-8") as fh:
+            given = set(fh.read().split())
+    except OSError:
+        given = set()
+    new = []
+    for module_name in DEFAULT_ON:
+        if module_name in given:
+            continue
+        if prefs.addons.get(module_name) is None:
+            mod = enable(module_name, default_set=True, refresh_handled=True, handle_error=lambda _ex: None)
+            if mod is None:
+                # Not installed (a development build without the system extensions).
+                continue
+            if not prefs.use_preferences_save:
+                # Not saved on quit: hand it out again next time, until the preferences have it.
+                continue
+            prefs.is_dirty = True
+        new.append(module_name)
+    if new:
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "a", encoding="utf-8") as fh:
+                fh.write("".join(name + "\n" for name in new))
+        except OSError:
+            pass
 
 
 def paths():
