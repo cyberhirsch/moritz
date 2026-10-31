@@ -1,4 +1,4 @@
-This repository is only used as a mirror. Blender development happens on projects.blender.org.
+Thanks for contributing to Moritz.
 
-To get started with contributing code, please see:
-https://developer.blender.org/docs/handbook/contributing/
+Moritz is in alpha. For bugs and feature wishes, the quickest route is the Moritz Discord
+(#bug-reports and #feature-requests): https://discord.gg/cA9x2yprmG
