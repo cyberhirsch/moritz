@@ -1107,12 +1107,26 @@ class WM_OT_url_open_preset(Operator):
 
     @staticmethod
     def _url_from_bug():
-        from _bpy_internal.system_info.url_prefill_runtime import url_from_blender
-        return url_from_blender()
+        # Moritz: a new issue on its GitHub, with the system filled in.
+        import platform
+        import urllib.parse
+        import gpu
+        body = (
+            "**What happened, and what did you expect?**\n\n\n"
+            "**Steps to reproduce**\n\n\n"
+            "**System**\n"
+            "- Moritz {:s} (based on Blender {:s}, {:s})\n- {:s}\n- {:s} {:s} {:s}\n"
+        ).format(
+            bpy.app.moritz_version_string if hasattr(bpy.app, "moritz_version_string") else "",
+            bpy.app.version_string, bpy.app.build_hash.decode("ascii", "replace"), platform.platform(),
+            gpu.platform.renderer_get(), gpu.platform.vendor_get(), gpu.platform.version_get(),
+        )
+        return MORITZ_URL + "/issues/new?" + urllib.parse.urlencode({"body": body})
 
     @staticmethod
     def _url_from_release_notes():
-        return "https://www.blender.org/download/releases/{:d}-{:d}/".format(*bpy.app.version[:2])
+        # Moritz: its own releases.
+        return MORITZ_URL + "/releases"
 
     @staticmethod
     def _url_from_manual():
@@ -1132,13 +1146,13 @@ class WM_OT_url_open_preset(Operator):
           tip_("Report a bug with pre-filled version information")),
          _url_from_bug),
         (('RELEASE_NOTES', iface_("Release Notes"),
-          tip_("Read about what's new in this version of Blender")),
+          tip_("What's new in this version")),
          _url_from_release_notes),
         (('MANUAL', iface_("User Manual"),
-          tip_("The reference manual for this version of Blender")),
+          tip_("The reference manual")),
          _url_from_manual),
         (('API', iface_("Python API Reference"),
-          tip_("The API reference manual for this version of Blender")),
+          tip_("The Python API reference")),
          _url_from_api),
 
         # Static URL's.
@@ -3506,7 +3520,7 @@ class WM_MT_splash_quick_setup(Menu):
         sub = col.column(heading="Theme")
         label = bpy.types.USERPREF_MT_interface_theme_presets.bl_label
         if label == "Presets":
-            label = "Blender Dark"
+            label = "Dark"
         sub.menu("USERPREF_MT_interface_theme_presets", text=label)
 
         col.separator()
@@ -3621,9 +3635,7 @@ class WM_MT_splash(Menu):
 
             # Moritz: its own links first; the manual and communities are Blender's.
             col2.operator("wm.url_open", text="Moritz on GitHub", icon='URL').url = MORITZ_URL
-            col2.operator("wm.url_open_preset", text="Blender Manual", icon='URL').type = 'MANUAL'
-            col2.operator("wm.url_open", text="Blender Communities", icon='URL').url = "https://www.blender.org/community/"
-            col2.operator("wm.url_open_preset", text="Blender Website", icon='URL').type = 'BLENDER'
+            col2.operator("wm.url_open_preset", text="Manual", icon='URL').type = 'MANUAL'
 
         col_sep = layout.column()
         col_sep.separator()
@@ -3640,10 +3652,17 @@ class WM_MT_splash(Menu):
 
         col2 = split.column()
 
-        col2.operator("wm.url_open_preset", text="What's New in Blender", icon='URL').type = 'RELEASE_NOTES'
-        col2.operator("wm.url_open_preset", text="Donate to Blender", icon='FUND').type = 'FUND'
+        # Moritz: its own links; nothing in the menus and splash says Blender but the credit.
+        col2.operator("wm.url_open_preset", text="Release Notes", icon='URL').type = 'RELEASE_NOTES'
+        col2.operator("wm.url_open_preset", text="Manual", icon='URL').type = 'MANUAL'
+        col2.operator("wm.url_open_preset", text="Report a Bug", icon='URL').type = 'BUG'
 
         layout.separator()
+        # A centered row sizes its label too short in the splash and cuts it; a split keeps it whole.
+        split = layout.split(factor=0.4)
+        split.label()
+        split.enabled = False
+        split.label(text="Based on Blender")
 
         if (not bpy.app.online_access) and bpy.app.online_access_override:
             self.layout.label(text="Running in Offline Mode", icon='INTERNET_OFFLINE')
@@ -3683,17 +3702,15 @@ class WM_MT_splash_about(Menu):
         del _ghost_backend, ghost_backend
 
         col.separator(factor=2.0)
-        col.label(text="Moritz and Blender are free software")
+        col.label(text="Moritz is free software")
         col.label(text="Licensed under the GNU General Public License")
 
         col = split.column(align=True)
         col.emboss = 'PULLDOWN_MENU'
         col.operator("wm.url_open", text="Moritz on GitHub", icon='URL').url = MORITZ_URL
-        col.operator("wm.url_open_preset", text="Donate to Blender", icon='FUND').type = 'FUND'
+        col.operator("wm.url_open_preset", text="Release Notes", icon='URL').type = 'RELEASE_NOTES'
         col.separator(factor=2.0)
-        col.operator("wm.url_open_preset", text="Blender Credits", icon='URL').type = 'CREDITS'
         col.operator("wm.url_open", text="License", icon='URL').url = "https://www.blender.org/about/license/"
-        col.operator("wm.url_open_preset", text="Blender Website", icon='URL').type = 'BLENDER'
 
 
 class WM_MT_region_toggle_pie(Menu):

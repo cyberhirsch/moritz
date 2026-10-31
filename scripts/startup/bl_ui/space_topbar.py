@@ -713,11 +713,10 @@ class TOPBAR_MT_help(Menu):
 
         show_developer = context.preferences.view.show_developer_ui
 
+        # Moritz: its own links (the manual and API reference are Blender's, the right ones).
         layout.operator("wm.url_open_preset", text="Manual", icon='URL').type = 'MANUAL'
-        layout.operator("wm.url_open", text="Support").url = "https://www.blender.org/support"
-        layout.operator("wm.url_open", text="User Communities").url = "https://www.blender.org/community/"
-        layout.operator("wm.url_open", text="Get Involved").url = "https://www.blender.org/get-involved/"
         layout.operator("wm.url_open_preset", text="Release Notes").type = 'RELEASE_NOTES'
+        layout.operator("wm.url_open", text="Moritz on GitHub").url = "https://github.com/cyberhirsch/moritz"
 
         layout.separator()
 
@@ -727,7 +726,6 @@ class TOPBAR_MT_help(Menu):
                 text="Developer Documentation",
                 icon='URL',
             ).url = "https://developer.blender.org/docs/"
-            layout.operator("wm.url_open", text="Developer Community").url = "https://devtalk.blender.org"
             layout.operator("wm.url_open_preset", text="Python API Reference").type = 'API'
             layout.operator("wm.operator_cheat_sheet", icon='TEXT')
 
