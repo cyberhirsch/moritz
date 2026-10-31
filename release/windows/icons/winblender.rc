@@ -24,11 +24,11 @@ BEGIN
     BEGIN
       VALUE "FileVersion", BLEN_VER_RC_STR
       VALUE "ProductVersion", BLEN_VER_RC_STR
-      VALUE "CompanyName", "Blender Foundation"
-      VALUE "FileDescription", "Blender"
-      VALUE "LegalCopyright", "GPLv3 (Blender Foundation)"
-      VALUE "OriginalFilename", "blender.exe"
-      VALUE "ProductName", "Blender"
+      VALUE "CompanyName", "Moritz Authors"
+      VALUE "FileDescription", "Moritz"
+      VALUE "LegalCopyright", "GPLv3 (Moritz Authors, based on Blender)"
+      VALUE "OriginalFilename", "moritz.exe"
+      VALUE "ProductName", "Moritz"
     END
   END
   BLOCK "VarFileInfo"

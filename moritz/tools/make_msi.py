@@ -9,7 +9,8 @@
 Needs the WiX .NET tool (`dotnet tool install --global wix`) with the UI extension
 (`wix extension add --global WixToolset.UI.wixext`). The program folder is staged the same way
 as the portable zip (Maximize copied in as real files, no debug symbols or build tools), then
-installed to Program Files\\Moritz for all users, with a Start Menu shortcut.
+installed for the current user without admin rights, with a Start Menu shortcut. Windows puts a
+per-user install (ALLUSERS=2 with MSIINSTALLPERUSER=1) in %LOCALAPPDATA%\\Programs\\Moritz.
 
 Moritz has its own upgrade code, so it installs next to Blender and never replaces it. It
 registers no file types: .blend files keep opening in (and showing the icon of) Blender.
@@ -53,10 +54,19 @@ def rtf(text):
 WXS = r'''<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
      xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
   <Package Name="Moritz {ver}" Manufacturer="Moritz" Version="{msi_ver}" Language="1033"
-           UpgradeCode="{upgrade}" Scope="perMachine" Compressed="yes">
+           UpgradeCode="{upgrade}" Scope="perUserOrMachine" Compressed="yes">
+    <!-- perUserOrMachine sets ALLUSERS=2 and MSIINSTALLPERUSER=1: per user, no admin rights,
+         Program Files becomes %LOCALAPPDATA%\Programs. -->
     <MajorUpgrade AllowSameVersionUpgrades="yes"
                   DowngradeErrorMessage="A newer Moritz is already installed." />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <!-- 0.2.0 installed for all users; a per-user install can't upgrade that one. -->
+    <Property Id="MACHINEINSTALL">
+      <RegistrySearch Root="HKLM" Key="Software\Moritz" Name="InstallDir" Type="raw" Bitness="always64" />
+    </Property>
+    <Launch Condition="Installed OR NOT MACHINEINSTALL"
+            Message="Moritz 0.2.0 is installed for all users. Uninstall it first (Settings &gt; Apps &gt; Installed apps &gt; Moritz), then run this installer again." />
 
     <Icon Id="moritz.ico" SourceFile="{icon}" />
     <Property Id="ARPPRODUCTICON" Value="moritz.ico" />
@@ -75,7 +85,7 @@ WXS = r'''<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
       <Component Id="StartMenuShortcut" Guid="{shortcut_guid}">
         <Shortcut Id="MoritzShortcut" Name="Moritz" Target="[INSTALLFOLDER]moritz-launcher.exe"
                   WorkingDirectory="INSTALLFOLDER" Icon="moritz.ico" />
-        <RegistryValue Root="HKLM" Key="Software\Moritz" Name="InstallDir" Type="string"
+        <RegistryValue Root="HKMU" Key="Software\Moritz" Name="InstallDir" Type="string"
                        Value="[INSTALLFOLDER]" KeyPath="yes" />
       </Component>
     </StandardDirectory>

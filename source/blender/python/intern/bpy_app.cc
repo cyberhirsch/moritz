@@ -41,6 +41,7 @@
 
 #include "BKE_appdir.hh"
 #include "BKE_blender_version.h"
+#include "BKE_moritz_version.h"
 #include "BKE_global.hh"
 #include "BKE_main.hh"
 
@@ -98,6 +99,10 @@ static PyStructSequence_Field app_info_fields[] = {
      ":type: tuple[int, int, int]\n"},
     {"version_string",
      "The Blender version formatted as a string\n"
+     "\n"
+     ":type: str\n"},
+    {"moritz_version_string",
+     "Moritz's own version (Moritz is based on Blender :data:`version_string`)\n"
      "\n"
      ":type: str\n"},
     {"version_cycle",
@@ -224,6 +229,7 @@ static PyObject *make_app_info()
   SetObjItem(PyC_Tuple_Pack_I32(
       {BLENDER_FILE_VERSION / 100, BLENDER_FILE_VERSION % 100, BLENDER_FILE_SUBVERSION}));
   SetStrItem(BKE_blender_version_string());
+  SetStrItem(MORITZ_VERSION_STRING);
 
   SetStrItem(STRINGIFY(BLENDER_VERSION_CYCLE));
   SetObjItem(PyBool_FromLong(G.background));
