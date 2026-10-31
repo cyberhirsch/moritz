@@ -506,6 +506,8 @@ class PREFERENCES_OT_addon_enable(Operator):
         mod = addon_utils.enable(module_name, default_set=True, handle_error=err_cb)
 
         if mod:
+            # Moritz: a default add-on turned on again is handed out again.
+            addon_utils.default_off_set(module_name, False)
             bl_info = addon_utils.module_bl_info(mod)
 
             info_ver = bl_info.get("blender", (0, 0, 0))
@@ -562,6 +564,8 @@ class PREFERENCES_OT_addon_disable(Operator):
 
         module_name = self.module
         addon_utils.disable(module_name, default_set=True, handle_error=err_cb)
+        # Moritz: the user turned it off, so a default add-on stays off.
+        addon_utils.default_off_set(module_name, True)
 
         if err_str:
             self.report({'ERROR'}, err_str)

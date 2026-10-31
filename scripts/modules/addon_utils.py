@@ -107,43 +107,57 @@ def _enable_builtin():
 
 
 # Moritz: add-ons that are on by default (factory settings list them in `blendfile.cc`).
-# Preferences saved before one of them was added get it once; after that, turning it off is the
-# user's choice. The ones handed out are listed in the config folder.
+# Preferences without one of them get it at startup, unless the user turned it off in
+# Preferences > Add-ons: only that is remembered (in the config folder), so preferences that lost
+# it otherwise (saved by a build without it, for one) get it back.
 DEFAULT_ON = ("bl_ext.system.io_scene_max",)
 
 
-def _enable_defaults():
+def _defaults_off_path():
     import os
+    return os.path.join(_bpy.utils.user_resource('CONFIG'), "moritz_addons_off.txt")
+
+
+def _defaults_off():
+    try:
+        with open(_defaults_off_path(), encoding="utf-8") as fh:
+            return set(fh.read().split())
+    except OSError:
+        return set()
+
+
+def default_off_set(module_name, off):
+    """Moritz: remember that the user turned a default add-on off (or on again)."""
+    import os
+    if module_name not in DEFAULT_ON:
+        return
+    names = _defaults_off()
+    if (module_name in names) == off:
+        return
+    if off:
+        names.add(module_name)
+    else:
+        names.discard(module_name)
+    path = _defaults_off_path()
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as fh:
+            fh.write("".join(name + "\n" for name in sorted(names)))
+    except OSError:
+        pass
+
+
+def _enable_defaults():
     if _bpy.app.factory_startup:
         return
     prefs = _preferences
-    path = os.path.join(_bpy.utils.user_resource('CONFIG'), "moritz_default_addons.txt")
-    try:
-        with open(path, encoding="utf-8") as fh:
-            given = set(fh.read().split())
-    except OSError:
-        given = set()
-    new = []
+    off = _defaults_off()
     for module_name in DEFAULT_ON:
-        if module_name in given:
+        if module_name in off or prefs.addons.get(module_name) is not None:
             continue
-        if prefs.addons.get(module_name) is None:
-            mod = enable(module_name, default_set=True, refresh_handled=True, handle_error=lambda _ex: None)
-            if mod is None:
-                # Not installed (a development build without the system extensions).
-                continue
-            if not prefs.use_preferences_save:
-                # Not saved on quit: hand it out again next time, until the preferences have it.
-                continue
+        # Not installed (a development build without the system extensions): returns None.
+        if enable(module_name, default_set=True, refresh_handled=True, handle_error=lambda _ex: None):
             prefs.is_dirty = True
-        new.append(module_name)
-    if new:
-        try:
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-            with open(path, "a", encoding="utf-8") as fh:
-                fh.write("".join(name + "\n" for name in new))
-        except OSError:
-            pass
 
 
 def paths():

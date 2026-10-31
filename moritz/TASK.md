@@ -1327,6 +1327,23 @@ Agents (Claude and others) and scripts drive Moritz the way the other *craft app
   (`addon_utils.BUILTIN` or enabled once per version at startup, remembering if the user turned it
   off). Seb's workaround for now: Preferences > Add-ons > "Import Autodesk MAX" on.
   **Done 2026-10-31:** `addon_utils.DEFAULT_ON` enables it once for saved preferences that lack it (marker `moritz_default_addons.txt`); turned off later, it stays off. Test `test_default_addons.py`.
+- [x] **Still missing in installed 0.3.0** *(Seb, 2026-10-31 evening: "i don't see the max importer yet";
+  fix approved: "Yes, fix it")*.
+  Checked headless with his prefs: the extension is in the build (`5.3\extensions\system\io_scene_max`),
+  but not enabled. The marker `moritz_default_addons.txt` already lists it (written 11:29), while
+  `userpref.blend` (saved 22:45) lacks it, so `DEFAULT_ON` won't hand it out again. Likely (not
+  proven): a later session from a build without the system extension (dev build) dropped it and
+  saved the prefs. **Flaw:** the marker counts "given" even when the prefs no longer have it for a
+  reason other than the user. Fix idea: record a turn-off only when the user disables it (e.g. check
+  on disable, or per-build marker), or re-give when the extension was unavailable. Workaround:
+  Preferences > Add-ons > "Import Autodesk MAX" on. Side note: a stale Maximize copy (2026-10-29)
+  sits in `%APPDATA%\Moritz\5.3\scripts\addons\maximize`; the built-in one wins, but it causes a
+  duplicate warning at start.
+  **Done 2026-10-31:** cause confirmed in `addon_utils._enable_defaults` (a name in the marker was
+  skipped for good). Now only a turn-off in Preferences > Add-ons (`preferences.addon_disable`) is
+  remembered, in `moritz_addons_off.txt`; turning it on there clears it. Preferences that lack the
+  importer otherwise get it at every start. The old marker is ignored. Test `test_default_addons.py`
+  (6 checks). The stale Maximize copy in Seb's user add-ons is left for him to delete.
 
 ## Smart Extrude bugs (Seb, 2026-10-31, two screenshots)
 
@@ -1510,6 +1527,50 @@ changing code.**
     triangle) still look tidy.
   - *Add-on (`quad_caps.py`, `poly_tools.py` Cap). Files: one more Geometry Nodes input; Blender
     evaluates it.*
+
+## Similar project: neom315/blender-max (analyzed 2026-10-31, at Seb's request)
+
+[github.com/neom315/blender-max](https://github.com/neom315/blender-max), "Blender Max" 0.6.8:
+- **Status:** a Blender extension (add-on), GPL-3.0-or-later, made 2026-10-23/24, 14 stars.
+- **Code:** about 19,000 lines of Python in 25 modules. The repo is mainly the website and the
+  release zips; source exists only inside the zips.
+- **Compatibility:** the manifest says Blender 5.0 to <5.1, the README says 5.0–5.2.
+
+**Approach:** a pixel replica of the 3ds Max 2027 UI.
+- The toolbar, ribbon, Command Panel, Scene Explorer, track bar, time controls, ViewCube,
+  Slate / Compact Material Editor, Track View, Render Setup and Edit UVWs are drawn with the GPU
+  inside Image Editor areas. They are "measured against the installed 3ds Max 2027 UI"
+  (DefaultUI.cuix, dialog resources). The buttons call Blender operators.
+- A workspace switch (Blender Max ↔ Blender) swaps the theme and replaces the draw functions of
+  Blender's headers and menus at runtime (`runtime._patch_draw`).
+- Its own Max-style transform gizmo, with a fixed screen size, Max colors and a yellow active
+  axis.
+- Parametric primitives (10 standard ones): object properties whose update rebuilds the mesh.
+  No Geometry Nodes and no stack.
+- Modifiers mapped to Blender's (TurboSmooth → Subsurf). Edit Poly, Edit Mesh, Cap Holes and
+  Slice are unsupported (`None` in `commands.py`).
+
+**Against Moritz:**
+- It is stronger on the Max look and on the animation and material editors.
+- Moritz is stronger on modeling: Edit Poly in the stack, Smart Extrude, Freeform, 30+
+  parametric objects, splines, the modifier list, docking, keymaps and names, MCP and CLI, a
+  real program with installer and updater.
+- Its painted UI depends on Blender internals (patched draw functions, Image Editor
+  surfaces) and breaks easily across Blender versions.
+
+**Possibly worth borrowing (only where Max is better; for Seb to decide):**
+- The **track bar**: keys of the selected objects under the viewports, with a filter, time tags
+  and key sets.
+- The **ViewCube**.
+- Max's **transform gizmo** behavior: the last used axis stays the constraint when dragging the
+  object itself.
+- A **Compact Material Editor** with sample slots.
+- A **Render Setup** dialog.
+
+Its GPL-3 code can be reused with credit. Moritz is GPL, Blender is GPL-2-or-later.
+
+**Risk on their side, not ours:** the pixel-measured replica of Autodesk's UI and the earlier
+name "Blender Studio Max" invite trademark trouble. Moritz should keep its own look.
 
 ## Upstream maintenance (recurring)
 - [ ] Merge each Blender release branch into `moritz/main` (recurring; last: 1 fix from `blender-v5.3-release`, 2026-10-30, merge d1c576d7acf; before that 4 fixes, merge ca65c5eef82; before that 115 fixes, 2026-10-29, merge a188bb1acd8, no conflicts, Windows libraries updated for the KTX / OpenImageIO fix; merge with `GIT_LFS_SKIP_SMUDGE=1`, a plain merge dies on LFS test images)
