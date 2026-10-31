@@ -79,21 +79,9 @@ class CreateButtonsPanel:
     bl_context = "create"
 
 
-class PROPERTIES_PT_create_category(CreateButtonsPanel, Panel):
-    bl_label = "Category"
-    bl_options = {'HIDE_HEADER'}
-
-    def draw(self, context):
-        # Max's row of category icons above the object types.
-        row = self.layout.row(align=True)
-        row.scale_y = 1.4
-        row.prop(context.window_manager, "moritz_create_category", icon_only=True, expand=True)
-        self.layout.label(text=context.window_manager.bl_rna.properties["moritz_create_category"].enum_items[
-            context.window_manager.moritz_create_category].name)
-
-
 class PROPERTIES_PT_create(CreateButtonsPanel, Panel):
     bl_label = "Object Type"
+    bl_options = {'HIDE_HEADER'}
 
     # Moritz: `object_type_draw(layout, context, category) -> bool`, set by an add-on to draw its own
     # object types for a category (Maximize: parametric primitives and shapes); False falls back to
@@ -101,8 +89,17 @@ class PROPERTIES_PT_create(CreateButtonsPanel, Panel):
     object_type_draw = None
 
     def draw(self, context):
-        layout = self.layout
-        category = context.window_manager.moritz_create_category
+        wm = context.window_manager
+        category = wm.moritz_create_category
+        # The category icons in a column along the left edge (Seb: "a vertical row on the panel"),
+        # the object types beside them. Names are in the tooltips.
+        row = self.layout.row()
+        icons = row.column(align=True)
+        icons.ui_units_x = 1.6
+        icons.scale_y = 1.4
+        icons.prop(wm, "moritz_create_category", icon_only=True, expand=True)
+        layout = row.column()
+        layout.label(text=wm.bl_rna.properties["moritz_create_category"].enum_items[category].name)
         object_type_draw = PROPERTIES_PT_create.object_type_draw
         if object_type_draw is not None and object_type_draw(layout, context, category):
             return
@@ -143,7 +140,6 @@ def unregister():
 
 
 classes = (
-    PROPERTIES_PT_create_category,
     PROPERTIES_PT_create,
     PROPERTIES_PT_create_name,
 )
