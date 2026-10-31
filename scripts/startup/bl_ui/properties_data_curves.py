@@ -25,7 +25,6 @@ class DATA_PT_context_curves(DataButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -47,7 +46,6 @@ class DATA_PT_curves_surface(DataButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -156,7 +154,6 @@ class DATA_PT_CURVES_attributes(DataButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -190,7 +187,6 @@ class DATA_PT_curves_animation(DataButtonsPanel, PropertiesAnimationMixin, Prope
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
     _animated_id_context_property = "curves"
@@ -200,7 +196,6 @@ class DATA_PT_custom_props_curves(DataButtonsPanel, PropertyPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
     _context_path = "object.data"

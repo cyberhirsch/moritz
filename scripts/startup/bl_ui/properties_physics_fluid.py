@@ -102,7 +102,6 @@ class PHYSICS_PT_fluid(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -131,7 +130,6 @@ class PHYSICS_PT_settings(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -299,7 +297,6 @@ class PHYSICS_PT_borders(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -337,7 +334,6 @@ class PHYSICS_PT_smoke(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -376,7 +372,6 @@ class PHYSICS_PT_smoke_dissolve(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -425,7 +420,6 @@ class PHYSICS_PT_fire(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -469,7 +463,6 @@ class PHYSICS_PT_liquid(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -537,7 +530,6 @@ class PHYSICS_PT_flow_source(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -583,7 +575,6 @@ class PHYSICS_PT_flow_initial_velocity(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -630,7 +621,6 @@ class PHYSICS_PT_flow_texture(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -686,7 +676,6 @@ class PHYSICS_PT_adaptive_domain(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -743,7 +732,6 @@ class PHYSICS_PT_noise(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -828,7 +816,6 @@ class PHYSICS_PT_mesh(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -928,7 +915,6 @@ class PHYSICS_PT_particles(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -1065,7 +1051,6 @@ class PHYSICS_PT_diffusion(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -1117,7 +1102,6 @@ class PHYSICS_PT_viscosity(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -1162,7 +1146,6 @@ class PHYSICS_PT_guide(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -1233,7 +1216,6 @@ class PHYSICS_PT_collections(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -1265,7 +1247,6 @@ class PHYSICS_PT_cache(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -1343,7 +1324,6 @@ class PHYSICS_PT_export(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -1400,7 +1380,6 @@ class PHYSICS_PT_field_weights(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -1594,7 +1573,6 @@ class PHYSICS_PT_fluid_domain_render(PhysicButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 

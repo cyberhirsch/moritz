@@ -2574,7 +2574,7 @@ bool ED_view3d_has_depth_buffer_updated(const Depsgraph *depsgraph, const View3D
   bool is_viewport_preview_solid = v3d->shading.type == OB_SOLID;
   bool is_viewport_preview_material = v3d->shading.type == OB_MATERIAL;
   bool is_viewport_render_eevee = v3d->shading.type == OB_RENDER &&
-                                  BKE_engine_id_is_eevee(engine_name);
+                                  (STREQ(engine_name, RE_engine_id_BLENDER_EEVEE));
   bool is_viewport_render_workbench = v3d->shading.type == OB_RENDER &&
                                       STREQ(engine_name, RE_engine_id_BLENDER_WORKBENCH);
   bool is_viewport_render_external_with_overlay = v3d->shading.type == OB_RENDER &&

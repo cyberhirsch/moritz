@@ -18,7 +18,6 @@ set(INC
   # For `*_info.hh` includes.
   ../compositor/shaders/infos
   ../draw/engines/eevee
-  ../draw/engines/mnpr
   ../draw/engines/gpencil
   ../draw/engines/gpencil/shaders/infos
   ../draw/engines/image/shaders/infos

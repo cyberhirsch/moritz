@@ -52,8 +52,6 @@ struct bNodeTree;
 enum eGPUMaterialEngine {
   GPU_MAT_EEVEE,
   GPU_MAT_COMPOSITOR,
-  /* Moritz: mNPR compiles its own shaders from the same node trees as EEVEE. */
-  GPU_MAT_MNPR,
   GPU_MAT_ENGINE_MAX,
 };
 

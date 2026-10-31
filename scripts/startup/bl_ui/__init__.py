@@ -56,7 +56,6 @@ _modules = [
     "properties_physics_fluid",
     "properties_physics_softbody",
     "properties_render",
-    "properties_mnpr",
     "properties_output",
     "properties_view_layer",
     "properties_scene",
@@ -131,7 +130,6 @@ def register():
     properties_paint_common.register()
     properties_create.register()
     properties_data_modifier.register()
-    properties_mnpr.register()
 
     from bpy.props import (
         EnumProperty,
@@ -192,7 +190,6 @@ def unregister():
     properties_paint_common.unregister()
     properties_create.unregister()
     properties_data_modifier.unregister()
-    properties_mnpr.unregister()
 
     for mod in reversed(_modules_loaded):
         for cls in reversed(mod.classes):

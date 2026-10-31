@@ -12,9 +12,6 @@
 #include "BLI_set.hh"
 #include "BLI_string_ref.hh"
 
-#include <list>
-#include <string>
-
 #include "BKE_global.hh"
 
 #include "GPU_capabilities.hh"
@@ -735,60 +732,6 @@ static void init_eevee_infos()
   }
 }
 
-/* Moritz: mNPR, the copy of EEVEE. A few of its resource tables are declared outside the `mnpr`
- * namespace (`KernelGlobals`, `gbuffer::Reader`, ...), so their infos get the same names as
- * EEVEE's and would replace them. File those under an "mnpr_" key and point mNPR's own infos at
- * that key. The info keeps its name: the shaders test `CREATE_INFO_<name>`. */
-static const char *mnpr_info_name(const char *name)
-{
-  if (StringRef(name).startswith("mnpr_")) {
-    return name;
-  }
-  /* Kept for the whole session, like the infos. A list never moves its strings. */
-  static std::list<std::string> renamed_names;
-  return renamed_names.emplace_back(std::string("mnpr_") + name).c_str();
-}
-
-static void init_mnpr_infos()
-{
-  Vector<ShaderCreateInfo *> mnpr_infos;
-  Set<StringRef> renamed;
-
-#undef GPU_SHADER_CREATE_INFO
-#define GPU_SHADER_CREATE_INFO(_info) \
-  ShaderCreateInfo *ptr_##_info = new ShaderCreateInfo(#_info); \
-  ShaderCreateInfo &_info = *ptr_##_info; \
-  g_create_infos->add_new(mnpr_info_name(#_info), ptr_##_info); \
-  mnpr_infos.append(ptr_##_info); \
-  if (!StringRef(#_info).startswith("mnpr_")) { \
-    renamed.add(#_info); \
-  } \
-  _info
-
-/* Declare, register and construct the infos. */
-#include "glsl_mnpr_infos_list.hh"
-
-#undef GPU_SHADER_CREATE_INFO
-#define GPU_SHADER_CREATE_INFO(_info) \
-  ShaderCreateInfo *ptr_##_info = new ShaderCreateInfo(#_info); \
-  ShaderCreateInfo &_info = *ptr_##_info; \
-  g_create_infos->add_new(#_info, ptr_##_info); \
-  _info
-
-  for (ShaderCreateInfo *info : mnpr_infos) {
-    for (ShaderCreateInfo::AdditionalInfo &additional : info->additional_infos_) {
-      if (renamed.contains(additional.name)) {
-        additional.name = mnpr_info_name(additional.name.c_str());
-      }
-    }
-  }
-
-  if (GPU_stencil_classify_buffer_workaround()) {
-    mnpr_deferred_tile_classify.storage_buf(
-        12, Qualifier::read_write, "uint", "dummy_workaround_buf[]");
-  }
-}
-
 static void init_overlay_infos()
 {
 /* Declare, register and construct the infos. */
@@ -843,7 +786,6 @@ void gpu_shader_create_info_init()
   init_compositor_infos();
   init_draw_infos();
   init_eevee_infos();
-  init_mnpr_infos();
   init_overlay_infos();
   init_image_infos();
   init_gpencil_infos();

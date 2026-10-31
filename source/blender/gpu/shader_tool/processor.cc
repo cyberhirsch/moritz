@@ -392,8 +392,7 @@ SourceProcessor::Result SourceProcessor::convert(metadata::Source external_sourc
     case Language::CPP:
       /* Should become BSL, but until the new compiler is fully working, fallback
        * to the legacy path. */
-      return (filename.starts_with("eevee_") || filename.starts_with("mnpr_") ||
-              filename.starts_with("draw_")) ?
+      return (filename.starts_with("eevee_") || filename.starts_with("draw_")) ?
                  convert_bsl() :
                  convert_bsl_legacy(external_sources_symbols);
     case Language::BSL:
@@ -789,7 +788,6 @@ void SourceProcessor::parse_includes(Parser &parser)
          * Needs the file to be in the same folder. */
         (dependency_name.ends_with(".bsl.hh") && filename.ends_with(".bsl.hh") &&
          ((dependency_name.starts_with("eevee_") && filename.starts_with("eevee_")) ||
-          (dependency_name.starts_with("mnpr_") && filename.starts_with("mnpr_")) ||
           (dependency_name.starts_with("overlay_") && filename.starts_with("overlay_")))))
     {
       /* Dependencies between create infos are not needed for reflections.

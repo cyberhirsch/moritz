@@ -22,7 +22,7 @@ class CameraButtonsPanel:
 
 
 def camera_dof_panorama_unsupported(context, cam):
-    return context.engine in {'BLENDER_EEVEE', 'MORITZ_MNPR'} and cam.type == 'PANO'
+    return context.engine == 'BLENDER_EEVEE' and cam.type == 'PANO'
 
 
 class CAMERA_PT_presets(PresetPanel, Panel):
@@ -33,7 +33,6 @@ class CAMERA_PT_presets(PresetPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -46,7 +45,6 @@ class CAMERA_PT_safe_areas_presets(PresetPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -57,7 +55,6 @@ class DATA_PT_context_camera(CameraButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -80,7 +77,6 @@ class DATA_PT_lens(CameraButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -107,7 +103,7 @@ class DATA_PT_lens(CameraButtonsPanel, Panel):
 
         elif cam.type == 'PANO':
             engine = context.engine
-            if engine in {'CYCLES', 'BLENDER_EEVEE', 'MORITZ_MNPR'}:
+            if engine in {'CYCLES', 'BLENDER_EEVEE'}:
                 col.prop(cam, "panorama_type")
                 if cam.panorama_type == 'FISHEYE_EQUIDISTANT':
                     col.prop(cam, "fisheye_fov")
@@ -138,7 +134,7 @@ class DATA_PT_lens(CameraButtonsPanel, Panel):
                     sub = col.column(align=True)
                     sub.prop(cam, "central_cylindrical_radius", text="Cylinder Radius")
 
-            elif engine in {'BLENDER_RENDER', 'BLENDER_EEVEE', 'MORITZ_MNPR', 'BLENDER_WORKBENCH'}:
+            elif engine in {'BLENDER_RENDER', 'BLENDER_EEVEE', 'BLENDER_WORKBENCH'}:
                 if cam.lens_unit == 'MILLIMETERS':
                     col.prop(cam, "lens")
                 elif cam.lens_unit == 'FOV':
@@ -176,7 +172,6 @@ class DATA_PT_camera_stereoscopy(CameraButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -229,7 +224,6 @@ class DATA_PT_camera(CameraButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -263,7 +257,6 @@ class DATA_PT_camera_dof(CameraButtonsPanel, Panel):
     bl_options = {'DEFAULT_CLOSED'}
     COMPAT_ENGINES = {
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -308,7 +301,6 @@ class DATA_PT_camera_dof_aperture(CameraButtonsPanel, Panel):
     bl_parent_id = "DATA_PT_camera_dof"
     COMPAT_ENGINES = {
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -337,7 +329,6 @@ class DATA_PT_camera_background_image(CameraButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -451,7 +442,6 @@ class DATA_PT_camera_display(CameraButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -489,7 +479,6 @@ class DATA_PT_camera_display_composition_guides(CameraButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -525,7 +514,6 @@ class DATA_PT_camera_safe_areas(CameraButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -560,7 +548,6 @@ class DATA_PT_camera_safe_areas_center_cut(CameraButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -589,7 +576,6 @@ class DATA_PT_camera_animation(CameraButtonsPanel, PropertiesAnimationMixin, Pro
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
     _animated_id_context_property = "camera"
@@ -599,7 +585,6 @@ class DATA_PT_custom_props_camera(CameraButtonsPanel, PropertyPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
     _context_path = "object.data"

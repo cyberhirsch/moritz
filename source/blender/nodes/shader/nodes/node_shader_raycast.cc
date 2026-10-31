@@ -10,8 +10,6 @@
 
 #include "BLI_math_vector_c.hh"
 
-#include "BKE_scene.hh"
-
 #include "RNA_prototypes.hh"
 
 #include "NOD_node_extra_info.hh"
@@ -127,7 +125,7 @@ static void node_layout_ex(ui::Layout &layout, bContext *C, PointerRNA *ptr)
 static void node_extra_info(NodeExtraInfoParams &parameters)
 {
   const Scene *scene = CTX_data_scene(&parameters.C);
-  if (!BKE_engine_id_is_eevee(scene->r.engine)) {
+  if (StringRef(scene->r.engine) != RE_engine_id_BLENDER_EEVEE) {
     return;
   }
 

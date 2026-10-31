@@ -418,7 +418,6 @@ class OBJECT_PT_visibility(ObjectButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -442,7 +441,7 @@ class OBJECT_PT_visibility(ObjectButtonsPanel, Panel):
         col.prop(ob, "hide_viewport", text="Viewports", toggle=False, invert_checkbox=True)
         col.prop(ob, "hide_render", text="Renders", toggle=False, invert_checkbox=True)
 
-        if context.engine in {'BLENDER_EEVEE', 'MORITZ_MNPR'}:
+        if context.engine == 'BLENDER_EEVEE':
             if ob.type in {'MESH', 'CURVE', 'SURFACE', 'META', 'FONT', 'CURVES', 'POINTCLOUD', 'VOLUME'}:
                 layout.separator()
                 col = layout.column(heading="Ray Visibility")
@@ -499,7 +498,6 @@ class OBJECT_PT_shading(ObjectButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
     }
 
     @classmethod
@@ -610,7 +608,6 @@ class OBJECT_PT_shadow_terminator(ObjectButtonsPanel, Panel):
     bl_context = "object"
     COMPAT_ENGINES = {
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'CYCLES',
     }
 
@@ -625,12 +622,12 @@ class OBJECT_PT_shadow_terminator(ObjectButtonsPanel, Panel):
         flow = layout.grid_flow(row_major=False, columns=0, even_columns=True, even_rows=False, align=True)
 
         ob = context.object
-        if context.engine in {'BLENDER_EEVEE', 'MORITZ_MNPR'}:
+        if context.engine == 'BLENDER_EEVEE':
             flow.prop(ob, "shadow_terminator_normal_offset", text="Normal Offset")
 
         flow.prop(ob, "shadow_terminator_geometry_offset", text="Geometry Offset")
 
-        if context.engine not in {'BLENDER_EEVEE', 'MORITZ_MNPR'}:
+        if context.engine != 'BLENDER_EEVEE':
             flow.prop(ob, "shadow_terminator_shading_offset", text="Shading Offset")
 
 

@@ -126,37 +126,6 @@ set(SRC
   engines/eevee/eevee_view.cc
   engines/eevee/eevee_volume.cc
   engines/eevee/eevee_world.cc
-  engines/mnpr/mnpr_ambient_occlusion.cc
-  engines/mnpr/mnpr_camera.cc
-  engines/mnpr/mnpr_cryptomatte.cc
-  engines/mnpr/mnpr_depth_of_field.cc
-  engines/mnpr/mnpr_engine.cc
-  engines/mnpr/mnpr_film.cc
-  engines/mnpr/mnpr_hizbuffer.cc
-  engines/mnpr/mnpr_instance.cc
-  engines/mnpr/mnpr_light.cc
-  engines/mnpr/mnpr_lightcache.cc
-  engines/mnpr/mnpr_lightprobe.cc
-  engines/mnpr/mnpr_lightprobe_planar.cc
-  engines/mnpr/mnpr_lightprobe_sphere.cc
-  engines/mnpr/mnpr_lightprobe_volume.cc
-  engines/mnpr/mnpr_lookdev.cc
-  engines/mnpr/mnpr_lut.cc
-  engines/mnpr/mnpr_material.cc
-  engines/mnpr/mnpr_motion_blur.cc
-  engines/mnpr/mnpr_pipeline.cc
-  engines/mnpr/mnpr_precompute.cc
-  engines/mnpr/mnpr_raytrace.cc
-  engines/mnpr/mnpr_renderbuffers.cc
-  engines/mnpr/mnpr_sampling.cc
-  engines/mnpr/mnpr_shader.cc
-  engines/mnpr/mnpr_shadow.cc
-  engines/mnpr/mnpr_subsurface.cc
-  engines/mnpr/mnpr_sync.cc
-  engines/mnpr/mnpr_velocity.cc
-  engines/mnpr/mnpr_view.cc
-  engines/mnpr/mnpr_volume.cc
-  engines/mnpr/mnpr_world.cc
   engines/workbench/workbench_effect_antialiasing.cc
   engines/workbench/workbench_effect_cavity.cc
   engines/workbench/workbench_effect_dof.cc
@@ -257,39 +226,6 @@ set(SRC
   engines/eevee/eevee_view.hh
   engines/eevee/eevee_volume.hh
   engines/eevee/eevee_world.hh
-  engines/mnpr/mnpr_ambient_occlusion.hh
-  engines/mnpr/mnpr_camera.hh
-  engines/mnpr/mnpr_cryptomatte.hh
-  engines/mnpr/mnpr_depth_of_field.hh
-  engines/mnpr/mnpr_engine.h
-  engines/mnpr/mnpr_film.hh
-  engines/mnpr/mnpr_gbuffer.hh
-  engines/mnpr/mnpr_hizbuffer.hh
-  engines/mnpr/mnpr_instance.hh
-  engines/mnpr/mnpr_light.hh
-  engines/mnpr/mnpr_lightcache.hh
-  engines/mnpr/mnpr_lightprobe.hh
-  engines/mnpr/mnpr_lightprobe_planar.hh
-  engines/mnpr/mnpr_lightprobe_sphere.hh
-  engines/mnpr/mnpr_lightprobe_volume.hh
-  engines/mnpr/mnpr_lookdev.hh
-  engines/mnpr/mnpr_lut.hh
-  engines/mnpr/mnpr_material.hh
-  engines/mnpr/mnpr_material_shared.hh
-  engines/mnpr/mnpr_motion_blur.hh
-  engines/mnpr/mnpr_pipeline.hh
-  engines/mnpr/mnpr_precompute.hh
-  engines/mnpr/mnpr_raytrace.hh
-  engines/mnpr/mnpr_renderbuffers.hh
-  engines/mnpr/mnpr_sampling.hh
-  engines/mnpr/mnpr_shader.hh
-  engines/mnpr/mnpr_shadow.hh
-  engines/mnpr/mnpr_subsurface.hh
-  engines/mnpr/mnpr_sync.hh
-  engines/mnpr/mnpr_velocity.hh
-  engines/mnpr/mnpr_view.hh
-  engines/mnpr/mnpr_volume.hh
-  engines/mnpr/mnpr_world.hh
   engines/external/external_engine.h
   engines/gpencil/gpencil_engine.hh
   engines/gpencil/gpencil_engine_private.hh
@@ -598,163 +534,6 @@ set(SHADER_SRC_EEVEE
   engines/eevee/eevee_volume_shared.hh
 )
 
-# Moritz: mNPR, a copy of EEVEE (made by moritz/tools/make_mnpr_copy.py).
-set(SHADER_SRC_MNPR
-  engines/mnpr/shaders/mnpr_attributes_curves_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_attributes_mesh_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_attributes_pointcloud_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_attributes_volume_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_attributes_world_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_bxdf.bsl.hh
-  engines/mnpr/shaders/mnpr_bxdf_diffuse.bsl.hh
-  engines/mnpr/shaders/mnpr_bxdf_lut.bsl.hh
-  engines/mnpr/shaders/mnpr_bxdf_lut_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_bxdf_microfacet.bsl.hh
-  engines/mnpr/shaders/mnpr_bxdf_oren_nayar.bsl.hh
-  engines/mnpr/shaders/mnpr_bxdf_types.bsl.hh
-  engines/mnpr/shaders/mnpr_camera_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_closure.bsl.hh
-  engines/mnpr/shaders/mnpr_colorspace_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_cryptomatte.bsl.hh
-  engines/mnpr/shaders/mnpr_cryptomatte_sort.bsl.hh
-  engines/mnpr/shaders/mnpr_debug.bsl.hh
-  engines/mnpr/shaders/mnpr_deferred_combine.bsl.hh
-  engines/mnpr/shaders/mnpr_deferred_eval.bsl.hh
-  engines/mnpr/shaders/mnpr_deferred_stroke_normal.bsl.hh
-  engines/mnpr/shaders/mnpr_deferred_thickness_amend.bsl.hh
-  engines/mnpr/shaders/mnpr_deferred_tile_classify.bsl.hh
-  engines/mnpr/shaders/mnpr_depth_of_field_accumulator.bsl.hh
-  engines/mnpr/shaders/mnpr_depth_of_field_bokeh_lut.bsl.hh
-  engines/mnpr/shaders/mnpr_depth_of_field_filter.bsl.hh
-  engines/mnpr/shaders/mnpr_depth_of_field_gather.bsl.hh
-  engines/mnpr/shaders/mnpr_depth_of_field_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_depth_of_field_resolve.bsl.hh
-  engines/mnpr/shaders/mnpr_depth_of_field_scatter.bsl.hh
-  engines/mnpr/shaders/mnpr_depth_of_field_setup.bsl.hh
-  engines/mnpr/shaders/mnpr_depth_of_field_tiles.bsl.hh
-  engines/mnpr/shaders/mnpr_fast_gi.bsl.hh
-  engines/mnpr/shaders/mnpr_film.bsl.hh
-  engines/mnpr/shaders/mnpr_filter.bsl.hh
-  engines/mnpr/shaders/mnpr_forward_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_forward_resolve.bsl.hh
-  engines/mnpr/shaders/mnpr_gbuffer_read.bsl.hh
-  engines/mnpr/shaders/mnpr_gbuffer_types.bsl.hh
-  engines/mnpr/shaders/mnpr_gbuffer_write.bsl.hh
-  engines/mnpr/shaders/mnpr_geom_curves.bsl.hh
-  engines/mnpr/shaders/mnpr_geom_gsplat.bsl.hh
-  engines/mnpr/shaders/mnpr_geom_mesh.bsl.hh
-  engines/mnpr/shaders/mnpr_geom_pointcloud.bsl.hh
-  engines/mnpr/shaders/mnpr_geom_types_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_geom_volume.bsl.hh
-  engines/mnpr/shaders/mnpr_geom_world.bsl.hh
-  engines/mnpr/shaders/mnpr_hiz.bsl.hh
-  engines/mnpr/shaders/mnpr_hiz_update.bsl.hh
-  engines/mnpr/shaders/mnpr_light_culling.bsl.hh
-  engines/mnpr/shaders/mnpr_light_data.bsl.hh
-  engines/mnpr/shaders/mnpr_light_eval.bsl.hh
-  engines/mnpr/shaders/mnpr_light_iter.bsl.hh
-  engines/mnpr/shaders/mnpr_light_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_light_shadow_setup.bsl.hh
-  engines/mnpr/shaders/mnpr_light_shape_display.bsl.hh
-  engines/mnpr/shaders/mnpr_lightprobe.bsl.hh
-  engines/mnpr/shaders/mnpr_lightprobe_display.bsl.hh
-  engines/mnpr/shaders/mnpr_lightprobe_plane.bsl.hh
-  engines/mnpr/shaders/mnpr_lightprobe_sphere.bsl.hh
-  engines/mnpr/shaders/mnpr_lightprobe_sphere_bake.bsl.hh
-  engines/mnpr/shaders/mnpr_lightprobe_sphere_culling.bsl.hh
-  engines/mnpr/shaders/mnpr_lightprobe_volume.bsl.hh
-  engines/mnpr/shaders/mnpr_lightprobe_volume_bake.bsl.hh
-  engines/mnpr/shaders/mnpr_lightprobe_volume_load.bsl.hh
-  engines/mnpr/shaders/mnpr_lookdev_copy_world.bsl.hh
-  engines/mnpr/shaders/mnpr_lookdev_display.bsl.hh
-  engines/mnpr/shaders/mnpr_ltc_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_ltc_lut_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_material_variants.bsl.hh
-  engines/mnpr/shaders/mnpr_motion_blur.bsl.hh
-  engines/mnpr/shaders/mnpr_nodetree.bsl.hh
-  engines/mnpr/shaders/mnpr_nodetree_closures_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_nodetree_frag_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_nodetree_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_nodetree_type.bsl.hh
-  engines/mnpr/shaders/mnpr_nodetree_vert_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_occupancy_convert.bsl.hh
-  engines/mnpr/shaders/mnpr_occupancy_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_octahedron_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_pipeline.bsl.hh
-  engines/mnpr/shaders/mnpr_ray_denoise.bsl.hh
-  engines/mnpr/shaders/mnpr_ray_generate.bsl.hh
-  engines/mnpr/shaders/mnpr_ray_tile.bsl.hh
-  engines/mnpr/shaders/mnpr_ray_trace.bsl.hh
-  engines/mnpr/shaders/mnpr_ray_trace_screen_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_ray_types_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_renderpass.bsl.hh
-  engines/mnpr/shaders/mnpr_renderpass_clear.bsl.hh
-  engines/mnpr/shaders/mnpr_reverse_z_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_sampling_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_page_allocate.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_page_clear.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_page_defrag.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_page_free.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_page_mask.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_page_ops.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_tag_update.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_tag_usage.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_tag_usage_transparent.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_tilemap_amend.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_tilemap_bounds.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_tilemap_finalize.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_tilemap_init.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_tilemap_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_tracing.bsl.hh
-  engines/mnpr/shaders/mnpr_shadow_visibility.bsl.hh
-  engines/mnpr/shaders/mnpr_subsurface.bsl.hh
-  engines/mnpr/shaders/mnpr_subsurface_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_surf_capture.bsl.hh
-  engines/mnpr/shaders/mnpr_surf_common.bsl.hh
-  engines/mnpr/shaders/mnpr_surf_deferred.bsl.hh
-  engines/mnpr/shaders/mnpr_surf_depth.bsl.hh
-  engines/mnpr/shaders/mnpr_surf_forward.bsl.hh
-  engines/mnpr/shaders/mnpr_surf_hybrid.bsl.hh
-  engines/mnpr/shaders/mnpr_surf_occupancy.bsl.hh
-  engines/mnpr/shaders/mnpr_surf_shadow.bsl.hh
-  engines/mnpr/shaders/mnpr_surf_volume.bsl.hh
-  engines/mnpr/shaders/mnpr_surf_world.bsl.hh
-  engines/mnpr/shaders/mnpr_surfel.bsl.hh
-  engines/mnpr/shaders/mnpr_surfel_cluster.bsl.hh
-  engines/mnpr/shaders/mnpr_surfel_light.bsl.hh
-  engines/mnpr/shaders/mnpr_surfel_list.bsl.hh
-  engines/mnpr/shaders/mnpr_surfel_ray.bsl.hh
-  engines/mnpr/shaders/mnpr_thickness_lib.bsl.hh
-  engines/mnpr/shaders/mnpr_transparency.bsl.hh
-  engines/mnpr/shaders/mnpr_uniform.bsl.hh
-  engines/mnpr/shaders/mnpr_utility_tx.bsl.hh
-  engines/mnpr/shaders/mnpr_velocity.bsl.hh
-  engines/mnpr/shaders/mnpr_volume.bsl.hh
-  engines/mnpr/shaders/mnpr_volume_lib.bsl.hh
-
-  engines/mnpr/mnpr_camera_shared.hh
-  engines/mnpr/mnpr_debug_shared.hh
-  engines/mnpr/mnpr_defines.hh
-  engines/mnpr/mnpr_depth_of_field_shared.hh
-  engines/mnpr/mnpr_film_shared.hh
-  engines/mnpr/mnpr_hizbuffer_shared.hh
-  engines/mnpr/mnpr_light_shared.hh
-  engines/mnpr/mnpr_lightprobe_shared.hh
-  # engines/mnpr/mnpr_material_shared.hh  # Excluded (shared).
-  engines/mnpr/mnpr_motion_blur_shared.hh
-  engines/mnpr/mnpr_precompute_shared.hh
-  engines/mnpr/mnpr_raytrace_shared.hh
-  engines/mnpr/mnpr_renderbuffers_shared.hh
-  engines/mnpr/mnpr_sampling_shared.hh
-  engines/mnpr/mnpr_shadow_shared.hh
-  engines/mnpr/mnpr_subsurface_shared.hh
-  engines/mnpr/mnpr_transform.hh
-  engines/mnpr/mnpr_uniform_shared.hh
-  engines/mnpr/mnpr_velocity_shared.hh
-  engines/mnpr/mnpr_volume_shared.hh
-)
-
 set(SHADER_SRC_OVERLAY
   engines/overlay/shaders/infos/overlay_armature_infos.hh
   engines/overlay/shaders/infos/overlay_background_infos.hh
@@ -991,8 +770,6 @@ set(GLSL_INC
   engines/workbench/shaders/infos
   engines/eevee
   engines/eevee/shaders
-  engines/mnpr
-  engines/mnpr/shaders
   engines/overlay
   engines/overlay/shaders
   engines/overlay/shaders/infos
@@ -1012,9 +789,6 @@ foreach(GLSL_FILE ${SHADER_SRC_DRAW})
   glsl_to_c(${GLSL_FILE} GLSL_C GLSL_INC)
 endforeach()
 foreach(GLSL_FILE ${SHADER_SRC_EEVEE})
-  glsl_to_c(${GLSL_FILE} GLSL_C GLSL_INC)
-endforeach()
-foreach(GLSL_FILE ${SHADER_SRC_MNPR})
   glsl_to_c(${GLSL_FILE} GLSL_C GLSL_INC)
 endforeach()
 foreach(GLSL_FILE ${SHADER_SRC_OVERLAY})
@@ -1070,7 +844,6 @@ endmacro()
 
 generate_glsl_headers("${SHADER_SRC_DRAW}" "draw")
 generate_glsl_headers("${SHADER_SRC_EEVEE}" "eevee")
-generate_glsl_headers("${SHADER_SRC_MNPR}" "mnpr")
 generate_glsl_headers("${SHADER_SRC_OVERLAY}" "overlay")
 generate_glsl_headers("${SHADER_SRC_IMAGE}" "image")
 generate_glsl_headers("${SHADER_SRC_GPENCIL}" "gpencil")

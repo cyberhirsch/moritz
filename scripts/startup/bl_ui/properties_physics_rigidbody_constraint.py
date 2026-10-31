@@ -18,7 +18,6 @@ class PHYSICS_PT_rigid_body_constraint(PHYSICS_PT_rigidbody_constraint_panel, Pa
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -43,7 +42,6 @@ class PHYSICS_PT_rigid_body_constraint_settings(PHYSICS_PT_rigidbody_constraint_
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -79,7 +77,6 @@ class PHYSICS_PT_rigid_body_constraint_objects(PHYSICS_PT_rigidbody_constraint_p
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -105,7 +102,6 @@ class PHYSICS_PT_rigid_body_constraint_override_iterations(PHYSICS_PT_rigidbody_
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -136,7 +132,6 @@ class PHYSICS_PT_rigid_body_constraint_limits(PHYSICS_PT_rigidbody_constraint_pa
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -160,7 +155,6 @@ class PHYSICS_PT_rigid_body_constraint_limits_linear(PHYSICS_PT_rigidbody_constr
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -224,7 +218,6 @@ class PHYSICS_PT_rigid_body_constraint_limits_angular(PHYSICS_PT_rigidbody_const
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -297,7 +290,6 @@ class PHYSICS_PT_rigid_body_constraint_motor(PHYSICS_PT_rigidbody_constraint_pan
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -321,7 +313,6 @@ class PHYSICS_PT_rigid_body_constraint_motor_angular(PHYSICS_PT_rigidbody_constr
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -366,7 +357,6 @@ class PHYSICS_PT_rigid_body_constraint_motor_linear(PHYSICS_PT_rigidbody_constra
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -409,7 +399,6 @@ class PHYSICS_PT_rigid_body_constraint_springs(PHYSICS_PT_rigidbody_constraint_p
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -440,7 +429,6 @@ class PHYSICS_PT_rigid_body_constraint_springs_angular(PHYSICS_PT_rigidbody_cons
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -495,7 +483,6 @@ class PHYSICS_PT_rigid_body_constraint_springs_linear(PHYSICS_PT_rigidbody_const
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 

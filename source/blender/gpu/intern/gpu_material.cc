@@ -168,8 +168,7 @@ GPUMaterialFromNodeTreeResult GPU_material_from_nodetree(
   localtree->flag |= NTREE_IS_GPU_SHADER_INTERNAL;
   nodes::InlineShaderNodeTreeParams inline_params;
   inline_params.allow_preserving_repeat_zones = true;
-  inline_params.target_engine_ = ELEM(engine, GPU_MAT_EEVEE, GPU_MAT_MNPR) ? SHD_OUTPUT_EEVEE :
-                                                                             SHD_OUTPUT_ALL;
+  inline_params.target_engine_ = engine == GPU_MAT_EEVEE ? SHD_OUTPUT_EEVEE : SHD_OUTPUT_ALL;
   nodes::inline_shader_node_tree(*ntree, *localtree, inline_params);
 
   for (nodes::InlineShaderNodeTreeParams::ErrorMessage &error : inline_params.r_error_messages) {

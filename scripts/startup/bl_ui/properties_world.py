@@ -27,7 +27,6 @@ class WORLD_PT_context_world(WorldButtonsPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -51,7 +50,7 @@ class WORLD_PT_context_world(WorldButtonsPanel, Panel):
 class EEVEE_WORLD_PT_mist(WorldButtonsPanel, Panel):
     bl_label = "Mist Pass"
     bl_options = {'DEFAULT_CLOSED'}
-    COMPAT_ENGINES = {'BLENDER_EEVEE', 'MORITZ_MNPR'}
+    COMPAT_ENGINES = {'BLENDER_EEVEE'}
 
     @classmethod
     def poll(cls, context):
@@ -76,7 +75,6 @@ class WORLD_PT_animation(WorldButtonsPanel, PropertiesAnimationMixin, PropertyPa
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
 
@@ -102,7 +100,6 @@ class WORLD_PT_custom_props(WorldButtonsPanel, PropertyPanel, Panel):
     COMPAT_ENGINES = {
         'BLENDER_RENDER',
         'BLENDER_EEVEE',
-        'MORITZ_MNPR',
         'BLENDER_WORKBENCH',
     }
     _context_path = "world"
@@ -111,7 +108,7 @@ class WORLD_PT_custom_props(WorldButtonsPanel, PropertyPanel, Panel):
 
 class EEVEE_WORLD_PT_surface(WorldButtonsPanel, Panel):
     bl_label = "Surface"
-    COMPAT_ENGINES = {'BLENDER_EEVEE', 'MORITZ_MNPR'}
+    COMPAT_ENGINES = {'BLENDER_EEVEE'}
 
     @classmethod
     def poll(cls, context):
@@ -144,7 +141,7 @@ class EEVEE_WORLD_PT_volume(WorldButtonsPanel, Panel):
     bl_label = "Volume"
     bl_translation_context = i18n_contexts.id_id
     bl_options = {'DEFAULT_CLOSED'}
-    COMPAT_ENGINES = {'BLENDER_EEVEE', 'MORITZ_MNPR'}
+    COMPAT_ENGINES = {'BLENDER_EEVEE'}
 
     @classmethod
     def poll(cls, context):
@@ -177,7 +174,7 @@ class EEVEE_WORLD_PT_volume(WorldButtonsPanel, Panel):
 class EEVEE_WORLD_PT_settings(WorldButtonsPanel, Panel):
     bl_label = "Settings"
     bl_options = {'DEFAULT_CLOSED'}
-    COMPAT_ENGINES = {'BLENDER_EEVEE', 'MORITZ_MNPR'}
+    COMPAT_ENGINES = {'BLENDER_EEVEE'}
 
     @classmethod
     def poll(cls, context):
@@ -192,7 +189,7 @@ class EEVEE_WORLD_PT_settings(WorldButtonsPanel, Panel):
 class EEVEE_WORLD_PT_lightprobe(WorldButtonsPanel, Panel):
     bl_label = "Light Probe"
     bl_parent_id = "EEVEE_WORLD_PT_settings"
-    COMPAT_ENGINES = {'BLENDER_EEVEE', 'MORITZ_MNPR'}
+    COMPAT_ENGINES = {'BLENDER_EEVEE'}
 
     def draw(self, context):
         layout = self.layout
@@ -206,7 +203,7 @@ class EEVEE_WORLD_PT_lightprobe(WorldButtonsPanel, Panel):
 class EEVEE_WORLD_PT_sun(WorldButtonsPanel, Panel):
     bl_label = "Sun"
     bl_parent_id = "EEVEE_WORLD_PT_settings"
-    COMPAT_ENGINES = {'BLENDER_EEVEE', 'MORITZ_MNPR'}
+    COMPAT_ENGINES = {'BLENDER_EEVEE'}
 
     def draw(self, context):
         layout = self.layout
@@ -222,7 +219,7 @@ class EEVEE_WORLD_PT_sun_shadow(WorldButtonsPanel, Panel):
     bl_label = "Shadow"
     bl_parent_id = "EEVEE_WORLD_PT_sun"
     bl_options = {'DEFAULT_CLOSED'}
-    COMPAT_ENGINES = {'BLENDER_EEVEE', 'MORITZ_MNPR'}
+    COMPAT_ENGINES = {'BLENDER_EEVEE'}
 
     def draw_header(self, context):
         world = context.world

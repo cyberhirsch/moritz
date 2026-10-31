@@ -52,7 +52,7 @@ def __gather_color(blender_lamp, export_settings) -> Optional[List[float]]:
 
     emission_node = __get_cycles_emission_node(blender_lamp, export_settings)
 
-    if bpy.context.scene.render.engine in {'BLENDER_EEVEE', 'MORITZ_MNPR'}:
+    if bpy.context.scene.render.engine == 'BLENDER_EEVEE':
         emission_node = None  # EEVEE nodes are not taken into account (yet)
 
     if emission_node is not None:
@@ -96,7 +96,7 @@ def __gather_color(blender_lamp, export_settings) -> Optional[List[float]]:
 def __gather_intensity(blender_lamp, blender_lamp_world_matrix, export_settings) -> Optional[float]:
     emission_node = __get_cycles_emission_node(blender_lamp, export_settings)
 
-    if bpy.context.scene.render.engine in {'BLENDER_EEVEE', 'MORITZ_MNPR'}:
+    if bpy.context.scene.render.engine == 'BLENDER_EEVEE':
         emission_node = None  # EEVEE nodes are not taken into account (yet)
 
     if emission_node is not None:
