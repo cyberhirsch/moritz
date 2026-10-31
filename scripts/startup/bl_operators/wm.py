@@ -1130,9 +1130,9 @@ class WM_OT_url_open_preset(Operator):
 
     @staticmethod
     def _url_from_manual():
-        return "https://docs.blender.org/manual/{:s}/{:d}.{:d}/".format(
-            bpy.utils.manual_language_code(), *bpy.app.version[:2],
-        )
+        # Moritz: its own manual on GitHub Pages, by Moritz's version (it links on to Blender's).
+        major, minor = getattr(bpy.app, "moritz_version_string", "0.3.0").split(".")[:2]
+        return "https://cyberhirsch.github.io/moritz/manual/{:s}.{:s}/".format(major, minor)
 
     @staticmethod
     def _url_from_api():

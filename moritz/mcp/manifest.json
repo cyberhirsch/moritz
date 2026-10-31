@@ -2,7 +2,7 @@
   "manifest_version": "0.4",
   "name": "moritz",
   "display_name": "Moritz",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Drive Moritz, the 3D app for 3ds Max users: Create, Modify, Edit Poly, Utilities and Python",
   "long_description": "Moritz MCP lets an assistant work in the running Moritz the way a Max user does: create objects with their Max parameters, build the modifier stack by Max or Blender names, work in Edit Poly, use Align, Array and the Spacing Tool, manage layers and selection sets, render and export. Every change is one undo step. Python and the Blender documentation are there for the rest.\n\nIn Moritz, turn on Preferences > System > Moritz MCP > Allow AI Assistants and moritz-cli. Moritz only listens on this computer.",
   "author": {

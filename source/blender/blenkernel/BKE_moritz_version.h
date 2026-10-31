@@ -11,4 +11,4 @@
  * (#BLENDER_VERSION) stays as it is: file compatibility, add-ons and the config folder use it.
  */
 
-#define MORITZ_VERSION_STRING "0.2.0"
+#define MORITZ_VERSION_STRING "0.3.0"
