@@ -16,7 +16,7 @@ import os
 import sys
 import zipfile
 
-from make_portable_zip import moritz_version
+from make_portable_zip import moritz_version, record_checksum
 
 SOURCE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SERVER = os.path.join(SOURCE, "moritz", "mcp")
@@ -42,6 +42,7 @@ def main():
                 zf.write(path, os.path.relpath(path, SERVER).replace(os.sep, "/"))
         zf.write(COMMANDS, "mzmcp/moritz_commands.py")
         zf.writestr("manifest.json", json.dumps(manifest, indent=2) + "\n")
+    record_checksum(out)
     print(out, round(os.path.getsize(out) / 1e6, 1), "MB")
 
 

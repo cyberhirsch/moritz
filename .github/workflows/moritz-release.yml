@@ -195,6 +195,11 @@ jobs:
         env: { GH_TOKEN: "${{ github.token }}" }
         run: |
           ver=$(sed -n 's/.*MORITZ_VERSION_STRING "\(.*\)".*/\1/p' source/blender/blenkernel/BKE_moritz_version.h)
+          # Each platform wrote its own SHA256SUMS.txt; one list for all (Moritz's updater installs
+          # only files listed there).
+          rm -f dist/SHA256SUMS.txt
+          (cd dist && sha256sum -- * > SHA256SUMS.txt)
           ls -la dist
+          cat dist/SHA256SUMS.txt
           gh release create "v$ver" dist/* --draft --prerelease --title "Moritz $ver" \
             --notes "Draft: notes to be written. macOS: the app is not notarized; on first start right-click > Open, or run xattr -cr /Applications/Moritz.app."

@@ -23,7 +23,7 @@ import subprocess
 import sys
 import tempfile
 
-from make_portable_zip import SKIP_NAMES, SKIP_SUFFIXES, _is_junction, moritz_version, version
+from make_portable_zip import SKIP_NAMES, SKIP_SUFFIXES, _is_junction, moritz_version, version, record_checksum
 
 # Fixed forever: Windows matches installed and new versions of Moritz by it.
 UPGRADE_CODE = "6F1E2C7A-3D5B-4E8F-9A21-4D0C7B5E9A13"
@@ -134,6 +134,7 @@ def main():
                         "-bindpath", "stage=" + stage, "-o", out, wxs], check=True)
     finally:
         shutil.rmtree(work, ignore_errors=True)
+    record_checksum(out)
     print(out, round(os.path.getsize(out) / 1e6), "MB")
 
 

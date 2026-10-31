@@ -29,6 +29,7 @@ _modules = [
     "moritz_modifier_list",
     "moritz_modifier_stack",
     "moritz_subobject",
+    "moritz_update",
     "node",
     "object",
     "object_align",
@@ -66,6 +67,7 @@ def register():
     from . import (
         bone_selection_sets,
         copy_global_transform,
+        moritz_update,
     )
 
     for mod in _modules_loaded:
@@ -74,6 +76,7 @@ def register():
 
     bone_selection_sets.register()
     copy_global_transform.register()
+    moritz_update.register()
 
 
 def unregister():
@@ -81,8 +84,10 @@ def unregister():
     from . import (
         bone_selection_sets,
         copy_global_transform,
+        moritz_update,
     )
 
+    moritz_update.unregister()
     bone_selection_sets.unregister()
     copy_global_transform.unregister()
 

@@ -40,6 +40,25 @@ def moritz_version():
     return match.group(1).replace(" ", "-").lower()
 
 
+def record_checksum(path):
+    """Add (or replace) the package's line in SHA256SUMS.txt next to it; Moritz's updater installs
+    only files listed there."""
+    import hashlib
+    digest = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            digest.update(chunk)
+    name = os.path.basename(path)
+    sums = os.path.join(os.path.dirname(path), "SHA256SUMS.txt")
+    lines = []
+    if os.path.isfile(sums):
+        with open(sums, encoding="utf-8") as f:
+            lines = [line for line in f.read().splitlines() if line.split()[-1:] != [name]]
+    lines.append("{}  {}".format(digest.hexdigest(), name))
+    with open(sums, "w", encoding="utf-8", newline="\n") as f:
+        f.write("\n".join(sorted(lines, key=lambda line: line.split()[-1])) + "\n")
+
+
 def add_tree(zf, root, arc_root, skip_dirs=()):
     for dirpath, dirnames, filenames in os.walk(root):
         # Junctions and links are not followed; the add-on is added from its repository.
@@ -71,6 +90,7 @@ def main():
         if maximize:
             add_tree(zf, os.path.join(maximize, "maximize"),
                      os.path.join(top, ver, "scripts", "addons_core", "maximize"))
+    record_checksum(out)
     print(out, round(os.path.getsize(out) / 1e6), "MB")
 
 

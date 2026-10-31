@@ -717,6 +717,7 @@ class TOPBAR_MT_help(Menu):
         layout.operator("wm.url_open_preset", text="Manual", icon='URL').type = 'MANUAL'
         layout.operator("wm.url_open_preset", text="Release Notes").type = 'RELEASE_NOTES'
         layout.operator("wm.url_open", text="Moritz on GitHub").url = "https://github.com/cyberhirsch/moritz"
+        layout.operator("wm.moritz_update_check", text="Check for Updates...", icon='FILE_REFRESH')
 
         layout.separator()
 

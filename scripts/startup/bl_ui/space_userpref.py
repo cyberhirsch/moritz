@@ -858,6 +858,15 @@ class USERPREF_PT_system_network(SystemPanel, CenterAlignMixIn, Panel):
         layout.row().prop(system, "network_connection_limit", text="Connection Limit")
 
 
+class USERPREF_PT_system_updates(SystemPanel, CenterAlignMixIn, Panel):
+    """Moritz: its updater (bl_operators/moritz_update.py)."""
+    bl_label = "Updates"
+
+    def draw_centered(self, context, layout):
+        from bl_operators import moritz_update
+        moritz_update.draw_preferences(layout, context)
+
+
 class USERPREF_PT_system_memory(SystemPanel, CenterAlignMixIn, Panel):
     bl_label = "Memory & Limits"
 
@@ -3179,6 +3188,7 @@ classes = (
     USERPREF_PT_system_display_graphics,
     USERPREF_PT_system_os_settings,
     USERPREF_PT_system_network,
+    USERPREF_PT_system_updates,
     USERPREF_PT_system_memory,
     USERPREF_PT_system_video_sequencer,
     USERPREF_PT_system_sound,

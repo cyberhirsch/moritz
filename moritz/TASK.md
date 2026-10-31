@@ -786,6 +786,10 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 
 - *(Seb, 2026-10-31: no 0.2.1; the MCP server, CLI, per-user installer and the rest ship with
   0.3.0.)*
+- *(Seb, 2026-10-31: "when everything is done release 0.3". This is the go for the release
+  workflow runs, the CI dispatch included, once the open items are done: the updater, quad cap
+  relax, and anything else open and requested. Release as a pre-release like 0.2.0, macOS
+  unsigned with the note. Re-run a failed job as needed. Report the release URL.)*
 - [ ] **0.3.0 on Windows, Linux and macOS** (Seb, 2026-10-31: "0.3.0 should be linux, windows
   and mac"). The repos are public, so GitHub's hosted runners are free.
   - **Workflow:** one `workflow_dispatch` workflow with a matrix:
@@ -1434,6 +1438,73 @@ changing code.**
     `_url_from_manual` in `wm.py` points there. Screenshots are made with the Moritz CLI/MCP, so
     they can be redone for each release.
   - Ship the first version with 0.3.0.
+
+## Updater (Seb, 2026-10-31: "build an update (with optional auto) into moritz")
+
+- [x] **Moritz checks GitHub Releases for a newer version and installs it; auto is optional.**
+  - **Source:** `https://api.github.com/repos/cyberhirsch/moritz/releases`. Compare with
+    `bpy.app.moritz_version_string`. Pick the asset for the platform:
+    - Windows: `.msi`
+    - Linux: `.tar.xz`
+    - macOS: `.dmg`
+  - **Preferences > System > Updates:**
+    - **Check for Updates on Startup** (on, at most once a day).
+    - **Install Updates Automatically** (off by default).
+    - **Include Pre-releases** (off).
+    - **Check Now** button.
+    - The last check time.
+  - **Online access:** only when Blender's **Allow Online Access** is on (`bpy.app.online_access`).
+    Off means no network at all, and Check Now explains why.
+  - **Notice:** a quiet line in the status bar ("Moritz 0.3.1 is available") and an entry in
+    Help > **Check for Updates…**. They open a dialog with the version, the release notes
+    (`body` of the release) and **Install**, **Skip This Version** and **Later**.
+  - **Install:**
+    - Download in the background (progress in the status bar, never blocks the UI).
+    - Check the file's **SHA-256** against `SHA256SUMS.txt`, which every release then also
+      publishes (add it to `make_msi.py` / `make_unix_package.py` and the release workflow).
+    - Hand over at quit:
+      - Windows: `msiexec /i … /passive` for the per-user MSI, then Moritz restarts.
+      - Linux: unpack next to the current folder and swap it in.
+      - macOS: mount the dmg and copy `Moritz.app` over.
+    - Ask to save unsaved work first. Auto mode installs at the next quit, never mid-session.
+  - **Safety:**
+    - Only HTTPS from github.com / objects.githubusercontent.com.
+    - Only this repo, only signed-off checksums.
+    - The portable zip is updated by telling the user, not by overwriting a folder it may not own.
+  - **Where:** Python in Moritz's startup scripts (`bl_operators/moritz_update.py` plus the
+    Preferences panel), so no new C code. It ships in the packages, with the next rebuild and
+    0.3.0. Files are unaffected.
+  - **Test:** a fake releases JSON and a local file server, covering:
+    - a newer, older and same version
+    - the pre-release filter
+    - online access off
+    - a bad checksum
+
+  **Done 2026-10-31:** `scripts/startup/bl_operators/moritz_update.py` (Help > Check for Updates..., Preferences > System > Updates, status-bar line, dialog with the notes and Install / Skip This Version / Later; settings in `<config>/moritz_update.json`). Background check and download, SHA-256 against `SHA256SUMS.txt` (written by every packager via `record_checksum`, regenerated for all packages in the release job), hand-over through `atexit` (checked: it runs at quit) to a PowerShell / sh helper that waits for Moritz to exit. Test `moritz/tests/test_moritz_update.py` (25 checks, local server). **Not tested end to end:** a real MSI / tar.xz / dmg install (needs a published release with SHA256SUMS.txt; the first is 0.3.0, so the first real update is 0.3.0 → 0.3.x). Copies that aren't the per-user MSI (portable zip, dev builds) get the download page.
+## Relax the quad caps (Seb, 2026-10-31: "can we relax the quad cap a little?")
+
+- [ ] **Quad caps get a relax.**
+  - **Where:**
+    - the primitives' Quad Cap (Cylinder, Cone, ChamferCyl, Spindle, Gengon, Prism; the quad
+      poles of Sphere, Capsule and OilTank too)
+    - Edit Poly's Cap, quad and inset variants
+  - **Today:** the inner grid is a square, so the cells near its corners squeeze and the rings
+    toward the circle kink. **Seb's screenshot** (a Cylinder cap from the top): the inner grid is
+    pushed out almost to the rim, leaving one thin ring of long, narrow quads around it, and the
+    grid cells bulge toward the edge. The relax should even this out: the grid pulls in so the
+    outer ring's quads are about as deep as the grid cells, and the cells near the rim get about
+    the same size as those in the middle.
+  - **The change:**
+    - Smooth the cap's inner vertices a few iterations: in Geometry Nodes `Blur Attribute` on
+      position, or a Laplacian relax.
+    - Keep the outer border and the cap's plane fixed, so the cap stays flat and meets the side
+      walls.
+  - **Control:** a **Cap Relax** parameter, 0–1, default about 0.5, in the primitive's Parameters
+    and Cap's redo panel / caddy. 0 gives today's grid.
+  - **Check:** UVs stay clean, the cap stays planar, Sides that aren't a multiple of 4 (the one
+    triangle) still look tidy.
+  - *Add-on (`quad_caps.py`, `poly_tools.py` Cap). Files: one more Geometry Nodes input; Blender
+    evaluates it.*
 
 ## Upstream maintenance (recurring)
 - [ ] Merge each Blender release branch into `moritz/main` (recurring; last: 1 fix from `blender-v5.3-release`, 2026-10-30, merge d1c576d7acf; before that 4 fixes, merge ca65c5eef82; before that 115 fixes, 2026-10-29, merge a188bb1acd8, no conflicts, Windows libraries updated for the KTX / OpenImageIO fix; merge with `GIT_LFS_SKIP_SMUDGE=1`, a plain merge dies on LFS test images)

@@ -24,7 +24,7 @@ import sys
 import tarfile
 import tempfile
 
-from make_portable_zip import moritz_version, version
+from make_portable_zip import moritz_version, version, record_checksum
 
 ARCH = {"x86_64": "x64", "amd64": "x64", "arm64": "arm64", "aarch64": "arm64"}
 
@@ -82,6 +82,7 @@ def main():
     maximize = os.path.abspath(sys.argv[2]) if len(sys.argv) > 2 else None
     out_dir = os.path.abspath(sys.argv[3]) if len(sys.argv) > 3 else os.getcwd()
     out = macos(install, maximize, out_dir) if sys.platform == "darwin" else linux(install, maximize, out_dir)
+    record_checksum(out)
     print(out, round(os.path.getsize(out) / 1e6), "MB")
 
 
