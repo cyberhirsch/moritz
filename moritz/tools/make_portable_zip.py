@@ -86,7 +86,10 @@ def main():
     top = "moritz-{}-windows-x64".format(moritz_version())
     out = os.path.join(out_dir, top + ".zip")
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
-        add_tree(zf, release, top, skip_dirs=(os.path.join(release, "portable"),))
+        # The add-on comes from its repository; a copy already in the build folder is left out.
+        skip = (os.path.join(release, "portable"),
+                os.path.join(release, ver, "scripts", "addons_core", "maximize"))
+        add_tree(zf, release, top, skip_dirs=skip if maximize else skip[:1])
         if maximize:
             add_tree(zf, os.path.join(maximize, "maximize"),
                      os.path.join(top, ver, "scripts", "addons_core", "maximize"))

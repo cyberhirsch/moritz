@@ -75,12 +75,17 @@ jobs:
       - name: Packages
         shell: powershell
         run: |
-          dotnet tool install --global wix
-          wix extension add --global WixToolset.UI.wixext
+          # Pinned: the latest WiX does not load the UI extension (WIX0144); 5.0.2 is what 0.2.0 used.
+          dotnet tool install --global wix --version 5.0.2
+          wix extension add --global WixToolset.UI.wixext/5.0.2
+          if ($LASTEXITCODE -ne 0) { exit 1 }
           mkdir dist
           python blender/moritz/tools/make_portable_zip.py build/bin/Release Maximize dist
+          if ($LASTEXITCODE -ne 0) { exit 1 }
           python blender/moritz/tools/make_msi.py build/bin/Release Maximize dist
+          if ($LASTEXITCODE -ne 0) { exit 1 }
           python blender/moritz/tools/make_mcpb.py dist
+          if ($LASTEXITCODE -ne 0) { exit 1 }
           Remove-Item dist/*.wixpdb -ErrorAction SilentlyContinue
       - uses: actions/upload-artifact@v4
         with: { name: moritz-windows, path: dist/*, retention-days: 14 }
