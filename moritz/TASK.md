@@ -1483,7 +1483,12 @@ changing code.**
   **Done 2026-10-31:** `scripts/startup/bl_operators/moritz_update.py` (Help > Check for Updates..., Preferences > System > Updates, status-bar line, dialog with the notes and Install / Skip This Version / Later; settings in `<config>/moritz_update.json`). Background check and download, SHA-256 against `SHA256SUMS.txt` (written by every packager via `record_checksum`, regenerated for all packages in the release job), hand-over through `atexit` (checked: it runs at quit) to a PowerShell / sh helper that waits for Moritz to exit. Test `moritz/tests/test_moritz_update.py` (25 checks, local server). **Not tested end to end:** a real MSI / tar.xz / dmg install (needs a published release with SHA256SUMS.txt; the first is 0.3.0, so the first real update is 0.3.0 → 0.3.x). Copies that aren't the per-user MSI (portable zip, dev builds) get the download page.
 ## Relax the quad caps (Seb, 2026-10-31: "can we relax the quad cap a little?")
 
-- [ ] **Quad caps get a relax.**
+- [x] **Quad caps get a relax.** Done 2026-10-31: Cap Relax (0-1, default 0.5) on Cylinder, Cone,
+  ChamferCyl, Spindle, Gengon, Prism and the quad poles of Sphere, Capsule, OilTank (a repeat zone of
+  one-step Blur Attribute on position, rim held, blended by Cap Relax; groups now version 6), and on
+  Edit Poly Cap (quad and inset; a Laplacian relax in Python, border held). Test
+  `tests/test_cap_relax.py`; comparison sheet `cap_relax_compare.png` (Sides 32/48, Cap Segs 1/3, Relax
+  0 / 0.5 / 1).
   - **Where:**
     - the primitives' Quad Cap (Cylinder, Cone, ChamferCyl, Spindle, Gengon, Prism; the quad
       poles of Sphere, Capsule and OilTank too)
