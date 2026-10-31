@@ -119,10 +119,11 @@ jobs:
           git lfs pull || echo "some LFS files are missing"
           git -c submodule."lib/linux_x64".update=checkout submodule update --init --depth 1 lib/linux_x64
           git -C lib/linux_x64 lfs pull
-      - uses: actions/cache@v4
+      # The compiler cache is saved right after the build, also when a later step fails.
+      - uses: actions/cache/restore@v4
         with:
           path: ~/.cache/ccache
-          key: ccache-linux-${{ github.sha }}
+          key: ccache-linux-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: ccache-linux-
       - name: Configure
         run: |
@@ -132,11 +133,21 @@ jobs:
           cmake -S blender -B build -G Ninja -C blender/build_files/cmake/config/blender_release.cmake \
             -DWITH_COMPILER_CCACHE=ON $CMAKE_GPU_OFF -DWITH_CYCLES_DEVICE_ONEAPI=OFF
       - name: Build
-        env: { CCACHE_DIR: ~/.cache/ccache, CCACHE_MAXSIZE: 4G }
+        env: { CCACHE_MAXSIZE: 4G }
         run: |
+          export CCACHE_DIR="$HOME/.cache/ccache"
           source /opt/rh/gcc-toolset-14/enable
           cmake --build build --target install -j 4
           ccache -s
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: ~/.cache/ccache
+          key: ccache-linux-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Add Maximize
+        run: |
+          ver=$(ls build/bin | grep -E '^[0-9]+\.[0-9]+$')
+          cp -R Maximize/maximize "build/bin/$ver/scripts/addons_core/maximize"
       - name: Tests
         run: python3.11 blender/moritz/tools/run_headless_tests.py build/bin/moritz blender Maximize
       - name: Package
@@ -167,10 +178,10 @@ jobs:
           git lfs pull || echo "some LFS files are missing"
           git -c submodule."lib/macos_arm64".update=checkout submodule update --init --depth 1 lib/macos_arm64
           git -C lib/macos_arm64 lfs pull
-      - uses: actions/cache@v4
+      - uses: actions/cache/restore@v4
         with:
           path: ~/Library/Caches/ccache
-          key: ccache-macos-${{ github.sha }}
+          key: ccache-macos-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: ccache-macos-
       - name: Configure
         run: |
@@ -181,6 +192,16 @@ jobs:
         run: |
           cmake --build build --target install -j 3
           ccache -s
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: ~/Library/Caches/ccache
+          key: ccache-macos-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Add Maximize
+        run: |
+          res=build/bin/Moritz.app/Contents/Resources
+          ver=$(ls $res | grep -E '^[0-9]+\.[0-9]+$')
+          cp -R Maximize/maximize "$res/$ver/scripts/addons_core/maximize"
       - name: Tests
         run: python3 blender/moritz/tools/run_headless_tests.py build/bin/Moritz.app/Contents/MacOS/Moritz blender Maximize
       - name: Package
