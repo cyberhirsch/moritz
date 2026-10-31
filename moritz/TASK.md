@@ -13,7 +13,10 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done.
 - **Installer:** per user (no admin rights), keeping the first-start setup.
 - **Edit Poly on instances:** as in Max, shared. Adding or editing it on one instance applies to all
   (the add-on keeps the modifiers in sync; files stay plain Blender data).
-- **Repos stay private.**
+- ~~**Repos stay private.**~~ **Both repos are public** (Seb, 2026-10-31; checked without login:
+  `cyberhirsch/moritz` and `cyberhirsch/maximize` answer 200). GitHub's hosted runners are free
+  for them, macOS included.
+- **Moritz 0.3.0 ships for Windows, Linux and macOS** (Seb, 2026-10-31). See Phase 5.
 - **Phase 3b:** do every item in order, then report.
 
 - *(2026-10-29)* **Moritz is a Blender alternative, not Blender plus an add-on.** Seb: "moritz
@@ -781,6 +784,33 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 - [x] CI for Maximize: background tests on Blender 5.3 (GitHub Actions)
 - [x] 0.2 release (Seb, 2026-10-25: the first release is Moritz 0.2, on Blender 5.3). *Released 2026-10-30 as 0.2.0 (Seb: "build a 0.2.0 and release on github"): tag `v0.2.0` on c680148f01b (Maximize tag `v0.2.0` on 3419ab0), private GitHub pre-release https://github.com/cyberhirsch/moritz/releases/tag/v0.2.0 with the zip and msi (also in `G:/Code/Moritz/dist/0.2.0`); suite 65/65, both packages smoke-tested. The hand tests in `moritz/docs/release_0.2_checklist.md` were not done before the release.*
 
+- [ ] **0.3.0 on Windows, Linux and macOS** (Seb, 2026-10-31: "0.3.0 should be linux, windows
+  and mac"). The repos are public, so GitHub's hosted runners are free.
+  - **Workflow:** one `workflow_dispatch` workflow with a matrix:
+    - Windows: `windows-latest`, as now.
+    - Linux x64: `ubuntu-latest` inside Blender's Rocky Linux 8 build image, for glibc
+      compatibility.
+    - macOS arm64: `macos-14`.
+    - macOS x64: `macos-13`, if Intel is wanted.
+    Each job downloads Blender's precompiled libraries for its platform (Blender's `make update`
+    lib checkout for 5.3) and clones Maximize. A compiler cache (sccache or ccache with
+    `actions/cache`) keeps reruns inside the 6 h / ~14 GB limits. Run Maximize's headless tests on
+    every platform.
+  - **Packages:**
+    - Windows: zip and per-user MSI.
+    - Linux: `moritz-0.3.0-linux-x64.tar.xz`.
+    - macOS: `.dmg` with `Moritz.app`.
+  - **Untested platform code:** `GHOST_SystemPathsUnix.cc` and `GHOST_SystemPathsCocoa.mm`
+    (config in `~/.config/moritz`, `~/Library/Application Support/Moritz`), the app bundle name,
+    `Info.plist` (bundle id, icon `.icns`), the Linux `.desktop` file and icons, and `moritz-cli`
+    on both.
+  - **macOS signing:** without an Apple Developer account (99 USD a year) the app is only ad-hoc
+    signed and not notarized. Gatekeeper then calls it "damaged"; users must run
+    `xattr -cr Moritz.app` or open it with right-click > Open. Seb decides whether to get an
+    account; until then, ship unsigned with that note in the release text.
+  - **Release:** one GitHub release with all packages. *Starting the workflow is a CI run: ask
+    Seb before each dispatch, as per the CI rule.*
+
 ## Phase 6 — Command Panel (plan, 2026-10-25)
 
 Max's Command Panel replaces the look of Blender's Properties editor: the same editor, renamed, with
@@ -1203,6 +1233,176 @@ No-brainers (approved by Seb, 2026-10-25):
   column (Blender sorts by name only), Max's separate Layer Explorer (Blender's View Layer mode
   already shows collections).
 
+## Phase 8 — MCP server and CLI (Seb, 2026-10-31: "make an mcp and cli for moritz too")
+
+Agents (Claude and others) and scripts drive Moritz the way the other *craft apps are driven.
+- [x] **Moritz MCP server.** Start from Blender Lab's MCP (`projects.blender.org/lab/blender_mcp`,
+  GPL-3.0, so it can be forked; installed here as the Claude extension `blender-mcp`: a `uv`
+  server `blmcp` plus a Blender add-on that listens in the running app). Fork it as **Moritz
+  MCP**: Moritz's name and icon, the add-on built into Moritz (always on, like Maximize, with an
+  on/off and port setting in Preferences), and Moritz's own tools on top of the generic ones:
+  - Create: every Create-tab object with its Max parameters (Box, Teapot, Suzanne, TorusKnot …,
+    shapes), named Box001 etc.
+  - Modify: the stack in Max order; add from the Moritz modifier list by Max or Blender name;
+    Edit Poly levels 1–5, its tools (Smart Extrude, Chamfer, Weld, Bridge, Cap …), Collapse To.
+  - Utilities: Align, Array, Spacing Tool, Object Paint; Transform Type-In values.
+  - Scene: Scene Explorer data (layers = collections, freeze, hide), selection sets, Hold / Fetch.
+  - Settings: keymap and name scheme; screenshot of a viewport or the window.
+  - Every tool goes through the same operators as the UI, so undo works.
+  Ship it as a Claude extension (`.mcpb`) next to the release, and document the setup in the
+  README. The app's text calls it Moritz's own, not Maximize's.
+  **Done 2026-10-31:** add-on `scripts/addons_core/moritz_mcp` (built in, server off until Preferences > System > Moritz MCP, localhost port 9877), 38 Moritz commands in `commands.py` (Create, Modify, Edit Poly, Utilities, Scene Explorer, Settings) next to the generic tools; server `moritz/mcp` (package `mzmcp`), `.mcpb` from `moritz/tools/make_mcpb.py`. Object Paint is not a command (it is interactive). Tests `test_moritz_mcp_commands.py`, `test_moritz_mcp_live.py`.
+- [x] **Moritz CLI** (`moritz-cli.exe` next to `moritz.exe`, in the zip and MSI). Two modes:
+  - **Headless** (wraps `moritz.exe -b`): `open`, `info` (objects, modifiers, missing files),
+    `render` (frame / range / camera), `convert` (FBX, OBJ, glTF, USD, .max via the importer),
+    `run` (a Python script), `test` (the suite).
+  - **Live**: the same commands against a running Moritz through the MCP add-on's socket
+    (`--connect`), plus `command list` / `command run` for every MCP tool, so the CLI and the MCP
+    share one command set.
+  - JSON output with `--json`, for scripts and agents.
+  **Done 2026-10-31:** `scripts/modules/moritz_cli.py` behind the console launcher `moritz-cli.exe` (`source/creator/moritz_cli_win32.c`): info, open, render, convert, run, test, command list/run, serve; `--json`, `--connect`.
+- *Add-on and packaging work, no core change. The add-on and CLI ship in the packages, so a new
+  release is needed to deliver them. Files unaffected. Security: the socket listens on
+  localhost only, and it's off until enabled in Preferences (it runs any Python).*
+
+## Found installing 0.2.0 (2026-10-31)
+
+- [x] **The MSI installs per machine, not per user.** It went to `C:\Program Files\Moritz\`, with
+  the Start Menu shortcut in `C:\ProgramData\…`. That goes against the decision "Installer: per user
+  (no admin rights)". It should go to `%LOCALAPPDATA%\Programs\Moritz` with `ALLUSERS=""` /
+  `MSIINSTALLPERUSER=1` (WiX `Scope="perUser"`), the shortcut in the user's Start Menu.
+  **Done 2026-10-31:** `Scope="perUserOrMachine"` (ALLUSERS=2, MSIINSTALLPERUSER=1), registry under HKMU; a launch condition stops it while the per-machine 0.2.0 is installed (uninstall that first). Tables checked; not installed here.
+- [x] **`moritz.exe --version` prints "Blender 5.3.0 Beta"**; the rebrand sweep missed it. It
+  should print "Moritz 0.2.0 (based on Blender 5.3.0)" (`creator_args.cc`, `print_version_full`).
+  *Core, rebuild; batch with the next one.*
+  **Done 2026-10-31:** prints "Moritz 0.2.0 (based on Blender 5.3.0 Beta)"; new `bpy.app.moritz_version_string`.
+
+## No Blender in menus and splash (Seb, 2026-10-31)
+
+- [x] *(Seb: "remove all references to Blender, except for the credit, in the programs menus and
+  splashscreen")* **This overrides the earlier "Blender's own links stay named as Blender's".**
+  In every menu of the app (top bar File / Edit / Render / Window / Help, editor headers, context
+  menus, the Preferences window) and on the splash, nothing says "Blender" any more. The only
+  exception is the credit: "Based on Blender" in About and one credit line on the splash.
+  - **Help menu:** Blender Website, Blender Store, Development Fund, Release Notes, Python API
+    Reference, Report a Bug, and the "Blender" items in the Help > Manual entries. Keep **Manual**
+    and **Python API Reference** under neutral names (they still open Blender's docs, which are
+    the right ones). **Report a Bug** opens Moritz's GitHub issues. Remove the Store, Fund and
+    Blender Website items, and point **Release Notes** to Moritz's release page.
+  - **Splash:** the links column (Donate, What's New, Blender links) shows Moritz's: Release
+    Notes, Manual, Report a Bug. "What's New in Blender" goes. Credit line: "Based on Blender".
+  - Also check: the File menu (Import/Export "Blender" entries, "Link / Append from Blender
+    file"), Preferences (System > "Blender" labels, Save & Load), "Install Application Template",
+    the top-left app menu, and the Windows Start Menu / taskbar names.
+  - Keep: version numbers in file-compatibility messages, internals (`.blend`, `bpy`), and the
+    license texts.
+  - *Core and bundled scripts, so it needs a rebuild; batch it with the --version fix. Files
+    unaffected.*
+  **Done 2026-10-31:** Help menu, splash, About, theme presets (Dark / Light), Windows version info (moritz.exe "Moritz"). Kept on purpose: the "Blender" keymap and name scheme (they name the compatibility modes). Checked in screenshots.
+
+## Create tab: category buttons in a column (Seb, 2026-10-31)
+
+- [x] *(Seb, screenshot of the Create tab's seven category icons: Geometry, Shapes, Lights,
+  Cameras, Helpers, Space Warps, Systems; "those buttons need to be a vertical row on the panel")*
+  The category buttons go **one above the other in a vertical column** along the panel's left
+  edge, with the object-type grid to its right, instead of the horizontal strip on top. Icons only
+  (names in the tooltips), the active one highlighted as now. Python layout (`ui.py` /
+  `properties_create`), no rebuild unless the panel itself lives in core; files unaffected.
+  **Done 2026-10-31:** `properties_create.py`: icon column on the left, category name and the two-column grid to its right; checked at 230 px panel width.
+
+## Bug: .max importer missing from File > Import (Seb, 2026-10-31)
+
+- [x] *(Seb's screenshot of File > Import in the installed 0.2.0: no "Autodesk MAX (.max)",
+  only Max Scene (.mxscene))* **Cause, checked headless:** the importer
+  (`bl_ext.system.io_scene_max`) is installed and enabled with factory settings, but Seb's saved
+  `%APPDATA%\Moritz\5.3\config\userpref.blend` (from 2026-10-30) doesn't list it, so it stays off.
+  Any user with saved preferences hits the same problem. **Fix:** treat it like Maximize, always on
+  (`addon_utils.BUILTIN` or enabled once per version at startup, remembering if the user turned it
+  off). Seb's workaround for now: Preferences > Add-ons > "Import Autodesk MAX" on.
+  **Done 2026-10-31:** `addon_utils.DEFAULT_ON` enables it once for saved preferences that lack it (marker `moritz_default_addons.txt`); turned off later, it stays off. Test `test_default_addons.py`.
+
+## Smart Extrude bugs (Seb, 2026-10-31, two screenshots)
+
+*(Seb: "smart extruding on two axis plane doesn't work yet, please confirm the error in the code,
+before you code. also extruding inwards, should be like a boolean substraction, but it is more
+like an intersection.")* **Rule: confirm the cause (in the code or by reproducing it) before
+changing code.**
+- [x] **Plane handle (two axes). Cause confirmed in the code:** in Blender's Move gizmo the
+  plane handles are `GIZMO_GT_arrow_3d` gizmos too (`transform_gizmo_3d.cc` line 1703,
+  `GIZMO_NEW_ARROW(MAN_AXIS_TRANS_XY)` etc., drawn in the plane style). Maximize's
+  `gizmo_arrow_move` (`transform.py` line 656) picks any highlighted `GIZMO_GT_arrow_3d`, so a
+  Shift+drag on a plane handle is taken for an arrow and constrained to one axis (the handle's
+  Z), not moved in the plane. Fix: skip the plane-style handles there (their `draw_style`) and let
+  the gizmo's own plane move run. Blender's Shift flip only affects single-axis handles
+  (`transform_gizmo_3d.cc` line 2207), so the plane stays a plane. The same fix covers Clone on
+  the plane handles.
+  **Done 2026-10-31:** Maximize 9de0a1e (`draw_style != 'NORMAL'` skipped); test `test_smart_extrude_drag.py` with `MX_GIZMO=PLANE`.
+- [ ] **Inward gives an intersection instead of a subtraction. Not confirmed yet; reproduce
+  first** (Seb's object: a wedge-shaped ridge, a polygon on its sloped top pushed in; the result
+  is only the piece inside the cutter). `smart_extrude()` calls
+  `mesh.intersect_boolean(operation='DIFFERENCE')` with the cutter solid selected, which is
+  right. An intersection-shaped result means one of the two solids reads as inside-out:
+  (a) the cutter's normals point inward after `recalc_face_normals(faces=solid)` (line 212)
+  on a skewed, thin solid; or (b) Seb's mesh is open or has flipped normals, so the exact
+  solver's inside test inverts. Check with Seb's mesh: cutter normals before the boolean, and
+  whether the mesh is manifold.
+- [x] **Found while reading the code, confirmed:** in the boolean path, `_cap_plane` uses the
+  *move* direction as the cap's normal (line 137), so any move that isn't along the polygon
+  normal (an arrow off the normal, a plane drag) finds no cap afterwards and leaves nothing
+  selected. `_widening` also tests "along" against the move direction. Use the polygons' normal
+  for the cap, and the move only for the sweep.
+  **Done 2026-10-31:** Maximize 9de0a1e, `_cap_plane` uses the polygons' normal. `_widening` stays: its "along" test is about the move.
+  **Not reproduced (2026-10-31):** wedge ridge, push along the normal, along Global Z, through the far side, on an open mesh: all subtract. Waiting for Seb's .blend or exact steps.
+
+## Create: drag bug and parameters (Seb, 2026-10-31)
+
+- [ ] **Bug, not confirmed yet; reproduce first:** *(Seb: "when creating a teapot there is a bug,
+  maybe also with the other, when you click and drag, you can make it bigger, and smaller, but
+  not bigger again. it gets stuck.")* While dragging the size, a Teapot can shrink after growing,
+  but can't grow again. Check all drag-created objects (Teapot, Suzanne, Sphere, Box …), both
+  keymaps. Reading `primitives.py` found no clamp in `_apply` (`RADIUS`: `d.length * scale`).
+  Candidates to check: the input's soft or hard max in the node group, an `update_tag` /
+  depsgraph lag, or the ray hit (`_hit`) jumping when the mouse passes over the new object.
+  Confirm before changing code.
+- [ ] *(Seb: "also i would like to see the parameters in the create panel")* **Parameters in the
+  Create tab:** as in Max, after (and while) creating an object, the Create panel shows its
+  parameters below the object-type grid: Name and Color, then Parameters (radius, segments,
+  Teapot parts, …), and Creation Method / Keyboard Entry where Max has them. They are the same
+  live inputs the Modify tab shows, for the just-created or selected object of that type. In Max
+  they stay editable until you pick another tool or object.
+
+## Slice Plane: big white disk (Seb, 2026-10-31, screenshot, "what is that white sphere?")
+
+- [ ] **Cause found in the code (`poly_tools.py`, `MAXIMIZE_GGT_slice_plane`):** the white disk
+  is the Slice Plane's **move handle** (`GIZMO_GT_move_3d`, `FILL` + `ALIGN_VIEW`), with three
+  faults:
+  1. **Drawn at twice the plane's position:** `draw_prepare` sets
+     `move.matrix_basis = Translation(co)`, and the gizmo also adds its target `offset`, which is
+     the same `maximize_slice_location`. In the screenshot the disk sits as far above the plane as
+     the plane sits above the ground (about 48 px each). Fix: identity `matrix_basis` (the offset
+     carries the position), or no target and an operator drag.
+  2. **No color set:** it draws in the default white, opaque. Use the plane's yellow with low
+     alpha and a highlight, like the dials.
+  3. **Too big:** no `scale_basis`, and `FILL` fills the whole circle. Use a small ring
+     (`ALIGN_VIEW` without `FILL`, or a small `scale_basis`), as Max's Slice Plane has no big disk.
+  - Also check that dragging the handle moves the plane 1:1 (not 2:1) after the fix.
+
+## SwiftLoop does nothing (Seb, 2026-10-31: "swiftloop doesn't do anything yet?")
+
+- [ ] **Not confirmed; reproduce first.** The button is a name alias (`vocabulary.py` line 195:
+  `swift_loop` → `mesh.loopcut_slide`, no options). From a panel button the alias runs it with a
+  3D View override (`run()`, line 300). Likely cause: Loop Cut and Slide works on the edge under
+  the mouse at invoke time, and the click happened in the Command Panel, so there is no edge under
+  the cursor and it ends or waits without effect. Check what happens: cancelled, or a modal that
+  never gets viewport events.
+- **What it should be (Max's SwiftLoop):** a **mode**. Click the button, then in the viewport a
+  loop preview follows the edge under the cursor; each click inserts a loop there, and you can
+  insert as many as you like until right-click or Esc. Shift+click inserts a loop and keeps it
+  flowing (Max: "Shift+click: flow loop"); Ctrl+click selects the loop; Ctrl+Shift+click
+  removes it; Alt+drag slides. The button stays highlighted while the mode is on. Build it as a
+  modal operator that calls `mesh.loopcut` at the mouse position per click (or our own ring cut)
+  instead of one Loop Cut and Slide.
+
 ## Upstream maintenance (recurring)
 - [ ] Merge each Blender release branch into `moritz/main` (recurring; last: 1 fix from `blender-v5.3-release`, 2026-10-30, merge d1c576d7acf; before that 4 fixes, merge ca65c5eef82; before that 115 fixes, 2026-10-29, merge a188bb1acd8, no conflicts, Windows libraries updated for the KTX / OpenImageIO fix; merge with `GIT_LFS_SKIP_SMUDGE=1`, a plain merge dies on LFS test images)
-- [ ] Re-run the test suite and a smoke test of Maximize after each merge (recurring; last: 2026-10-30 after the 1-fix merge: all 64 test scripts pass; before that, after the 4-fix merge: all 60 test scripts pass, 14 Moritz + 46 Maximize)
+- [ ] Re-run the test suite and a smoke test of Maximize after each merge (recurring; last: 2026-10-31: all 68 test scripts pass; 2026-10-30 after the 1-fix merge: all 64 test scripts pass; before that, after the 4-fix merge: all 60 test scripts pass, 14 Moritz + 46 Maximize)
