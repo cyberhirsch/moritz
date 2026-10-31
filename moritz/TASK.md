@@ -784,6 +784,8 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
 - [x] CI for Maximize: background tests on Blender 5.3 (GitHub Actions)
 - [x] 0.2 release (Seb, 2026-10-25: the first release is Moritz 0.2, on Blender 5.3). *Released 2026-10-30 as 0.2.0 (Seb: "build a 0.2.0 and release on github"): tag `v0.2.0` on c680148f01b (Maximize tag `v0.2.0` on 3419ab0), private GitHub pre-release https://github.com/cyberhirsch/moritz/releases/tag/v0.2.0 with the zip and msi (also in `G:/Code/Moritz/dist/0.2.0`); suite 65/65, both packages smoke-tested. The hand tests in `moritz/docs/release_0.2_checklist.md` were not done before the release.*
 
+- *(Seb, 2026-10-31: no 0.2.1; the MCP server, CLI, per-user installer and the rest ship with
+  0.3.0.)*
 - [ ] **0.3.0 on Windows, Linux and macOS** (Seb, 2026-10-31: "0.3.0 should be linux, windows
   and mac"). The repos are public, so GitHub's hosted runners are free.
   - **Workflow:** one `workflow_dispatch` workflow with a matrix:
@@ -810,6 +812,7 @@ Smallest first. Three of them turned out to be possible in Maximize after all (m
     account; until then, ship unsigned with that note in the release text.
   - **Release:** one GitHub release with all packages. *Starting the workflow is a CI run: ask
     Seb before each dispatch, as per the CI rule.*
+  **Prepared 2026-10-31, not run (needs Seb's go):** workflow `.github/workflows/moritz-release.yml` (Windows zip+MSI+.mcpb, Linux in a rockylinux:8 container, macOS arm64 on macos-14, ccache, headless tests via `moritz/tools/run_headless_tests.py`, optional draft release). Packaging `moritz/tools/make_unix_package.py` (tar.xz; .dmg with ad-hoc signature). Rebrand for Linux/macOS: program `moritz` / `Moritz.app` (`Moritz`), Info.plist (id `io.github.cyberhirsch.moritz`, Moritz icon `.icns`, .blend files stay Blender's: LSHandlerRank Alternate, imported type), `moritz.desktop` + icons, Wayland app id / X11 class "Moritz", macOS app menu, `moritz-cli` shell launcher. **No Intel Mac:** Blender 5.3 has no `macos_x64` libraries. No GPU kernels on hosted runners (Cycles CPU, or kernels compiled on the user's machine). Nothing of it has been compiled yet: Linux and macOS only build in CI. Risk: the Linux job may run out of the runner's ~14 GB disk.
 
 ## Phase 6 — Command Panel (plan, 2026-10-25)
 
@@ -1364,16 +1367,18 @@ changing code.**
   Candidates to check: the input's soft or hard max in the node group, an `update_tag` /
   depsgraph lag, or the ray hit (`_hit`) jumping when the mouse passes over the new object.
   Confirm before changing code.
-- [ ] *(Seb: "also i would like to see the parameters in the create panel")* **Parameters in the
+  **Not reproduced (2026-10-31):** every drag-created type (23) grows, shrinks and grows again by parameter and by evaluated size, in both keymaps, in all four quad views, shrunk to the center and dragged far out (`test_create_drag_grow.py`); the creation code is unchanged since 0.2.0. Need a screen recording or exact steps from Seb. Found on the way and fixed: Capsule showed nothing during its radius drag (height 0 clamps its caps); now a sphere, height never below the diameter.
+- [x] *(Seb: "also i would like to see the parameters in the create panel")* **Parameters in the
   Create tab:** as in Max, after (and while) creating an object, the Create panel shows its
   parameters below the object-type grid: Name and Color, then Parameters (radius, segments,
   Teapot parts, …), and Creation Method / Keyboard Entry where Max has them. They are the same
   live inputs the Modify tab shows, for the just-created or selected object of that type. In Max
   they stay editable until you pick another tool or object.
+  **Done 2026-10-31 (Maximize dfb74e2):** Create tab panels Keyboard Entry and Parameters (add-on, `ui.py`), below Name and Color, for the last created object until another object is active; they redraw during the drag. Not done: Creation Method (Max's Edge / Center, Cube / Box) needs new creation modes; ask Seb if he wants them.
 
 ## Slice Plane: big white disk (Seb, 2026-10-31, screenshot, "what is that white sphere?")
 
-- [ ] **Cause found in the code (`poly_tools.py`, `MAXIMIZE_GGT_slice_plane`):** the white disk
+- [x] **Cause found in the code (`poly_tools.py`, `MAXIMIZE_GGT_slice_plane`):** the white disk
   is the Slice Plane's **move handle** (`GIZMO_GT_move_3d`, `FILL` + `ALIGN_VIEW`), with three
   faults:
   1. **Drawn at twice the plane's position:** `draw_prepare` sets
@@ -1386,15 +1391,17 @@ changing code.**
   3. **Too big:** no `scale_basis`, and `FILL` fills the whole circle. Use a small ring
      (`ALIGN_VIEW` without `FILL`, or a small `scale_basis`), as Max's Slice Plane has no big disk.
   - Also check that dragging the handle moves the plane 1:1 (not 2:1) after the fix.
+  **Done 2026-10-31 (Maximize dfb74e2):** double position confirmed (`move3d_gizmo.cc` line 63 adds the target to the matrix); now identity matrix, yellow ring (scale 0.2, picked as a disk with FILL_SELECT). Found too: the second (green) dial never bound (`target_set_prop` index 1 is refused, `rna_wm_gizmo_api.cc` line 131), so `setup` failed half-way; both dials use get/set handlers, and a dial seen edge-on hides (it took the ring's clicks in the side views). Test `test_slice_plane_gizmo.py`: the plane follows the mouse 1:1.
 
 ## SwiftLoop does nothing (Seb, 2026-10-31: "swiftloop doesn't do anything yet?")
 
-- [ ] **Not confirmed; reproduce first.** The button is a name alias (`vocabulary.py` line 195:
+- [x] **Not confirmed; reproduce first.** The button is a name alias (`vocabulary.py` line 195:
   `swift_loop` → `mesh.loopcut_slide`, no options). From a panel button the alias runs it with a
   3D View override (`run()`, line 300). Likely cause: Loop Cut and Slide works on the edge under
   the mouse at invoke time, and the click happened in the Command Panel, so there is no edge under
   the cursor and it ends or waits without effect. Check what happens: cancelled, or a modal that
   never gets viewport events.
+  **Done 2026-10-31 (Maximize dfb74e2):** confirmed (from the panel `mesh.loopcut_slide` returns CANCELLED at once, nothing under the mouse). New modal `maximize.swift_loop` (`poly_tools.py`): yellow preview of the ring cut under the mouse, click inserts (own ring cut at the mouse position), Shift flow (Set Flow on the new loop), Ctrl select loop, Ctrl+Shift remove, Alt+drag edge slide, one undo step per click, right-click / Esc ends, button pressed while on; also in Blender's Edge menu. Test `test_swift_loop.py` (both keymaps). Alt+drag slide is not covered by the test.
 - **What it should be (Max's SwiftLoop):** a **mode**. Click the button, then in the viewport a
   loop preview follows the edge under the cursor; each click inserts a loop there, and you can
   insert as many as you like until right-click or Esc. Shift+click inserts a loop and keeps it
@@ -1402,6 +1409,31 @@ changing code.**
   removes it; Alt+drag slides. The button stays highlighted while the mode is on. Build it as a
   modal operator that calls `mesh.loopcut` at the mouse position per click (or our own ring cut)
   instead of one Loop Cut and Slide.
+
+## Moritz manual on GitHub (Seb, 2026-10-31: "Let's host a manual on Github too")
+
+- [ ] **A Moritz manual on GitHub Pages**, the target of Help > Manual and the splash's Manual
+  link (both open Blender's manual today).
+  - **Scope:** what Moritz does differently, not a copy of Blender's 2000-page manual:
+    - Getting Started: Quick Setup, keymaps, name schemes, and what is Max-like vs Blender.
+    - Command Panel: Create, Modify, Utilities.
+    - Edit Poly and Editable Poly: levels, ribbon tools, Smart Extrude, SwiftLoop, Slice Plane,
+      Freeform / Paint Deform.
+    - The modifier list (Max and Blender names), Splines, the quad menu, the Scene Explorer
+      features.
+    - Importing from Max: the .max importer and the .mxscene exporter.
+    - MCP and CLI.
+    - "For Max users" and "For Blender users" pages.
+    Every page links to the matching Blender manual page for everything Moritz leaves unchanged.
+  - **How:** Sphinx with RST, like Blender's manual, so pages can link or borrow from it. Blender's
+    manual is CC-BY-SA 4.0, so borrowed text needs credit and the same license. Source in
+    `moritz/manual/` in the Moritz repo (or its own repo `cyberhirsch/moritz-manual`). A GitHub
+    Actions workflow builds it on push to the docs and publishes to Pages. That one is small and
+    free (the repo is public), but it is CI: ask Seb before enabling it.
+  - **URL:** `https://cyberhirsch.github.io/moritz/manual/<version>/`, versioned like Blender's.
+    `_url_from_manual` in `wm.py` points there. Screenshots are made with the Moritz CLI/MCP, so
+    they can be redone for each release.
+  - Ship the first version with 0.3.0.
 
 ## Upstream maintenance (recurring)
 - [ ] Merge each Blender release branch into `moritz/main` (recurring; last: 1 fix from `blender-v5.3-release`, 2026-10-30, merge d1c576d7acf; before that 4 fixes, merge ca65c5eef82; before that 115 fixes, 2026-10-29, merge a188bb1acd8, no conflicts, Windows libraries updated for the KTX / OpenImageIO fix; merge with `GIT_LFS_SKIP_SMUDGE=1`, a plain merge dies on LFS test images)
