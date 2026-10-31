@@ -126,9 +126,11 @@ jobs:
           restore-keys: ccache-linux-
       - name: Configure
         run: |
+          # No oneAPI device: its JIT kernel library is built with the bundled DPC++ compiler, which
+          # finds no C++ headers in Rocky 8 (cstdint).
           source /opt/rh/gcc-toolset-14/enable
           cmake -S blender -B build -G Ninja -C blender/build_files/cmake/config/blender_release.cmake \
-            -DWITH_COMPILER_CCACHE=ON $CMAKE_GPU_OFF
+            -DWITH_COMPILER_CCACHE=ON $CMAKE_GPU_OFF -DWITH_CYCLES_DEVICE_ONEAPI=OFF
       - name: Build
         env: { CCACHE_DIR: ~/.cache/ccache, CCACHE_MAXSIZE: 4G }
         run: |
