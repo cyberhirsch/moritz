@@ -12,6 +12,10 @@ pipeline (modeling, sculpting, animation, rigging, simulation, rendering and com
 the way Max users expect: Max navigation and keys, the quad menu, the Command Panel with Create,
 Modify and Utilities, Editable Poly with sub-object levels 1–5, and a modifier stack with Edit Poly.
 
+> **Moritz is in alpha.** Many features are still missing, and you will run into bugs. Bugs get
+> fixed, so please report every one in `#bug-reports` on the [Moritz Discord](https://discord.gg/cA9x2yprmG).
+> Missing something you rely on? Add it to the wishlist in `#feature-requests`.
+
 - Download: [Releases](https://github.com/cyberhirsch/moritz/releases) (Windows 10/11, 64-bit)
 - Community: [Discord](https://discord.gg/cA9x2yprmG)
 - Roadmap, tasks and the list of core changes: [`moritz/`](moritz/)
