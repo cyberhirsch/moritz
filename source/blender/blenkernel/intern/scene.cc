@@ -1715,6 +1715,7 @@ int Scene::playback_end() const
 /** \} */
 
 const char *RE_engine_id_BLENDER_EEVEE = "BLENDER_EEVEE";
+const char *RE_engine_id_MORITZ_MNPR = "MORITZ_MNPR";
 const char *RE_engine_id_BLENDER_EEVEE_NEXT = "BLENDER_EEVEE_NEXT";
 const char *RE_engine_id_BLENDER_WORKBENCH = "BLENDER_WORKBENCH";
 const char *RE_engine_id_CYCLES = "CYCLES";
@@ -3084,9 +3085,15 @@ bool BKE_scene_use_spherical_stereo(Scene *scene)
   return (type && type->flag & RE_USE_SPHERICAL_STEREO);
 }
 
+bool BKE_engine_id_is_eevee(const char *idname)
+{
+  /* mNPR is a copy of EEVEE and supports everything EEVEE does. */
+  return STREQ(idname, RE_engine_id_BLENDER_EEVEE) || STREQ(idname, RE_engine_id_MORITZ_MNPR);
+}
+
 bool BKE_scene_uses_blender_eevee(const Scene *scene)
 {
-  return STREQ(scene->r.engine, RE_engine_id_BLENDER_EEVEE);
+  return BKE_engine_id_is_eevee(scene->r.engine);
 }
 
 bool BKE_scene_uses_blender_workbench(const Scene *scene)

@@ -17,6 +17,7 @@
 
 #include "BKE_context.hh"
 #include "BKE_node_runtime.hh"
+#include "BKE_scene.hh"
 
 #include "IMB_colormanagement.hh"
 
@@ -127,8 +128,7 @@ bool object_eevee_shader_nodes_poll(const bContext *C)
     return false;
   }
   const RenderEngineType *engine_type = CTX_data_engine_type(C);
-  return STREQ(engine_type->idname, "BLENDER_EEVEE") ||
-         STREQ(engine_type->idname, "BLENDER_EEVEE");
+  return BKE_engine_id_is_eevee(engine_type->idname);
 }
 
 /* ****** */

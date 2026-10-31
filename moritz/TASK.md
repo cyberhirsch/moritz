@@ -1511,6 +1511,31 @@ changing code.**
   - *Add-on (`quad_caps.py`, `poly_tools.py` Cap). Files: one more Geometry Nodes input; Blender
     evaluates it.*
 
+## mNPR renderer (Seb, 2026-10-31: "a new renderer based on eevee. call it mNPR", "Full copy of EEVEE")
+- [x] **mNPR engine: a full copy of EEVEE.** `source/blender/draw/engines/mnpr`, made by
+  `moritz/tools/make_mnpr_copy.py` (renames files, namespaces, shader and macro names). Engine id
+  `MORITZ_MNPR`, listed as "mNPR". EEVEE's own code is unchanged.
+  - Shared hooks: draw manager (view data, engine selection, registration), GPU shader lists,
+    `GPU_MAT_MNPR` material type, shader tool rules for `mnpr_` files.
+  - Create infos of mNPR's resource tables outside the `mnpr` namespace (`KernelGlobals`,
+    `gbuffer::Reader`, ...) are filed under an `mnpr_` key, or they replace EEVEE's
+    (`init_mnpr_infos` in `gpu_shader_create_info.cc`). EEVEE crashed before that fix.
+  - Every UI and node check that accepts EEVEE accepts mNPR (`BKE_engine_id_is_eevee`;
+    `moritz/tools/add_mnpr_to_ui.py` for the Python panels).
+  - Test: `moritz/tests/test_mnpr_engine.py`. With strokes off mNPR matches EEVEE exactly.
+- [x] **Painted strokes (first NPR feature).** A compute pass after the G-buffer
+  (`mnpr_deferred_stroke_normal.bsl.hh`) splits surfaces into stretched 3D Voronoi cells and gives
+  each cell one flat normal, read around the cell centre, so every stroke lights as one facet.
+  Render > Painted Strokes: Size, Stretch, Strength. Stored as scene properties: files open in
+  stock Blender, which ignores them.
+- [ ] Strokes anchored on the object (rest position), not in world space: moving objects swim now.
+- [ ] Colour jitter per stroke.
+- [ ] Silhouette break-up: strokes eat into and spill past the outline (pass before motion blur
+  and depth of field in `ShadingView::render_postfx`).
+- [ ] Hand test in the viewport and on a real scene (Seb).
+- *Files saved with mNPR selected store the engine "MORITZ_MNPR"; not yet checked what stock
+  Blender does with that engine name.*
+
 ## Upstream maintenance (recurring)
 - [ ] Merge each Blender release branch into `moritz/main` (recurring; last: 1 fix from `blender-v5.3-release`, 2026-10-30, merge d1c576d7acf; before that 4 fixes, merge ca65c5eef82; before that 115 fixes, 2026-10-29, merge a188bb1acd8, no conflicts, Windows libraries updated for the KTX / OpenImageIO fix; merge with `GIT_LFS_SKIP_SMUDGE=1`, a plain merge dies on LFS test images)
 - [ ] Re-run the test suite and a smoke test of Maximize after each merge (recurring; last: 2026-10-31: all 68 test scripts pass; 2026-10-30 after the 1-fix merge: all 64 test scripts pass; before that, after the 4-fix merge: all 60 test scripts pass, 14 Moritz + 46 Maximize)

@@ -30,6 +30,7 @@
 #include "BKE_compositor.hh"
 #include "BKE_context.hh"
 #include "BKE_cryptomatte.hh"
+#include "BKE_scene.hh"
 #include "BKE_image.hh"
 #include "BKE_lib_id.hh"
 #include "BKE_main.hh"
@@ -631,7 +632,7 @@ static void node_extra_info(NodeExtraInfoParams &parameters)
 
   /* EEVEE supports passes. */
   const Scene *scene = CTX_data_scene(&parameters.C);
-  if (StringRef(scene->r.engine) == RE_engine_id_BLENDER_EEVEE) {
+  if (BKE_engine_id_is_eevee(scene->r.engine)) {
     return;
   }
 

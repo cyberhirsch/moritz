@@ -193,6 +193,7 @@ int main(int argc, char **argv)
          filename.find("overlay/shaders/") == std::string::npos &&
          filename.find("select/shaders/") == std::string::npos &&
          filename.find("eevee/shaders/") == std::string::npos &&
+         filename.find("mnpr/shaders/") == std::string::npos &&
          filename.find("gpencil/shaders/") == std::string::npos))
     {
       language = Language::BLENDER_GLSL;

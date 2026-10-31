@@ -266,6 +266,10 @@ int get_render_child_particle_number(const RenderData *r, int child_num, bool fo
 bool BKE_scene_use_shading_nodes_custom(Scene *scene);
 bool BKE_scene_use_spherical_stereo(Scene *scene);
 
+/** Moritz: mNPR, the copy of EEVEE (#RenderData::engine). */
+extern const char *RE_engine_id_MORITZ_MNPR;
+/** EEVEE or mNPR, the copy of EEVEE. */
+bool BKE_engine_id_is_eevee(const char *idname);
 bool BKE_scene_uses_blender_eevee(const Scene *scene);
 bool BKE_scene_uses_blender_workbench(const Scene *scene);
 bool BKE_scene_uses_cycles(const Scene *scene);
